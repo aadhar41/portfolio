@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Http\Controllers\API\v1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Education;
+use Illuminate\Http\Request;
+
+class EducationController extends Controller
+{
+    /**
+     * Return all education entries, latest first.
+     */
+    public function index()
+    {
+        return response()->json(
+            Education::orderByDesc('start_year')->get()
+        );
+    }
+
+    /**
+     * Return a single education entry.
+     */
+    public function show($id)
+    {
+        return response()->json(Education::findOrFail($id));
+    }
+
+    /**
+     * Store a new education entry.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'institution'   => 'required|string|max:255',
+            'degree'        => 'required|string|max:255',
+            'field_of_study' => 'required|string|max:255',
+            'start_year'    => 'required|string',
+            'end_year'      => 'nullable|string',
+            'grade'         => 'nullable|string|max:50',
+        ]);
+
+        return response()->json(Education::create($validated), 201);
+    }
+
+    /**
+     * Update an existing education entry.
+     */
+    public function update(Request $request, $id)
+    {
+        $education = Education::findOrFail($id);
+
+        $validated = $request->validate([
+            'institution'   => 'sometimes|string|max:255',
+            'degree'        => 'sometimes|string|max:255',
+            'field_of_study' => 'sometimes|string|max:255',
+            'start_year'    => 'sometimes|string',
+            'end_year'      => 'nullable|string',
+            'grade'         => 'nullable|string|max:50',
+        ]);
+
+        $education->update($validated);
+
+        return response()->json($education);
+    }
+
+    /**
+     * Delete an education entry.
+     */
+    public function destroy($id)
+    {
+        Education::findOrFail($id)->delete();
+
+        return response()->json(['message' => 'Education deleted successfully.']);
+    }
+}
