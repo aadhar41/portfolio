@@ -1,59 +1,169 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Portfolio — Full Stack Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack personal portfolio application built with a **Laravel 12 REST API** backend and a **React** frontend (coming soon).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Structure
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```
+portfolio/
+├── portfolio-backend/      # Laravel 12 REST API
+├── portfolio-frontend/     # React frontend (coming soon)
+├── documentation/          # Project documentation
+├── .gitignore
+└── README.md
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Backend (`portfolio-backend`)
+| Layer | Technology |
+|---|---|
+| Framework | Laravel 12 |
+| Language | PHP 8.2+ |
+| Auth | Laravel Sanctum |
+| Image Processing | Intervention Image 3 |
+| Cache / Queue | Redis (Predis) |
+| Testing | PHPUnit 11 |
+| Dev Tools | Laravel Telescope, Pail, Pint, Sail |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Frontend (`portfolio-frontend`)
+> Coming soon — React-based SPA
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Database Schema
 
-### Premium Partners
+### `profiles`
+Stores personal/professional profile information.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### `skills`
+| Column | Type | Notes |
+|---|---|---|
+| name | string | Skill name |
+| category | string | `frontend` \| `backend` \| `database` \| `tools` |
+| level | integer | Proficiency 1–100 (default: 80) |
+| sort_order | integer | Display ordering |
 
-## Contributing
+### `experiences`
+| Column | Type | Notes |
+|---|---|---|
+| company | string | Employer name |
+| position | string | Job title |
+| description | text | Role description |
+| start_date | string | Start date |
+| end_date | string | nullable — end date |
+| is_current | boolean | Currently working here |
+| technologies | json | nullable — tech used |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### `educations`
+| Column | Type | Notes |
+|---|---|---|
+| institution | string | School/University |
+| degree | string | Degree title |
+| field_of_study | string | Major/Specialization |
+| start_year | string | Start year |
+| end_year | string | nullable |
+| grade | string | nullable — GPA/grade |
 
-## Code of Conduct
+### `projects`
+| Column | Type | Notes |
+|---|---|---|
+| title | string | Project name |
+| description | text | Short description |
+| long_description | longText | nullable — detailed write-up |
+| image | string | nullable — cover image path |
+| live_url | string | nullable — deployed URL |
+| github_url | string | nullable — repository URL |
+| technologies | json | Tech stack used |
+| category | string | `web` \| `mobile` \| `api` |
+| featured | boolean | Highlight on homepage |
+| sort_order | integer | Display ordering |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### `blogs`
+| Column | Type | Notes |
+|---|---|---|
+| title | string | Post title |
+| slug | string | unique — URL-friendly key |
+| excerpt | text | Short preview |
+| content | longText | Full post content |
+| cover_image | string | nullable |
+| tags | json | nullable |
+| status | enum | `draft` \| `published` |
+| published_at | timestamp | nullable |
+| read_time | integer | Estimated minutes (default: 5) |
 
-## Security Vulnerabilities
+### `contacts`
+| Column | Type | Notes |
+|---|---|---|
+| name | string | Sender name |
+| email | string | Sender email |
+| subject | string | nullable |
+| message | text | Message body |
+| is_read | boolean | Read status (default: false) |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### `settings`
+Global application settings as key–value pairs.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js & npm
+- MySQL / PostgreSQL
+- Redis
+
+### Backend Setup
+
+```bash
+cd portfolio-backend
+
+# Install dependencies
+composer install
+
+# Copy and configure environment
+cp .env.example .env
+php artisan key:generate
+
+# Configure your DB credentials in .env, then run migrations
+php artisan migrate
+
+# Install frontend assets
+npm install && npm run build
+```
+
+### Running Locally
+
+```bash
+cd portfolio-backend
+
+# Start all services (server + queue + logs + vite)
+composer run dev
+```
+
+The API will be available at `http://localhost:8000`.
+
+### Running Tests
+
+```bash
+cd portfolio-backend
+composer run test
+```
+
+---
+
+## API Authentication
+
+This project uses **Laravel Sanctum** for token-based API authentication.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the [MIT license](https://opensource.org/licenses/MIT).

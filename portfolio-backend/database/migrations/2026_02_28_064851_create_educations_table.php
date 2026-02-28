@@ -12,8 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('educations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            Schema::create('educations', function (Blueprint $table) {
+                $table->id();
+                $table->string('institution');
+                $table->string('degree');
+                $table->string('field_of_study');
+                $table->string('start_year');
+                $table->string('end_year')->nullable();
+                $table->string('grade')->nullable();
+                $table->timestamps();
+            });
         });
     }
 

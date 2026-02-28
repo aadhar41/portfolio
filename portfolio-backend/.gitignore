@@ -1,24 +1,60 @@
-*.log
-.DS_Store
+# Laravel
+/vendor/
+/node_modules/
+/public/build/
+/public/hot/
+/public/storage/
+/storage/*.key
+/storage/pail/
+/storage/app/public/
+/storage/logs/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/bootstrap/cache/
+
+# Environment
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
+.env.*.local
+
+# Auth & Secrets
 /auth.json
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
+
+# Testing
+.phpunit.result.cache
+/.phpunit.cache/
+
+# Composer
+composer.phar
+
+# NPM / Build artifacts
+package-lock.json
+yarn.lock
+npm-debug.log
+yarn-error.log
+
+# IDE & Editor
+/.idea/
+/.vscode/
+/.fleet/
+/.nova/
+/.zed/
+.phpactor.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Vagrant / Homestead
 Homestead.json
 Homestead.yaml
-Thumbs.db
+.vagrant/
+
+# Logs
+*.log

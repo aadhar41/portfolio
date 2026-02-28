@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('skills', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('category'); // frontend|backend|database|tools
+            $table->integer('level')->default(80); // 1-100
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }
