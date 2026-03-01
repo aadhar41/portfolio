@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const NAV = [
@@ -10,27 +11,82 @@ const NAV = [
 
 export default function Header() {
   const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   return (
-    <header className="fixed top-0 w-full z-50 bg-slate-900/95 backdrop-blur border-b border-slate-700">
-      <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
-        <Link to="/" className="text-xl font-bold text-white">
-          AG<span className="text-blue-400">.</span>
-        </Link>
-        <nav className="hidden md:flex gap-6">
+    <header
+      className="navbar"
+      style={{ boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.12)" : "none" }}
+    >
+      <div className="container">
+        <div className="navbar-inner">
+          <Link to="/" className="navbar-brand">
+            Aadhar Gaur
+          </Link>
+
+          {/* Desktop nav */}
+          <nav>
+            <ul className="nav-menu" style={{ display: "flex" }}>
+              {NAV.map((n) => (
+                <li key={n.path}>
+                  <Link
+                    to={n.path}
+                    className={`nav-link${pathname === n.path ? " active" : ""}`}
+                  >
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Mobile hamburger */}
+          <button
+            className="nav-hamburger"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            <span
+              style={{
+                transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "",
+              }}
+            />
+            <span style={{ opacity: menuOpen ? 0 : 1 }} />
+            <span
+              style={{
+                transform: menuOpen
+                  ? "rotate(-45deg) translate(5px, -5px)"
+                  : "",
+              }}
+            />
+          </button>
+        </div>
+
+        {/* Mobile dropdown */}
+        {/* <ul className={`nav-menu${menuOpen ? " open" : ""}`}>
           {NAV.map((n) => (
-            <Link
-              key={n.path}
-              to={n.path}
-              className={`text-sm transition-colors ${
-                pathname === n.path
-                  ? "text-blue-400"
-                  : "text-slate-300 hover:text-white"
-              }`}
-            >
-              {n.label}
-            </Link>
+            <li key={n.path}>
+              <Link
+                to={n.path}
+                className={`nav-link${pathname === n.path ? " active" : ""}`}
+              >
+                {n.label}
+              </Link>
+            </li>
           ))}
-        </nav>
+        </ul> */}
       </div>
     </header>
   );

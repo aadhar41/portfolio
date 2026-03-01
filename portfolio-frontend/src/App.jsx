@@ -17,7 +17,7 @@ function App() {
     <HelmetProvider>
       <BrowserRouter>
         <Header />
-        <main className="min-h-screen">
+        <main>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
