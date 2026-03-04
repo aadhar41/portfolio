@@ -2,21 +2,74 @@ import { useEffect, useState } from "react";
 import { getProfile } from "../services/api";
 
 const SKILL_ICONS = {
+  // Backend Development
   php: "fab fa-php",
   laravel: "fab fa-laravel",
+  yii: "fas fa-layer-group",
+  codeigniter: "fas fa-fire",
+  lumen: "fas fa-bolt",
+  cakephp: "fas fa-birthday-cake",
+  wordpress: "fab fa-wordpress",
+
+  // Database Management
   mysql: "fas fa-database",
+  mongodb: "fas fa-leaf",
+  query: "fas fa-search",
+  schema: "fas fa-project-diagram",
+
+  // API Development
+  restful: "fas fa-server",
+  "third-party": "fas fa-plug",
+  payment: "fas fa-credit-card",
+
+  // Software Development
+  sdlc: "fas fa-sync-alt",
+  agile: "fas fa-running",
+  system: "fas fa-sitemap",
+  code: "fas fa-code-branch",
+  debugging: "fas fa-bug",
+
+  // Frontend Technologies
+  html5: "fab fa-html5",
+  css3: "fab fa-css3-alt",
   javascript: "fab fa-js-square",
-  react: "fab fa-react",
+  jquery: "fab fa-js",
   bootstrap: "fab fa-bootstrap",
-  git: "fas fa-code-branch",
-  github: "fab fa-github",
+  responsive: "fas fa-mobile-alt",
+
+  // Tools & Platforms
+  git: "fab fa-git-alt",
+  cli: "fas fa-terminal",
   docker: "fab fa-docker",
-  aws: "fas fa-cloud",
+  linux: "fab fa-linux",
+  apache: "fas fa-server",
+  nginx: "fas fa-network-wired",
+
+  // Best Practices
+  security: "fas fa-shield-alt",
+  performance: "fas fa-tachometer-alt",
+  technical: "fas fa-file-alt",
+
+  // Leadership
+  team: "fas fa-users",
+  project: "fas fa-tasks",
+  "cross-functional": "fas fa-handshake",
+  client: "fas fa-comments",
+
+  // Fallback
   api: "fas fa-server",
-  html: "fab fa-html5",
-  css: "fab fa-css3-alt",
+  github: "fab fa-github",
+  aws: "fab fa-aws",
+  react: "fab fa-react",
   node: "fab fa-node-js",
   python: "fab fa-python",
+  typescript: "fab fa-js",
+  vue: "fab fa-vuejs",
+  angular: "fab fa-angular",
+  sass: "fab fa-sass",
+  postgresql: "fas fa-database",
+  redis: "fas fa-server",
+  figma: "fab fa-figma",
 };
 function getIcon(name) {
   const key = name.toLowerCase().split(/[\s/]/)[0];
@@ -131,10 +184,7 @@ export default function About() {
             {/* Left: Photo */}
             <div style={{ textAlign: "center" }}>
               <img
-                src={
-                  profile?.avatar ??
-                  "https://ui-avatars.com/api/?name=Aadhar+Gaur&size=350&background=2c3e50&color=fff"
-                }
+                src={profile?.avatar ?? "/img/AboutAadhar.jpg"}
                 alt="Aadhar Gaur"
                 style={{
                   width: "100%",
@@ -143,8 +193,7 @@ export default function About() {
                   boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
                 }}
                 onError={(e) => {
-                  e.target.src =
-                    "https://ui-avatars.com/api/?name=Aadhar+Gaur&size=350&background=2c3e50&color=fff";
+                  e.target.src = "/img/AboutAadhar.jpg";
                 }}
               />
               <p

@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             'location'     => 'Jaipur, Rajasthan, India',
             'github_url'   => 'https://github.com/aadhar41',
             'linkedin_url' => 'https://www.linkedin.com/in/aadhar-gaur-php',
+            'avatar'       => '/img/AboutAadhar.jpg',
         ]);
 
         // ── Skills ──────────────────────────────────────────────────────
@@ -95,50 +96,77 @@ class DatabaseSeeder extends Seeder
             Skill::create($skill);
         }
 
-
         // ── Experiences ─────────────────────────────────────────────────
         $experiences = [
             [
-                'position'     => 'Senior PHP Developer',
-                'company'      => 'RG InfoTech',
-                'description'  => 'Led development of 6-7 concurrent Laravel projects, ensuring 100% on-time delivery. Designed and implemented RESTful APIs for third-party service integration.',
-                'start_date'   => 'Jan 2024',
-                'end_date'     => 'Mar 2025',
-                'is_current'   => false,
-                'technologies' => ['PHP', 'Laravel', 'MySQL', 'RESTful APIs'],
+                'position'    => 'Sr PHP Developer',
+                'company'     => 'RG InfoTech (Recursive Global InfoTech Pvt. Ltd.), Jaipur',
+                'description' => 'Designed, developed, and maintained 6-7 scalable web applications using PHP and Laravel framework, ensuring 100% alignment with client requirements and technical specifications. Led full-stack backend development efforts across multiple concurrent projects while maintaining strict code quality standards and documentation. Engineered and deployed RESTful APIs for seamless third-party service and payment gateway integrations, enhancing system interoperability. Conducted comprehensive code reviews and mentored junior developers on Laravel best practices, design patterns, and system architecture. Implemented coding standards and best practices across team, resulting in improved code maintainability and reduced technical debt. Identified and executed process improvements that increased team productivity by optimizing development workflows and CI/CD practices.',
+                'start_date'  => 'Jan 2024',
+                'end_date'    => 'Mar 2025',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'Laravel', 'MySQL', 'RESTful APIs', 'Payment Gateway', 'CI/CD'],
             ],
             [
-                'position'     => 'Senior Software Engineer',
-                'company'      => 'SimplifyVMS',
-                'description'  => 'Engineered backend services for large-scale Vendor Management System serving 10,000+ users. Optimized database queries improving system performance by 40%.',
-                'start_date'   => 'Jun 2022',
-                'end_date'     => 'Dec 2023',
-                'is_current'   => false,
-                'technologies' => ['PHP', 'MySQL', 'RESTful APIs', 'Agile'],
+                'position'    => 'Senior Software Engineer',
+                'company'     => 'SimplifyVMS, Noida',
+                'description' => 'Served as key backend engineer for large-scale Vendor Management System (VMS) handling complex business logic and high transaction volumes. Engineered optimized backend services emphasizing high performance, scalability, security, and fault tolerance for enterprise-level operations. Architected database schemas and optimized queries to improve system performance by 30%, supporting millions of vendor records. Collaborated with cross-functional teams (frontend, QA, DevOps) to integrate backend systems with user-facing applications and ensure seamless functionality. Provided technical guidance, code reviews, and mentorship to development team members on architecture and implementation strategies. Managed multiple projects simultaneously while maintaining strict deadlines and delivering consistently high-quality code. Conducted comprehensive testing, debugging, and troubleshooting across production systems, ensuring 99.5% uptime.',
+                'start_date'  => 'Jun 2022',
+                'end_date'    => 'Dec 2023',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'Laravel', 'MySQL', 'RESTful APIs', 'Agile', 'DevOps'],
             ],
             [
-                'position'     => 'Software Engineer III',
-                'company'      => 'Matellio Inc.',
-                'description'  => 'Developed and maintained client-based applications using PHP. Created and integrated APIs for seamless data exchange.',
-                'start_date'   => 'Nov 2021',
-                'end_date'     => 'Jun 2022',
-                'is_current'   => false,
-                'technologies' => [],
+                'position'    => 'Software Engineer III',
+                'company'     => 'Matellio Inc., Jaipur',
+                'description' => 'Functioned as key backend developer contributing to development and maintenance of mission-critical client projects using PHP and related technologies. Developed and integrated RESTful APIs for seamless data exchange between client systems and third-party platforms. Actively participated in code reviews, technical design discussions, and agile ceremonies while adhering to strict development methodologies. Consistently met aggressive project deadlines through effective time management, prioritization, and proactive communication. Analyzed complex technical requirements and proposed optimized solutions aligned with business objectives and technical constraints.',
+                'start_date'  => 'Nov 2021',
+                'end_date'    => 'Jun 2022',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'Laravel', 'MySQL', 'RESTful APIs', 'Agile'],
             ],
             [
-                'position'     => 'PHP Developer',
-                'company'      => 'The NineHertz',
-                'description'  => 'Developed web applications using Yii 1 framework and CakePHP. Contributed to both frontend and backend development.',
-                'start_date'   => 'May 2019',
-                'end_date'     => 'Nov 2020',
-                'is_current'   => false,
-                'technologies' => [],
+                'position'    => 'Sr. Web Developer',
+                'company'     => 'Appinop Technologies, Jaipur',
+                'description' => 'Developed custom modules, features, and extensions for diverse web applications utilizing PHP frameworks across multiple industry verticals. Contributed to database design and optimization initiatives resulting in improved application performance and reduced load times. Enhanced website security by identifying and addressing vulnerabilities, implementing encryption protocols, and following secure coding practices. Collaborated with project managers and clients to understand requirements and translate them into scalable technical solutions.',
+                'start_date'  => 'Apr 2021',
+                'end_date'    => 'Nov 2021',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'MySQL', 'Security', 'Database Optimization'],
+            ],
+            [
+                'position'    => 'PHP Developer',
+                'company'     => 'The NineHertz, Jaipur',
+                'description' => 'Developed responsive web applications primarily using Yii 1 framework with practical exposure to CakePHP, MongoDB, WordPress, and Lumen. Contributed to both frontend and backend development across diverse projects, demonstrating full-stack capabilities. Implemented responsive web design and optimization techniques, improving user experience metrics and page load performance. Coded using HTML5, CSS3, JavaScript, jQuery, and Bootstrap to create dynamic, user-friendly interfaces.',
+                'start_date'  => 'May 2019',
+                'end_date'    => 'Nov 2020',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'Yii', 'CakePHP', 'MongoDB', 'WordPress', 'Lumen', 'JavaScript', 'Bootstrap'],
+            ],
+            [
+                'position'    => 'PHP Developer',
+                'company'     => 'Yellow Objects Solutions Pvt. Ltd., Jaipur',
+                'description' => 'Developed and maintained multiple PHP-based web applications according to project requirements and client specifications. Optimized server-side code and database queries to enhance application performance and system efficiency. Wrote clean, well-documented server-side and client-side code using PHP, HTML5, CSS3, and JavaScript.',
+                'start_date'  => 'Feb 2018',
+                'end_date'    => 'Mar 2019',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'MySQL', 'HTML5', 'CSS3', 'JavaScript'],
+            ],
+            [
+                'position'    => 'Associate Web Developer',
+                'company'     => 'Blueberry Softech Private Limited, Ajmer',
+                'description' => 'Developed web-based applications using PHP, MySQL, AJAX, and CodeIgniter framework. Created intuitive user interfaces using HTML5, CSS3, and Bootstrap framework. Assisted senior developers in development tasks, debugging, and testing, gaining experience across full development lifecycle. Mentored junior developers, fostering collaborative learning environment and knowledge sharing within the development team.',
+                'start_date'  => 'Sep 2015',
+                'end_date'    => 'Sep 2017',
+                'is_current'  => false,
+                'technologies' => ['PHP', 'MySQL', 'CodeIgniter', 'AJAX', 'HTML5', 'CSS3', 'Bootstrap'],
             ],
         ];
 
         foreach ($experiences as $exp) {
             Experience::create($exp);
         }
+
 
         // ── Education ───────────────────────────────────────────────────
         $educations = [
