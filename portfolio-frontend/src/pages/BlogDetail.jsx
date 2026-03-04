@@ -169,24 +169,21 @@ export default function BlogDetail() {
               </p>
             </div>
 
-            {/* Article content — rendered as HTML if HTML, else plain text */}
-            <div
-              style={{ padding: "1.25rem 2rem 2rem" }}
-              className="blog-content"
-              dangerouslySetInnerHTML={
-                blog.content &&
-                blog.content.includes("<") &&
-                blog.content.includes(">")
-                  ? { __html: blog.content }
-                  : undefined
-              }
-            >
-              {!(
-                blog.content &&
-                blog.content.includes("<") &&
-                blog.content.includes(">")
-              ) &&
-                blog.content?.split("\n").map((line, i) => (
+            {/* Article content */}
+            {blog.content &&
+            blog.content.includes("<") &&
+            blog.content.includes(">") ? (
+              <div
+                style={{ padding: "1.25rem 2rem 2rem" }}
+                className="blog-content"
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+              />
+            ) : (
+              <div
+                style={{ padding: "1.25rem 2rem 2rem" }}
+                className="blog-content"
+              >
+                {blog.content?.split("\n").map((line, i) => (
                   <p
                     key={i}
                     style={{
@@ -198,7 +195,8 @@ export default function BlogDetail() {
                     {line}
                   </p>
                 ))}
-            </div>
+              </div>
+            )}
 
             {/* Back button */}
             <div style={{ padding: "0 2rem 2rem" }}>

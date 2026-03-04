@@ -20,6 +20,7 @@ export default function Home() {
 
   useEffect(() => {
     getProfile().then((res) => {
+      // console.log(JSON.stringify(res.data));
       setProfile(res.data.profile);
       setSkills(res.data.skills ?? {});
       setExperiences(res.data.experiences ?? []);
@@ -306,15 +307,15 @@ export default function Home() {
           </p>
           <div className="flex gap-2 justify-center">
             <a
-              href="/assets/docs/Aadhar_Gaur_CV.pdf"
-              download
+              href="/docs/Aadhar_Gaur_CV.pdf"
+              download="Aadhar_Gaur_CV.pdf"
               className="btn btn-gradient"
             >
               <i className="fas fa-download" /> Download CV
             </a>
             <a
-              href="/assets/docs/Aadhar_Gaur_Projects.pdf"
-              download
+              href="/docs/Aadhar_Gaur_Projects.pdf"
+              download="Aadhar_Gaur_Projects.pdf"
               className="btn btn-outline-primary"
             >
               <i className="fas fa-file-pdf" /> Projects List
