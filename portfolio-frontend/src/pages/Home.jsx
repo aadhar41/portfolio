@@ -147,7 +147,7 @@ export default function Home() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="hero">
+      <section id="hero" className="hero">
         <div className="container">
           <div className="hero-row hero-content">
             <div>
