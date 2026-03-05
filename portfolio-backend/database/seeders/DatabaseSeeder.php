@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\{Profile, Skill, Experience, Education, Project, Blog};
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class DatabaseSeeder extends Seeder
@@ -17,9 +18,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin User ──────────────────────────────────────────────────
-        User::factory()->create([
-            'name'  => 'Aadhar Gaur',
-            'email' => 'admin@portfolio.test',
+        User::create([
+            'name'     => 'Aadhar Admin',
+            'email'    => 'admin@aadhar.com',
+            'password' => Hash::make('admin123'),
+            'role'     => 'admin',
+        ]);
+
+        User::create([
+            'name'     => 'Aadhar Editor',
+            'email'    => 'editor@aadhar.com',
+            'password' => Hash::make('editor123'),
+            'role'     => 'editor',
         ]);
 
         // ── Profile ─────────────────────────────────────────────────────

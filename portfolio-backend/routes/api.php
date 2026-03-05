@@ -9,11 +9,14 @@ use App\Http\Controllers\API\v1\ContactController;
 use App\Http\Controllers\API\v1\SkillController;
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+use App\Http\Controllers\API\v1\AuthController;
+use App\Http\Controllers\API\v1\ExperienceController;
+use App\Http\Controllers\API\v1\EducationController;
 
 Route::prefix('v1')->group(function () {
+
+    // ---- Authentication ----
+    Route::post('/login', [AuthController::class, 'login']);
 
     // ---- Public endpoints ----
     Route::get('/profile',        [ProfileController::class, 'index']);
@@ -25,12 +28,18 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact',       [ContactController::class, 'store']);
 
     // ---- Admin endpoints (protected by Sanctum) ----
-    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
-        Route::put('/profile/{id}', [ProfileController::class, 'update']);
-        Route::apiResource('projects', ProjectController::class)
-            ->except(['index', 'show']);
-        Route::apiResource('blogs', BlogController::class)
-            ->except(['index', 'show']);
-        Route::get('/contacts', [ContactController::class, 'index']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me',      [AuthController::class, 'me']);
+
+        Route::prefix('admin')->group(function () {
+            Route::put('/profile', [ProfileController::class, 'update']);
+            Route::apiResource('skills', SkillController::class);
+            Route::apiResource('experiences', ExperienceController::class);
+            Route::apiResource('education', EducationController::class);
+            Route::apiResource('projects', ProjectController::class);
+            Route::apiResource('blogs', BlogController::class);
+            Route::get('/contacts', [ContactController::class, 'index']);
+        });
     });
 });

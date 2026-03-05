@@ -33,9 +33,9 @@ class ProfileController extends Controller
     }
 
     /**
-     * Create or update the profile (there is only one profile).
+     * Update the profile (there is only one profile).
      */
-    public function upsert(Request $request)
+    public function update(Request $request)
     {
         $validated = $request->validate([
             'name'         => 'required|string|max:255',

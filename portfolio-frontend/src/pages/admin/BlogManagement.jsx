@@ -1,0 +1,345 @@
+import { useState, useEffect } from "react";
+import { adminBlogs, getBlogs } from "../../services/api";
+
+export default function BlogManagement() {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentBlog, setCurrentBlog] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    excerpt: "",
+    content: "",
+    status: "draft",
+    tags: "",
+    cover_image: "",
+  });
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await getBlogs();
+      setBlogs(res.data);
+    } catch (err) {
+      console.error("Failed to fetch blogs", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (blog) => {
+    setCurrentBlog(blog);
+    setFormData({
+      title: blog.title,
+      slug: blog.slug,
+      excerpt: blog.excerpt,
+      content: blog.content,
+      status: blog.status,
+      tags: (blog.tags || []).join(", "),
+      cover_image: blog.cover_image || "",
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this blog post?"))
+      return;
+    try {
+      await adminBlogs.delete(id);
+      fetchBlogs();
+    } catch (err) {
+      alert("Delete failed");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      ...formData,
+      tags: formData.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t),
+    };
+
+    try {
+      if (currentBlog) {
+        await adminBlogs.update(currentBlog.id, data);
+      } else {
+        await adminBlogs.create(data);
+      }
+      setModalOpen(false);
+      fetchBlogs();
+    } catch (err) {
+      alert("Save failed: " + (err.response?.data?.message || "Unknown error"));
+    }
+  };
+
+  if (loading && blogs.length === 0) return <div>Loading blogs...</div>;
+
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <p style={{ color: "var(--text-light)" }}>
+          Manage your blog posts ({blogs.length})
+        </p>
+        <button
+          className="btn btn-gradient"
+          onClick={() => {
+            setCurrentBlog(null);
+            setFormData({
+              title: "",
+              slug: "",
+              excerpt: "",
+              content: "",
+              status: "draft",
+              tags: "",
+              cover_image: "",
+            });
+            setModalOpen(true);
+          }}
+        >
+          <i className="fas fa-plus"></i> New Post
+        </button>
+      </div>
+
+      <div className="card" style={{ overflow: "hidden" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            textAlign: "left",
+            fontSize: "0.9rem",
+          }}
+        >
+          <thead
+            style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}
+          >
+            <tr>
+              <th style={{ padding: "1rem" }}>Title</th>
+              <th style={{ padding: "1rem" }}>Status</th>
+              <th style={{ padding: "1rem" }}>Date</th>
+              <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {blogs.map((b) => (
+              <tr key={b.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: "1rem", fontWeight: 600 }}>{b.title}</td>
+                <td style={{ padding: "1rem" }}>
+                  <span
+                    className={`badge ${b.status === "published" ? "badge-gradient" : "badge-primary"}`}
+                    style={{ fontSize: "0.7rem" }}
+                  >
+                    {b.status}
+                  </span>
+                </td>
+                <td style={{ padding: "1rem", color: "var(--text-light)" }}>
+                  {b.published_at
+                    ? new Date(b.published_at).toLocaleDateString()
+                    : "Draft"}
+                </td>
+                <td style={{ padding: "1rem", textAlign: "right" }}>
+                  <button
+                    onClick={() => handleEdit(b)}
+                    title="Edit"
+                    style={{
+                      border: "none",
+                      background: "none",
+                      color: "#6366f1",
+                      cursor: "pointer",
+                      marginRight: 10,
+                    }}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(b.id)}
+                    title="Delete"
+                    style={{
+                      border: "none",
+                      background: "none",
+                      color: "#ef4444",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              maxWidth: 800,
+              width: "95%",
+              padding: "2rem",
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <h4 style={{ marginBottom: "1.5rem" }}>
+              {currentBlog ? "Edit Post" : "New Post"}
+            </h4>
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                  Title
+                </label>
+                <input
+                  className="form-control"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div
+                className="row row-2"
+                style={{ gap: "1rem", marginBottom: "1rem" }}
+              >
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                    Slug (optional)
+                  </label>
+                  <input
+                    className="form-control"
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData({ ...formData, slug: e.target.value })
+                    }
+                    placeholder="post-title"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                    Status
+                  </label>
+                  <select
+                    className="form-control"
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, status: e.target.value })
+                    }
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                  Excerpt
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="2"
+                  value={formData.excerpt}
+                  onChange={(e) =>
+                    setFormData({ ...formData, excerpt: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                  Content (Markdown supported)
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="8"
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div
+                className="row row-2"
+                style={{ gap: "1rem", marginBottom: "1.5rem" }}
+              >
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                    Tags (comma separated)
+                  </label>
+                  <input
+                    className="form-control"
+                    value={formData.tags}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tags: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
+                    Cover Image URL
+                  </label>
+                  <input
+                    className="form-control"
+                    type="url"
+                    value={formData.cover_image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, cover_image: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "1rem",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-gradient">
+                  Save Post
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
