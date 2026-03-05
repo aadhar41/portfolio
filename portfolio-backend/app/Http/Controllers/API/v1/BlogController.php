@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class BlogController extends Controller
 {
@@ -14,31 +15,35 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Blog::query();
+        $cacheKey = 'blogs_list_' . $request->get('tag', 'all') . '_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . ($request->user() ? $request->user()->id : 'public');
 
-        // Admin can see all, public only published
-        if (!$request->user() || $request->user()->role !== 'admin') {
-            $query->where('status', 'published');
-        } elseif ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        $blogs = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $query = Blog::query();
 
-        if ($request->filled('tag')) {
-            $query->whereJsonContains('tags', $request->tag);
-        }
+            // Admin can see all, public only published
+            if (!$request->user() || $request->user()->role !== 'admin') {
+                $query->where('status', 'published');
+            } elseif ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('excerpt', 'like', '%' . $search . '%')
-                    ->orWhere('content', 'like', '%' . $search . '%');
-            });
-        }
+            if ($request->filled('tag')) {
+                $query->whereJsonContains('tags', $request->tag);
+            }
 
-        $blogs = ($request->has('page') || $request->has('per_page'))
-            ? $query->orderByDesc('published_at')->orderByDesc('created_at')->paginate($request->integer('per_page', 10))
-            : $query->orderByDesc('published_at')->orderByDesc('created_at')->get();
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('excerpt', 'like', '%' . $search . '%')
+                        ->orWhere('content', 'like', '%' . $search . '%');
+                });
+            }
+
+            return $query->orderByDesc('published_at')
+                ->orderByDesc('created_at')
+                ->paginate($request->integer('per_page', 10));
+        });
 
         return response()->json($blogs);
     }
@@ -48,11 +53,13 @@ class BlogController extends Controller
      */
     public function show($slug)
     {
-        return response()->json(
-            Blog::where('slug', $slug)
+        $blog = Cache::remember("blog_post_{$slug}", now()->addHours(24), function () use ($slug) {
+            return Blog::where('slug', $slug)
                 ->where('status', 'published')
-                ->firstOrFail()
-        );
+                ->firstOrFail();
+        });
+
+        return response()->json($blog);
     }
 
     /**

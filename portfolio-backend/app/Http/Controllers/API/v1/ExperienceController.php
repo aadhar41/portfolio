@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Experience;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ExperienceController extends Controller
 {
@@ -13,20 +14,24 @@ class ExperienceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Experience::query();
+        $cacheKey = 'experiences_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('company', 'like', '%' . $search . '%')
-                    ->orWhere('position', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        }
+        $experiences = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $query = Experience::query();
 
-        $experiences = ($request->has('page') || $request->has('per_page'))
-            ? $query->orderByDesc('start_date')->paginate($request->integer('per_page', 10))
-            : $query->orderByDesc('start_date')->get();
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('company', 'like', '%' . $search . '%')
+                        ->orWhere('position', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                });
+            }
+
+            return ($request->has('page') || $request->has('per_page'))
+                ? $query->orderByDesc('start_date')->paginate($request->integer('per_page', 10))
+                : $query->orderByDesc('start_date')->get();
+        });
 
         return response()->json($experiences);
     }
@@ -36,7 +41,11 @@ class ExperienceController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Experience::findOrFail($id));
+        $experience = Cache::remember("experience_detail_{$id}", now()->addHours(24), function () use ($id) {
+            return Experience::findOrFail($id);
+        });
+
+        return response()->json($experience);
     }
 
     /**

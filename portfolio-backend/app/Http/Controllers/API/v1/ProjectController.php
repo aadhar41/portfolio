@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
@@ -13,23 +14,27 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::query();
+        $cacheKey = 'projects_list_' . $request->get('category', 'all') . '_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
 
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
+        $projects = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $query = Project::query();
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        }
+            if ($request->filled('category') && $request->category !== 'all') {
+                $query->where('category', $request->category);
+            }
 
-        $projects = ($request->has('page') || $request->has('per_page'))
-            ? $query->orderByDesc('featured')->orderBy('sort_order')->paginate($request->integer('per_page', 10))
-            : $query->orderByDesc('featured')->orderBy('sort_order')->get();
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                });
+            }
+
+            return $query->orderByDesc('featured')
+                ->orderBy('sort_order')
+                ->paginate($request->integer('per_page', 10));
+        });
 
         return response()->json($projects);
     }
@@ -39,7 +44,11 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Project::findOrFail($id));
+        $project = Cache::remember("project_detail_{$id}", now()->addHours(24), function () use ($id) {
+            return Project::findOrFail($id);
+        });
+
+        return response()->json($project);
     }
 
     /**

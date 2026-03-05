@@ -8,6 +8,7 @@ use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Education;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileController extends Controller
 {
@@ -16,12 +17,16 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'profile'     => Profile::first(),
-            'skills'      => Skill::orderBy('category')->orderBy('sort_order')->get()->groupBy('category'),
-            'experiences' => Experience::orderByDesc('start_date')->get(),
-            'educations'  => Education::orderByDesc('start_year')->get(),
-        ]);
+        $data = Cache::remember('full_profile', now()->addHours(24), function () {
+            return [
+                'profile'     => Profile::first(),
+                'skills'      => Skill::orderBy('category')->orderBy('sort_order')->get()->groupBy('category'),
+                'experiences' => Experience::orderByDesc('start_date')->get(),
+                'educations'  => Education::orderByDesc('start_year')->get(),
+            ];
+        });
+
+        return response()->json($data);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Education;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class EducationController extends Controller
 {
@@ -13,20 +14,24 @@ class EducationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Education::query();
+        $cacheKey = 'education_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('institution', 'like', '%' . $search . '%')
-                    ->orWhere('degree', 'like', '%' . $search . '%')
-                    ->orWhere('field_of_study', 'like', '%' . $search . '%');
-            });
-        }
+        $education = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $query = Education::query();
 
-        $education = ($request->has('page') || $request->has('per_page'))
-            ? $query->orderByDesc('start_year')->paginate($request->integer('per_page', 10))
-            : $query->orderByDesc('start_year')->get();
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('institution', 'like', '%' . $search . '%')
+                        ->orWhere('degree', 'like', '%' . $search . '%')
+                        ->orWhere('field_of_study', 'like', '%' . $search . '%');
+                });
+            }
+
+            return ($request->has('page') || $request->has('per_page'))
+                ? $query->orderByDesc('start_year')->paginate($request->integer('per_page', 10))
+                : $query->orderByDesc('start_year')->get();
+        });
 
         return response()->json($education);
     }
@@ -36,7 +41,11 @@ class EducationController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Education::findOrFail($id));
+        $education = Cache::remember("education_detail_{$id}", now()->addHours(24), function () use ($id) {
+            return Education::findOrFail($id);
+        });
+
+        return response()->json($education);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Skill;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SkillController extends Controller
 {
@@ -13,18 +14,22 @@ class SkillController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Skill::orderBy('category')
-            ->orderBy('sort_order');
+        $cacheKey = 'skills_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
 
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
+        $skills = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $query = Skill::select("id", "name", "category", "level", "sort_order")->orderBy('category')
+                ->orderBy('sort_order');
 
-        if ($request->filled('per_page')) {
-            return response()->json($query->paginate($request->integer('per_page', 10)));
-        }
+            if ($request->filled('search')) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            }
 
-        $skills = $query->get()->groupBy('category');
+            if ($request->filled('per_page')) {
+                return $query->paginate($request->integer('per_page', 10));
+            }
+
+            return $query->get()->groupBy('category');
+        });
 
         return response()->json($skills);
     }
@@ -34,7 +39,11 @@ class SkillController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Skill::findOrFail($id));
+        $skill = Cache::remember("skill_detail_{$id}", now()->addHours(24), function () use ($id) {
+            return Skill::findOrFail($id);
+        });
+
+        return response()->json($skill);
     }
 
     /**

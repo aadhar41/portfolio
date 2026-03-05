@@ -9,17 +9,22 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PER_PAGE = 6;
 
   useEffect(() => {
     setLoading(true);
-    getProjects({ category, search })
+    getProjects({ category, search, page, per_page: PER_PAGE })
       .then((res) => {
-        // Handle both paginated response and direct array
         const data = res.data.data || res.data;
         setProjects(Array.isArray(data) ? data : []);
+        if (res.data.last_page) {
+          setTotalPages(res.data.last_page);
+        }
       })
       .finally(() => setLoading(false));
-  }, [category, search]);
+  }, [category, search, page]);
 
   return (
     <>
@@ -169,6 +174,31 @@ export default function Projects() {
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div
+              className="flex justify-center gap-1"
+              style={{ marginTop: "2.5rem" }}
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className="btn btn-sm"
+                  style={{
+                    background:
+                      page === p ? "var(--gradient)" : "var(--bg-light)",
+                    color: page === p ? "white" : "var(--primary-color)",
+                    border: "none",
+                    minWidth: 38,
+                  }}
+                >
+                  {p}
+                </button>
               ))}
             </div>
           )}

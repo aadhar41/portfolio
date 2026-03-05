@@ -36,29 +36,23 @@ export default function Blog() {
   const [tag, setTag] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const PER_PAGE = 6;
 
   useEffect(() => {
     setLoading(true);
-    getBlogs(tag ? { tag } : {})
+    getBlogs({ tag, search, page, per_page: PER_PAGE })
       .then((res) => {
         const data = res.data.data || res.data;
         setBlogs(Array.isArray(data) ? data : []);
-        setPage(1);
+        if (res.data.last_page) {
+          setTotalPages(res.data.last_page);
+        }
       })
       .finally(() => setLoading(false));
-  }, [tag]);
+  }, [tag, search, page]);
 
-  const filtered = search
-    ? blogs.filter(
-        (b) =>
-          b.title.toLowerCase().includes(search.toLowerCase()) ||
-          b.excerpt?.toLowerCase().includes(search.toLowerCase()),
-      )
-    : blogs;
-
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const paginated = blogs; // Now purely server-side
 
   const allTags = [...new Set(blogs.flatMap((b) => b.tags ?? []))];
   const displayTags = allTags.length > 0 ? allTags : STATIC_TAGS;

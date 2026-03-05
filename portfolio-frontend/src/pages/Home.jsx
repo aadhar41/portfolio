@@ -26,8 +26,14 @@ export default function Home() {
       setExperiences(res.data.experiences ?? []);
       setEducations(res.data.educations ?? []);
     });
-    getProjects({}).then((res) => setProjects(res.data.slice(0, 6)));
-    getBlogs({}).then((res) => setBlogs(res.data.slice(0, 3)));
+    getProjects({}).then((res) => {
+      const data = res.data.data || res.data;
+      setProjects(Array.isArray(data) ? data.slice(0, 6) : []);
+    });
+    getBlogs({}).then((res) => {
+      const data = res.data.data || res.data;
+      setBlogs(Array.isArray(data) ? data.slice(0, 3) : []);
+    });
   }, []);
 
   const handleContact = async (e) => {

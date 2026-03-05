@@ -6,15 +6,28 @@ A full-stack personal portfolio built with a **Laravel 12 REST API** backend and
 
 ## Screenshots
 
+### Public Frontend
+
 | Page | Preview |
 |---|---|
-| **Home** | ![Home Page](portfolio-frontend/public/img/screens/Index-Html-2026-01-31-10_21_46.png) |
-| **About** | ![About Page](portfolio-frontend/public/img/screens/About-Html-2026-01-31-10_23_15.png) |
-| **Projects** | ![Projects Page](portfolio-frontend/public/img/screens/Projects-Html-2026-01-31-10_22_32.png) |
-| **Project Detail** | ![Project Detail](portfolio-frontend/public/img/screens/Project-Detail-Html-2026-01-31-10_22_50.png) |
-| **Blog** | ![Blog Page](portfolio-frontend/public/img/screens/Blog-Html-2026-01-31-10_23_59.png) |
-| **Blog Detail** | ![Blog Detail](portfolio-frontend/public/img/screens/Blog-Detail-Html-2026-01-31-10_24_14.png) |
-| **Contact** | ![Contact Page](portfolio-frontend/public/img/screens/Contact-Html-2026-01-31-10_24_36.png) |
+| **Home** | ![Home Page](portfolio-frontend/public/img/screens/portfolio-home.png) |
+| **About** | ![About Page](portfolio-frontend/public/img/screens/portfolio-about-2026-03-05-19_08_09.png) |
+| **Projects** | ![Projects Page](portfolio-frontend/public/img/screens/portfolio-projects-2026-03-05-19_08_28.png) |
+| **Project Detail** | ![Project Detail](portfolio-frontend/public/img/screens/portfolio-projects-48-2026-03-05-19_08_57.png) |
+| **Blog** | ![Blog Page](portfolio-frontend/public/img/screens/portfolio-blog-2026-03-05-19_09_10.png) |
+| **Blog Detail** | ![Blog Detail](portfolio-frontend/public/img/screens/portfolio-blog-php-security-best-practices-2025-2026-03-05-19_09_23.png) |
+| **Contact** | ![Contact Page](portfolio-frontend/public/img/screens/portfolio-contact-2026-03-05-19_09_34.png) |
+
+### Admin Dashboard (Sanctum Protected)
+
+| Feature | Preview |
+|---|---|
+| **Login** | ![Admin Login](portfolio-frontend/public/img/screens/admin-login-2026-03-05-16_30_04.png) |
+| **Dashboard** | ![Admin Dashboard](portfolio-frontend/public/img/screens/admin-2026-03-05-16_30_21.png) |
+| **Project Management** | ![Project Management](portfolio-frontend/public/img/screens/admin-projects-2026-03-05-16_30_30.png) |
+| **Blog Management** | ![Blog Management](portfolio-frontend/public/img/screens/admin-blog-2026-03-05-16_32_07.png) |
+| **Skills Management** | ![Skills Management](portfolio-frontend/public/img/screens/admin-skills-2026-03-05-16_33_29.png) |
+| **Profile Management** | ![Profile Management](portfolio-frontend/public/img/screens/admin-profile-2026-03-05-16_33_39.png) |
 
 ---
 
@@ -305,6 +318,7 @@ This project uses **Laravel Sanctum** for token-based API authentication on all 
 The following issues were recently addressed to ensure a seamless admin experience:
 - **API Resolution**: Fixed a 404 error on the `admin/upload` endpoint by standardizing path resolution in the frontend.
 - **ReferenceErrors**: Resolved state initialization bugs in Skill, Education, and Experience management pages.
+- **Telescope Setup**: Resolved a "Table not found" exception by installing Telescope assets and executing missing database migrations for `telescope_entries`.
 - **UI Visibility**: Improved the Profile Management layout to ensure all form fields and action buttons are fully visible and scrollable.
 
 ---
