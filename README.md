@@ -300,6 +300,15 @@ This project uses **Laravel Sanctum** for token-based API authentication on all 
 
 ---
 
+## Recent Stability Improvements
+
+The following issues were recently addressed to ensure a seamless admin experience:
+- **API Resolution**: Fixed a 404 error on the `admin/upload` endpoint by standardizing path resolution in the frontend.
+- **ReferenceErrors**: Resolved state initialization bugs in Skill, Education, and Experience management pages.
+- **UI Visibility**: Improved the Profile Management layout to ensure all form fields and action buttons are fully visible and scrollable.
+
+---
+
 ## CORS
 
 The backend allows cross-origin requests from the `FRONTEND_URL` defined in `.env`. Configured in `config/cors.php`.
