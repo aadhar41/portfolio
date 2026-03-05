@@ -20,12 +20,18 @@ class ProjectController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
 
-        return response()->json(
-            $query->orderByDesc('featured')->orderBy('sort_order')->get()
-        );
+        $projects = ($request->has('page') || $request->has('per_page'))
+            ? $query->orderByDesc('featured')->orderBy('sort_order')->paginate($request->integer('per_page', 10))
+            : $query->orderByDesc('featured')->orderBy('sort_order')->get();
+
+        return response()->json($projects);
     }
 
     /**

@@ -48,85 +48,131 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#f1f5f9" }}>
       {/* Sidebar */}
       <aside
         style={{
-          width: 260,
-          background: "var(--primary-color)",
+          width: 280,
+          background: "#1e293b",
           color: "white",
           display: "flex",
           flexDirection: "column",
+          boxShadow: "4px 0 10px rgba(0,0,0,0.05)",
+          zIndex: 10,
         }}
       >
         <div
           style={{
-            padding: "2rem 1.5rem",
-            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            padding: "2.5rem 1.5rem",
+            background:
+              "linear-gradient(135deg, var(--primary-color), var(--secondary-color))",
+            clipPath: "polygon(0 0, 100% 0, 100% 85%, 0 100%)",
+            marginBottom: "1rem",
           }}
         >
-          <h3 style={{ margin: 0, fontSize: "1.2rem" }}>Aadhar Admin</h3>
-          <small
+          <h3
             style={{
-              color: "rgba(255,255,255,0.6)",
-              textTransform: "capitalize",
+              margin: 0,
+              fontSize: "1.3rem",
+              fontWeight: 700,
+              letterSpacing: -0.5,
             }}
           >
-            Role: {user.role}
-          </small>
-        </div>
-
-        <nav style={{ flexGrow: 1, padding: "1rem 0" }}>
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
+            Aadhar Admin
+          </h3>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginTop: 5,
+            }}
+          >
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "0.85rem 1.5rem",
-                color:
-                  location.pathname === item.path
-                    ? "white"
-                    : "rgba(255,255,255,0.7)",
-                textDecoration: "none",
-                background:
-                  location.pathname === item.path
-                    ? "rgba(255,255,255,0.1)"
-                    : "transparent",
-                transition: "0.2s",
-                fontSize: "0.95rem",
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "#4ade80",
+              }}
+            ></span>
+            <small
+              style={{
+                color: "rgba(255,255,255,0.8)",
+                textTransform: "capitalize",
+                fontSize: "0.75rem",
               }}
             >
-              <i
-                className={item.icon}
-                style={{ width: 24, marginRight: 10 }}
-              ></i>
-              {item.label}
-            </Link>
-          ))}
+              {user.role} Account
+            </small>
+          </div>
+        </div>
+
+        <nav style={{ flexGrow: 1, padding: "1rem 0.75rem" }}>
+          {navItems.map((item) => {
+            const isActive =
+              location.pathname === item.path ||
+              (item.path !== "/admin" &&
+                location.pathname.startsWith(item.path));
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0.85rem 1.25rem",
+                  color: isActive ? "white" : "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  borderRadius: 12,
+                  background: isActive
+                    ? "rgba(255,255,255,0.1)"
+                    : "transparent",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  fontSize: "0.95rem",
+                  fontWeight: isActive ? 600 : 400,
+                  marginBottom: 4,
+                }}
+                className="admin-nav-item"
+              >
+                <i
+                  className={item.icon}
+                  style={{
+                    width: 24,
+                    marginRight: 12,
+                    color: isActive ? "white" : "rgba(255,255,255,0.4)",
+                    fontSize: "1.1rem",
+                  }}
+                ></i>
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div
           style={{
             padding: "1.5rem",
-            borderTop: "1px solid rgba(255,255,255,0.1)",
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+            background: "rgba(0,0,0,0.1)",
           }}
         >
           <button
             onClick={handleLogout}
             style={{
               width: "100%",
-              background: "rgba(255,255,255,0.1)",
-              border: "none",
-              color: "white",
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.2)",
+              color: "#f87171",
               padding: "0.75rem",
-              borderRadius: 8,
+              borderRadius: 12,
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: 10,
+              fontWeight: 600,
+              transition: "0.3s",
             }}
           >
             <i className="fas fa-sign-out-alt"></i> Logout
@@ -136,17 +182,18 @@ export default function AdminLayout() {
             style={{
               display: "block",
               textAlign: "center",
-              marginTop: "1rem",
-              color: "rgba(255,255,255,0.5)",
+              marginTop: "1.2rem",
+              color: "rgba(255,255,255,0.4)",
               fontSize: "0.85rem",
               textDecoration: "none",
+              transition: "0.3s",
             }}
           >
-            View Site{" "}
             <i
-              className="fas fa-external-link-alt"
-              style={{ fontSize: "0.7rem" }}
+              className="fas fa-arrow-left"
+              style={{ fontSize: "0.7rem", marginRight: 5 }}
             ></i>
+            Back to Website
           </Link>
         </div>
       </aside>
@@ -155,9 +202,11 @@ export default function AdminLayout() {
       <main
         style={{
           flexGrow: 1,
-          padding: "2rem",
+          padding: "2.5rem",
           overflowY: "auto",
-          maxHeight: "100vh",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <header

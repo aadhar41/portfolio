@@ -88,29 +88,56 @@ export default function AdminDashboard() {
             style={{
               padding: "1.5rem",
               display: "flex",
-              alignItems: "center",
-              gap: "1rem",
+              flexDirection: "column",
+              gap: "0.5rem",
+              position: "relative",
+              overflow: "hidden",
+              minHeight: 120,
+              justifyContent: "center",
             }}
           >
             <div
               style={{
-                width: 50,
-                height: 50,
-                background: s.color + "22",
+                position: "absolute",
+                top: -10,
+                right: -10,
+                fontSize: "5rem",
+                opacity: 0.05,
+                transform: "rotate(-15deg)",
                 color: s.color,
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.5rem",
               }}
             >
               <i className={s.icon}></i>
             </div>
-            <div>
-              <h4 style={{ margin: 0, fontSize: "1.5rem" }}>{s.value}</h4>
-              <small style={{ color: "var(--text-light)" }}>{s.label}</small>
-            </div>
+            <small
+              style={{
+                color: "var(--text-light)",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                fontSize: "0.7rem",
+                letterSpacing: 1,
+              }}
+            >
+              {s.label}
+            </small>
+            <h4
+              style={{
+                margin: 0,
+                fontSize: "2rem",
+                fontWeight: 800,
+                color: "#1e293b",
+              }}
+            >
+              {s.value}
+            </h4>
+            <div
+              style={{
+                width: 40,
+                height: 4,
+                background: s.color,
+                borderRadius: 2,
+              }}
+            ></div>
           </div>
         ))}
       </div>

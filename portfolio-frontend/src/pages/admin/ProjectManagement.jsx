@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import { adminProjects, getProjects } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
+import FileUpload from "../../components/admin/FileUpload";
 
 export default function ProjectManagement() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const [formData, setFormData] = useState({
@@ -14,19 +22,33 @@ export default function ProjectManagement() {
     technologies: "",
     github_url: "",
     live_url: "",
+    image: "",
     featured: false,
   });
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchProjects();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, page]);
 
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await getProjects();
-      setProjects(res.data);
+      const res = await getProjects({ search, page, per_page: 10 });
+      // If server returned pagination object
+      if (res.data.data) {
+        setProjects(res.data.data);
+        setPagination({
+          current_page: res.data.current_page,
+          last_page: res.data.last_page,
+          total: res.data.total,
+        });
+      } else {
+        setProjects(res.data);
+      }
     } catch (err) {
       console.error("Failed to fetch projects", err);
     } finally {
@@ -34,6 +56,12 @@ export default function ProjectManagement() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1); // Reset to first page on search
+  };
+
+  // ... (handleEdit, handleDelete, handleSubmit remain similar)
   const handleEdit = (project) => {
     setCurrentProject(project);
     setFormData({
@@ -43,6 +71,7 @@ export default function ProjectManagement() {
       technologies: project.technologies.join(", "),
       github_url: project.github_url || "",
       live_url: project.live_url || "",
+      image: project.image || "",
       featured: project.featured,
     });
     setModalOpen(true);
@@ -63,10 +92,13 @@ export default function ProjectManagement() {
     e.preventDefault();
     const data = {
       ...formData,
-      technologies: formData.technologies
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t),
+      technologies:
+        typeof formData.technologies === "string"
+          ? formData.technologies
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : formData.technologies,
       featured: !!formData.featured,
     };
 
@@ -91,12 +123,20 @@ export default function ProjectManagement() {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "1.5rem",
+          gap: "1rem",
         }}
       >
-        <p style={{ color: "var(--text-light)" }}>
-          Manage your portfolio projects ({projects.length})
-        </p>
+        <div style={{ flex: 1, maxWidth: 300 }}>
+          <input
+            className="form-control"
+            placeholder="Search projects..."
+            value={search}
+            onChange={handleSearchChange}
+            style={{ borderRadius: 50, padding: "8px 20px" }}
+          />
+        </div>
         <button
           className="btn btn-gradient"
           onClick={() => {
@@ -108,6 +148,7 @@ export default function ProjectManagement() {
               technologies: "",
               github_url: "",
               live_url: "",
+              image: "",
               featured: false,
             });
             setModalOpen(true);
@@ -201,6 +242,39 @@ export default function ProjectManagement() {
         </table>
       </div>
 
+      {/* Pagination Controls */}
+      {pagination.last_page > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
+            Showing page {pagination.current_page} of {pagination.last_page} (
+            {pagination.total} total)
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === pagination.last_page}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Simple Modal */}
       {modalOpen && (
         <div
@@ -258,6 +332,14 @@ export default function ProjectManagement() {
                   required
                 />
               </div>
+              <FileUpload
+                label="Project Thumbnail"
+                currentImage={formData.image}
+                onUploadSuccess={(url) =>
+                  setFormData({ ...formData, image: url })
+                }
+                folder="projects"
+              />
               <div
                 className="row row-2"
                 style={{ gap: "1rem", marginBottom: "1rem" }}

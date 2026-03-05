@@ -22,8 +22,9 @@ export const getMe = () => api.get('/me')
 export const getProfile = () => api.get('/profile')
 export const updateProfile = (data) => api.put('/admin/profile', data)
 
-export const getSkills = () => api.get('/skills')
+export const getSkills = (params) => api.get('/skills', { params })
 export const adminSkills = {
+    list: (params) => api.get('/admin/skills', { params }),
     create: (data) => api.post('/admin/skills', data),
     update: (id, data) => api.put(`/admin/skills/${id}`, data),
     delete: (id) => api.delete(`/admin/skills/${id}`),
@@ -46,20 +47,29 @@ export const adminBlogs = {
 }
 
 export const adminExperience = {
-    list: () => api.get('/admin/experiences'),
+    list: (params) => api.get('/admin/experiences', { params }),
     create: (data) => api.post('/admin/experiences', data),
     update: (id, data) => api.put(`/admin/experiences/${id}`, data),
     delete: (id) => api.delete(`/admin/experiences/${id}`),
 }
 
 export const adminEducation = {
-    list: () => api.get('/admin/education'),
+    list: (params) => api.get('/admin/education', { params }),
     create: (data) => api.post('/admin/education', data),
     update: (id, data) => api.put(`/admin/education/${id}`, data),
     delete: (id) => api.delete(`/admin/education/${id}`),
 }
 
-export const getContacts = () => api.get('/admin/contacts')
+export const getContacts = (params) => api.get('/admin/contacts', { params })
 export const sendContact = (data) => api.post('/contact', data)
+
+export const uploadFile = (file, folder = 'uploads') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    return api.post('/admin/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+}
 
 export default api

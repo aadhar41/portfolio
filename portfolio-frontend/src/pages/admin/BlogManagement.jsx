@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
 import { adminBlogs, getBlogs } from "../../services/api";
+import FileUpload from "../../components/admin/FileUpload";
 
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
   const [formData, setFormData] = useState({
@@ -17,19 +25,37 @@ export default function BlogManagement() {
   });
 
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchBlogs();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, page]);
 
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await getBlogs();
-      setBlogs(res.data);
+      const res = await getBlogs({ search, page, per_page: 10 });
+      // If server returned pagination object
+      if (res.data.data) {
+        setBlogs(res.data.data);
+        setPagination({
+          current_page: res.data.current_page,
+          last_page: res.data.last_page,
+          total: res.data.total,
+        });
+      } else {
+        setBlogs(res.data);
+      }
     } catch (err) {
       console.error("Failed to fetch blogs", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1); // Reset to first page on search
   };
 
   const handleEdit = (blog) => {
@@ -61,10 +87,13 @@ export default function BlogManagement() {
     e.preventDefault();
     const data = {
       ...formData,
-      tags: formData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t),
+      tags:
+        typeof formData.tags === "string"
+          ? formData.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : formData.tags,
     };
 
     try {
@@ -88,12 +117,20 @@ export default function BlogManagement() {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "1.5rem",
+          gap: "1rem",
         }}
       >
-        <p style={{ color: "var(--text-light)" }}>
-          Manage your blog posts ({blogs.length})
-        </p>
+        <div style={{ flex: 1, maxWidth: 300 }}>
+          <input
+            className="form-control"
+            placeholder="Search posts..."
+            value={search}
+            onChange={handleSearchChange}
+            style={{ borderRadius: 50, padding: "8px 20px" }}
+          />
+        </div>
         <button
           className="btn btn-gradient"
           onClick={() => {
@@ -182,6 +219,39 @@ export default function BlogManagement() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {pagination.last_page > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
+            Showing page {pagination.current_page} of {pagination.last_page} (
+            {pagination.total} total)
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === pagination.last_page}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {modalOpen && (
@@ -303,20 +373,16 @@ export default function BlogManagement() {
                     }
                   />
                 </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                    Cover Image URL
-                  </label>
-                  <input
-                    className="form-control"
-                    type="url"
-                    value={formData.cover_image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, cover_image: e.target.value })
-                    }
-                  />
-                </div>
               </div>
+
+              <FileUpload
+                label="Cover Image"
+                currentImage={formData.cover_image}
+                onUploadSuccess={(url) =>
+                  setFormData({ ...formData, cover_image: url })
+                }
+                folder="blogs"
+              />
 
               <div
                 style={{

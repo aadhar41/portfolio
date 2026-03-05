@@ -13,7 +13,11 @@ export default function Projects() {
   useEffect(() => {
     setLoading(true);
     getProjects({ category, search })
-      .then((res) => setProjects(res.data))
+      .then((res) => {
+        // Handle both paginated response and direct array
+        const data = res.data.data || res.data;
+        setProjects(Array.isArray(data) ? data : []);
+      })
       .finally(() => setLoading(false));
   }, [category, search]);
 

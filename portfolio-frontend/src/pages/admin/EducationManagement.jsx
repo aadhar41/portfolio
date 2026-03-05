@@ -4,31 +4,48 @@ import { adminEducation } from "../../services/api";
 export default function EducationManagement() {
   const [education, setEducation] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentEdu, setCurrentEdu] = useState(null);
-  const [formData, setFormData] = useState({
-    institution: "",
-    degree: "",
-    field_of_study: "",
-    start_year: "",
-    end_year: "",
-    grade: "",
-  });
 
   useEffect(() => {
-    fetchEducation();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchEducation();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, page]);
 
   const fetchEducation = async () => {
     setLoading(true);
     try {
-      const res = await adminEducation.list();
-      setEducation(res.data);
+      const res = await adminEducation.list({ search, page, per_page: 10 });
+      // If server returned pagination object
+      if (res.data.data) {
+        setEducation(res.data.data);
+        setPagination({
+          current_page: res.data.current_page,
+          last_page: res.data.last_page,
+          total: res.data.total,
+        });
+      } else {
+        setEducation(res.data);
+      }
     } catch (err) {
       console.error("Failed to fetch education", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1); // Reset to first page on search
   };
 
   const handleEdit = (edu) => {
@@ -78,12 +95,20 @@ export default function EducationManagement() {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "1.5rem",
+          gap: "1rem",
         }}
       >
-        <p style={{ color: "var(--text-light)" }}>
-          Educational background ({education.length})
-        </p>
+        <div style={{ flex: 1, maxWidth: 300 }}>
+          <input
+            className="form-control"
+            placeholder="Search education..."
+            value={search}
+            onChange={handleSearchChange}
+            style={{ borderRadius: 50, padding: "8px 20px" }}
+          />
+        </div>
         <button
           className="btn btn-gradient"
           onClick={() => {
@@ -167,6 +192,39 @@ export default function EducationManagement() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {pagination.last_page > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
+            Showing page {pagination.current_page} of {pagination.last_page} (
+            {pagination.total} total)
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === pagination.last_page}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {modalOpen && (

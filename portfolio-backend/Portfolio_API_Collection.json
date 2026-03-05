@@ -1,0 +1,416 @@
+{
+    "info": {
+        "_postman_id": "portfolio-api-v1-full",
+        "name": "Portfolio API v1 Full",
+        "description": "Comprehensive API collection for all portfolio modules.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.token) {",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@aadhar.com\",\n    \"password\": \"admin123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": "{{baseUrl}}/api/v1/login"
+                    }
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/api/v1/me"
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": "{{baseUrl}}/api/v1/logout"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Public",
+            "item": [
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/profile"
+                    }
+                },
+                {
+                    "name": "Get Skills",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/skills"
+                    }
+                },
+                {
+                    "name": "Get Projects",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/projects"
+                    }
+                },
+                {
+                    "name": "Get Project Detail",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/projects/1"
+                    }
+                },
+                {
+                    "name": "Get Blogs",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/blogs"
+                    }
+                },
+                {
+                    "name": "Get Blog Detail",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/v1/blogs/my-first-post"
+                    }
+                },
+                {
+                    "name": "Send Contact Message",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Test\",\"email\":\"test@test.com\",\"subject\":\"Hi\",\"message\":\"Test\"}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": "{{baseUrl}}/api/v1/contact"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Projects",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/projects"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"title\":\"New Proj\",\"description\":\"Desc\",\"category\":\"web\",\"technologies\":[\"PHP\"]}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/projects"
+                            }
+                        },
+                        {
+                            "name": "Show",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/projects/1"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"title\":\"Updated Proj\"}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/projects/1"
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "url": "{{baseUrl}}/api/v1/admin/projects/1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Blogs",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/blogs"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"title\":\"New Blog\",\"content\":\"Content\",\"status\":\"draft\"}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/blogs"
+                            }
+                        },
+                        {
+                            "name": "Show",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/blogs/1"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "url": "{{baseUrl}}/api/v1/admin/blogs/1"
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "url": "{{baseUrl}}/api/v1/admin/blogs/1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Skills",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/skills"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"name\":\"Git\",\"category\":\"tools\",\"proficiency\":90}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/skills"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "url": "{{baseUrl}}/api/v1/admin/skills/1"
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "url": "{{baseUrl}}/api/v1/admin/skills/1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Experiences",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/experiences"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"company\":\"Google\",\"position\":\"Dev\",\"start_date\":\"2020-01-01\"}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/experiences"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "url": "{{baseUrl}}/api/v1/admin/experiences/1"
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "url": "{{baseUrl}}/api/v1/admin/experiences/1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Education",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/education"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"institution\":\"Uni\",\"degree\":\"CS\",\"start_year\":\"2015\"}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/education"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "url": "{{baseUrl}}/api/v1/admin/education/1"
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "url": "{{baseUrl}}/api/v1/admin/education/1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Profile",
+                    "item": [
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\"name\":\"Aadhar\"}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": "{{baseUrl}}/api/v1/admin/profile"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Contacts",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{baseUrl}}/api/v1/admin/contacts"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": [
+                    {
+                        "key": "token",
+                        "value": "{{token}}",
+                        "type": "string"
+                    }
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ]
+}

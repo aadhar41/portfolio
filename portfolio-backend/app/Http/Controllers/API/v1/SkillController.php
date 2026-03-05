@@ -11,12 +11,20 @@ class SkillController extends Controller
     /**
      * Return all skills grouped by category.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $skills = Skill::orderBy('category')
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy('category');
+        $query = Skill::orderBy('category')
+            ->orderBy('sort_order');
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('per_page')) {
+            return response()->json($query->paginate($request->integer('per_page', 10)));
+        }
+
+        $skills = $query->get()->groupBy('category');
 
         return response()->json($skills);
     }

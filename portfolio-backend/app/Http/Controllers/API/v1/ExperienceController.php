@@ -11,11 +11,24 @@ class ExperienceController extends Controller
     /**
      * Return all experiences, latest first.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(
-            Experience::orderByDesc('start_date')->get()
-        );
+        $query = Experience::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('company', 'like', '%' . $search . '%')
+                    ->orWhere('position', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        $experiences = ($request->has('page') || $request->has('per_page'))
+            ? $query->orderByDesc('start_date')->paginate($request->integer('per_page', 10))
+            : $query->orderByDesc('start_date')->get();
+
+        return response()->json($experiences);
     }
 
     /**

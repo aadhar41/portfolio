@@ -11,11 +11,24 @@ class EducationController extends Controller
     /**
      * Return all education entries, latest first.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(
-            Education::orderByDesc('start_year')->get()
-        );
+        $query = Education::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('institution', 'like', '%' . $search . '%')
+                    ->orWhere('degree', 'like', '%' . $search . '%')
+                    ->orWhere('field_of_study', 'like', '%' . $search . '%');
+            });
+        }
+
+        $education = ($request->has('page') || $request->has('per_page'))
+            ? $query->orderByDesc('start_year')->paginate($request->integer('per_page', 10))
+            : $query->orderByDesc('start_year')->get();
+
+        return response()->json($education);
     }
 
     /**

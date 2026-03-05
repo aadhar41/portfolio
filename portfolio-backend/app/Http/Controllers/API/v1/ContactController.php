@@ -31,11 +31,29 @@ class ContactController extends Controller
     /**
      * Return all contact messages (admin use).
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(
-            Contact::orderByDesc('created_at')->get()
-        );
+        $query = Contact::query();
+
+        if ($request->filled('is_read')) {
+            $query->where('is_read', $request->boolean('is_read'));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('subject', 'like', '%' . $search . '%')
+                    ->orWhere('message', 'like', '%' . $search . '%');
+            });
+        }
+
+        $contacts = ($request->has('page') || $request->has('per_page'))
+            ? $query->orderByDesc('created_at')->paginate($request->integer('per_page', 10))
+            : $query->orderByDesc('created_at')->get();
+
+        return response()->json($contacts);
     }
 
     /**

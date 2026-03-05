@@ -33,6 +33,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/me',      [AuthController::class, 'me']);
 
         Route::prefix('admin')->group(function () {
+            // Media Upload
+            Route::post('upload', [\App\Http\Controllers\API\v1\MediaController::class, 'upload']);
             Route::put('/profile', [ProfileController::class, 'update']);
             Route::apiResource('skills', SkillController::class);
             Route::apiResource('experiences', ExperienceController::class);

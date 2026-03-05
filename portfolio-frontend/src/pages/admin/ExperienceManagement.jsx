@@ -4,32 +4,48 @@ import { adminExperience } from "../../services/api";
 export default function ExperienceManagement() {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentExp, setCurrentExp] = useState(null);
-  const [formData, setFormData] = useState({
-    company: "",
-    position: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    is_current: false,
-    technologies: "",
-  });
 
   useEffect(() => {
-    fetchExperiences();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchExperiences();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, page]);
 
   const fetchExperiences = async () => {
     setLoading(true);
     try {
-      const res = await adminExperience.list();
-      setExperiences(res.data);
+      const res = await adminExperience.list({ search, page, per_page: 10 });
+      // If server returned pagination object
+      if (res.data.data) {
+        setExperiences(res.data.data);
+        setPagination({
+          current_page: res.data.current_page,
+          last_page: res.data.last_page,
+          total: res.data.total,
+        });
+      } else {
+        setExperiences(res.data);
+      }
     } catch (err) {
       console.error("Failed to fetch experiences", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1); // Reset to first page on search
   };
 
   const handleEdit = (exp) => {
@@ -88,12 +104,20 @@ export default function ExperienceManagement() {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "1.5rem",
+          gap: "1rem",
         }}
       >
-        <p style={{ color: "var(--text-light)" }}>
-          Work experience ({experiences.length})
-        </p>
+        <div style={{ flex: 1, maxWidth: 300 }}>
+          <input
+            className="form-control"
+            placeholder="Search experience..."
+            value={search}
+            onChange={handleSearchChange}
+            style={{ borderRadius: 50, padding: "8px 20px" }}
+          />
+        </div>
         <button
           className="btn btn-gradient"
           onClick={() => {
@@ -176,6 +200,39 @@ export default function ExperienceManagement() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {pagination.last_page > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
+            Showing page {pagination.current_page} of {pagination.last_page} (
+            {pagination.total} total)
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === pagination.last_page}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {modalOpen && (

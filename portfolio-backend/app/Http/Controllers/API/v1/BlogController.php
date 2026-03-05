@@ -14,15 +14,33 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Blog::where('status', 'published');
+        $query = Blog::query();
+
+        // Admin can see all, public only published
+        if (!$request->user() || $request->user()->role !== 'admin') {
+            $query->where('status', 'published');
+        } elseif ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         if ($request->filled('tag')) {
             $query->whereJsonContains('tags', $request->tag);
         }
 
-        return response()->json(
-            $query->orderByDesc('published_at')->get()
-        );
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('excerpt', 'like', '%' . $search . '%')
+                    ->orWhere('content', 'like', '%' . $search . '%');
+            });
+        }
+
+        $blogs = ($request->has('page') || $request->has('per_page'))
+            ? $query->orderByDesc('published_at')->orderByDesc('created_at')->paginate($request->integer('per_page', 10))
+            : $query->orderByDesc('published_at')->orderByDesc('created_at')->get();
+
+        return response()->json($blogs);
     }
 
     /**

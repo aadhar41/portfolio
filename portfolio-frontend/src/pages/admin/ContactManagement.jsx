@@ -4,21 +4,46 @@ import { getContacts } from "../../services/api";
 export default function ContactManagement() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchMessages();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, page]);
 
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const res = await getContacts();
-      setMessages(res.data);
+      const res = await getContacts({ search, page, per_page: 10 });
+      // If server returned pagination object
+      if (res.data.data) {
+        setMessages(res.data.data);
+        setPagination({
+          current_page: res.data.current_page,
+          last_page: res.data.last_page,
+          total: res.data.total,
+        });
+      } else {
+        setMessages(res.data);
+      }
     } catch (err) {
       console.error("Failed to fetch messages", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1); // Reset to first page on search
   };
 
   if (loading && messages.length === 0) return <div>Loading messages...</div>;
@@ -29,12 +54,20 @@ export default function ContactManagement() {
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "1.5rem",
+          gap: "1rem",
         }}
       >
-        <p style={{ color: "var(--text-light)" }}>
-          Inquiries from your contact form ({messages.length})
-        </p>
+        <div style={{ flex: 1, maxWidth: 300 }}>
+          <input
+            className="form-control"
+            placeholder="Search messages..."
+            value={search}
+            onChange={handleSearchChange}
+            style={{ borderRadius: 50, padding: "8px 20px" }}
+          />
+        </div>
         <button
           className="btn btn-outline-primary btn-sm"
           onClick={fetchMessages}
@@ -111,6 +144,39 @@ export default function ContactManagement() {
           ))
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {pagination.last_page > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
+            Showing page {pagination.current_page} of {pagination.last_page} (
+            {pagination.total} total)
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={page === pagination.last_page}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

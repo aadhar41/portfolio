@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getProfile, updateProfile } from "../../services/api";
+import FileUpload from "../../components/admin/FileUpload";
 
 export default function ProfileManagement() {
   const [formData, setFormData] = useState({
@@ -185,17 +186,14 @@ export default function ProfileManagement() {
               }
             />
           </div>
-          <div>
-            <label>Avatar URL</label>
-            <input
-              className="form-control"
-              value={formData.avatar}
-              onChange={(e) =>
-                setFormData({ ...formData, avatar: e.target.value })
-              }
-            />
-          </div>
         </div>
+
+        <FileUpload
+          label="Profile Picture (Avatar)"
+          currentImage={formData.avatar}
+          onUploadSuccess={(url) => setFormData({ ...formData, avatar: url })}
+          folder="avatars"
+        />
 
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button type="submit" className="btn btn-gradient" disabled={saving}>

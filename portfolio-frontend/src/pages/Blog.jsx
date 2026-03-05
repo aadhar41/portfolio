@@ -42,7 +42,8 @@ export default function Blog() {
     setLoading(true);
     getBlogs(tag ? { tag } : {})
       .then((res) => {
-        setBlogs(res.data);
+        const data = res.data.data || res.data;
+        setBlogs(Array.isArray(data) ? data : []);
         setPage(1);
       })
       .finally(() => setLoading(false));
