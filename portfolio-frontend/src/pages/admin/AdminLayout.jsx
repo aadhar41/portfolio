@@ -203,8 +203,8 @@ export default function AdminLayout() {
         style={{
           flexGrow: 1,
           padding: "2.5rem",
-          overflowY: "auto",
-          height: "100vh",
+          paddingBottom: "5rem",
+          minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
         }}

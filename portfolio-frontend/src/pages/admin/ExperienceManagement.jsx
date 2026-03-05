@@ -13,6 +13,15 @@ export default function ExperienceManagement() {
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentExp, setCurrentExp] = useState(null);
+  const [formData, setFormData] = useState({
+    company: "",
+    position: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    is_current: false,
+    technologies: "",
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -92,8 +92,7 @@ export default function SkillManagement() {
     }
   };
 
-  if (loading && Object.keys(skillsByGroup).length === 0)
-    return <div>Loading skills...</div>;
+  if (loading && skills.length === 0) return <div>Loading skills...</div>;
 
   return (
     <div>

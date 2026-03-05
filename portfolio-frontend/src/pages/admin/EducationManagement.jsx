@@ -13,6 +13,14 @@ export default function EducationManagement() {
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentEdu, setCurrentEdu] = useState(null);
+  const [formData, setFormData] = useState({
+    institution: "",
+    degree: "",
+    field_of_study: "",
+    start_year: "",
+    end_year: "",
+    grade: "",
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -64,7 +64,16 @@ export default function ProfileManagement() {
   if (loading) return <div>Loading profile data...</div>;
 
   return (
-    <div className="card" style={{ maxWidth: 800, padding: "2rem" }}>
+    <div
+      className="card"
+      style={{
+        maxWidth: 800,
+        padding: "2rem",
+        margin: "0 auto",
+        height: "auto",
+        overflow: "visible",
+      }}
+    >
       <h4 style={{ marginBottom: "1.5rem" }}>Personal Information</h4>
 
       {message.text && (
