@@ -82,18 +82,41 @@ export default function ProjectDetail() {
           </Link>
 
           {project.image && (
-            <img
-              src={project.image}
-              alt={project.title}
+            <div
               style={{
                 width: "100%",
                 maxHeight: 400,
-                objectFit: "cover",
+                backgroundColor: "#f0f2f5",
                 borderRadius: 15,
                 marginBottom: "2rem",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
               }}
-            />
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  maxHeight: 400,
+                  objectFit: "cover",
+                }}
+                onError={(e) => {
+                  const repoName = project.github_url?.split("/").pop();
+                  const ogUrl = `https://opengraph.githubassets.com/1/aadhar41/${repoName}`;
+                  if (e.target.src !== ogUrl) {
+                    e.target.src = ogUrl;
+                  } else {
+                    e.target.style.display = "none";
+                    e.target.parentElement.innerHTML = `<div style="text-align:center;color:#bdc3c7;padding:4rem;"><i class="fas fa-code fa-5x"></i></div>`;
+                  }
+                }}
+              />
+            </div>
           )}
 
           {project.long_description && (

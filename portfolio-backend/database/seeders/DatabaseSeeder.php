@@ -38,58 +38,71 @@ class DatabaseSeeder extends Seeder
         // ── Skills ──────────────────────────────────────────────────────
         $skills = [
             // Backend Development
-            ['name' => 'PHP',         'category' => 'Backend Development', 'level' => 95, 'sort_order' => 1],
-            ['name' => 'Laravel',     'category' => 'Backend Development', 'level' => 95, 'sort_order' => 2],
-            ['name' => 'Yii / Yii 2', 'category' => 'Backend Development', 'level' => 88, 'sort_order' => 3],
-            ['name' => 'CodeIgniter', 'category' => 'Backend Development', 'level' => 82, 'sort_order' => 4],
-            ['name' => 'Lumen',       'category' => 'Backend Development', 'level' => 80, 'sort_order' => 5],
-            ['name' => 'CakePHP',     'category' => 'Backend Development', 'level' => 78, 'sort_order' => 6],
-            ['name' => 'WordPress',   'category' => 'Backend Development', 'level' => 75, 'sort_order' => 7],
+            ['name' => 'PHP (5.*+, 7.*+, 8.1+)', 'category' => 'Backend Development', 'level' => 95, 'sort_order' => 1],
+            ['name' => 'Laravel (5–12)',      'category' => 'Backend Development', 'level' => 95, 'sort_order' => 2],
+            ['name' => 'Yii / Yii2',          'category' => 'Backend Development', 'level' => 85, 'sort_order' => 3],
+            ['name' => 'CodeIgniter',         'category' => 'Backend Development', 'level' => 82, 'sort_order' => 4],
+            ['name' => 'CakePHP',             'category' => 'Backend Development', 'level' => 78, 'sort_order' => 5],
+            ['name' => 'Express.js',          'category' => 'Backend Development', 'level' => 80, 'sort_order' => 6],
 
             // Database Management
-            ['name' => 'MySQL',             'category' => 'Database Management', 'level' => 92, 'sort_order' => 8],
-            ['name' => 'MongoDB',           'category' => 'Database Management', 'level' => 72, 'sort_order' => 9],
-            ['name' => 'Query Optimization', 'category' => 'Database Management', 'level' => 88, 'sort_order' => 10],
-            ['name' => 'Schema Design',     'category' => 'Database Management', 'level' => 85, 'sort_order' => 11],
+            ['name' => 'MySQL',               'category' => 'Database Management', 'level' => 87, 'sort_order' => 7],
+            ['name' => 'MongoDB',             'category' => 'Database Management', 'level' => 72, 'sort_order' => 8],
+            ['name' => 'Redis',               'category' => 'Database Management', 'level' => 70, 'sort_order' => 9],
+            ['name' => 'Memcached',           'category' => 'Database Management', 'level' => 71, 'sort_order' => 10],
+            ['name' => 'Query Optimization',  'category' => 'Database Management', 'level' => 88, 'sort_order' => 11],
+            ['name' => 'Schema Design',       'category' => 'Database Management', 'level' => 85, 'sort_order' => 12],
 
-            // API Development
-            ['name' => 'RESTful API Architecture',   'category' => 'API Development', 'level' => 95, 'sort_order' => 12],
-            ['name' => 'Third-party Integration',    'category' => 'API Development', 'level' => 90, 'sort_order' => 13],
-            ['name' => 'Payment Gateway Integration', 'category' => 'API Development', 'level' => 85, 'sort_order' => 14],
+            // API & Backend
+            ['name' => 'RESTful APIs',        'category' => 'API Development', 'level' => 95, 'sort_order' => 13],
+            ['name' => 'WebSockets',          'category' => 'API Development', 'level' => 85, 'sort_order' => 14],
+            ['name' => 'Socket.io',           'category' => 'API Development', 'level' => 82, 'sort_order' => 15],
+            ['name' => 'Laravel Sanctum',     'category' => 'API Development', 'level' => 88, 'sort_order' => 16],
+            ['name' => 'JWT Authentication',  'category' => 'API Development', 'level' => 85, 'sort_order' => 17],
+            ['name' => 'Third-party Integration', 'category' => 'API Development', 'level' => 90, 'sort_order' => 18],
+            ['name' => 'Payment Gateway Integration', 'category' => 'API Development', 'level' => 85, 'sort_order' => 19],
 
             // Software Development
-            ['name' => 'SDLC',                'category' => 'Software Development', 'level' => 88, 'sort_order' => 15],
-            ['name' => 'Agile Methodologies', 'category' => 'Software Development', 'level' => 85, 'sort_order' => 16],
-            ['name' => 'System Design',       'category' => 'Software Development', 'level' => 82, 'sort_order' => 17],
-            ['name' => 'Code Review',         'category' => 'Software Development', 'level' => 90, 'sort_order' => 18],
-            ['name' => 'Debugging',           'category' => 'Software Development', 'level' => 92, 'sort_order' => 19],
+            ['name' => 'SDLC',                'category' => 'Software Development', 'level' => 88, 'sort_order' => 20],
+            ['name' => 'Agile / Scrum',       'category' => 'Software Development', 'level' => 85, 'sort_order' => 21],
+            ['name' => 'MVC Architecture',    'category' => 'Software Development', 'level' => 90, 'sort_order' => 22],
+            ['name' => 'Unit Testing (PHPUnit)', 'category' => 'Software Development', 'level' => 82, 'sort_order' => 23],
+            ['name' => 'System Design',       'category' => 'Software Development', 'level' => 82, 'sort_order' => 24],
+            ['name' => 'Code Review',         'category' => 'Software Development', 'level' => 90, 'sort_order' => 25],
+            ['name' => 'Debugging',           'category' => 'Software Development', 'level' => 92, 'sort_order' => 26],
 
             // Frontend Technologies
-            ['name' => 'HTML5',             'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 20],
-            ['name' => 'CSS3',              'category' => 'Frontend Technologies', 'level' => 80, 'sort_order' => 21],
-            ['name' => 'JavaScript',        'category' => 'Frontend Technologies', 'level' => 82, 'sort_order' => 22],
-            ['name' => 'jQuery',            'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 23],
-            ['name' => 'Bootstrap',         'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 24],
-            ['name' => 'Responsive Design', 'category' => 'Frontend Technologies', 'level' => 80, 'sort_order' => 25],
+            ['name' => 'HTML5',               'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 27],
+            ['name' => 'CSS3',                'category' => 'Frontend Technologies', 'level' => 80, 'sort_order' => 28],
+            ['name' => 'JavaScript (ES6+)',   'category' => 'Frontend Technologies', 'level' => 82, 'sort_order' => 29],
+            ['name' => 'React.js',            'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 30],
+            ['name' => 'jQuery',              'category' => 'Frontend Technologies', 'level' => 80, 'sort_order' => 31],
+            ['name' => 'Bootstrap 5',         'category' => 'Frontend Technologies', 'level' => 85, 'sort_order' => 32],
+            ['name' => 'Tailwind CSS',        'category' => 'Frontend Technologies', 'level' => 88, 'sort_order' => 33],
+            ['name' => 'Responsive Design',   'category' => 'Frontend Technologies', 'level' => 80, 'sort_order' => 34],
 
             // Tools & Platforms
-            ['name' => 'Git',    'category' => 'Tools & Platforms', 'level' => 90, 'sort_order' => 26],
-            ['name' => 'CLI',    'category' => 'Tools & Platforms', 'level' => 88, 'sort_order' => 27],
-            ['name' => 'Docker', 'category' => 'Tools & Platforms', 'level' => 72, 'sort_order' => 28],
-            ['name' => 'Linux',  'category' => 'Tools & Platforms', 'level' => 78, 'sort_order' => 29],
-            ['name' => 'Apache', 'category' => 'Tools & Platforms', 'level' => 75, 'sort_order' => 30],
-            ['name' => 'Nginx',  'category' => 'Tools & Platforms', 'level' => 70, 'sort_order' => 31],
+            ['name' => 'Git',                 'category' => 'Tools & Platforms', 'level' => 85, 'sort_order' => 35],
+            ['name' => 'Composer',            'category' => 'Tools & Platforms', 'level' => 86, 'sort_order' => 36],
+            ['name' => 'npm',                 'category' => 'Tools & Platforms', 'level' => 80, 'sort_order' => 37],
+            ['name' => 'Vite',                'category' => 'Tools & Platforms', 'level' => 79, 'sort_order' => 38],
+            ['name' => 'Postman',             'category' => 'Tools & Platforms', 'level' => 85, 'sort_order' => 39],
+            ['name' => 'Insomnia',            'category' => 'Tools & Platforms', 'level' => 80, 'sort_order' => 40],
+            ['name' => 'Swagger',             'category' => 'Tools & Platforms', 'level' => 82, 'sort_order' => 41],
+            ['name' => 'CLI',                 'category' => 'Tools & Platforms', 'level' => 84, 'sort_order' => 42],
+            ['name' => 'Linux',               'category' => 'Tools & Platforms', 'level' => 78, 'sort_order' => 43],
+            ['name' => 'Apache',              'category' => 'Tools & Platforms', 'level' => 75, 'sort_order' => 44],
 
             // Best Practices
-            ['name' => 'Security Implementation',  'category' => 'Best Practices', 'level' => 88, 'sort_order' => 32],
-            ['name' => 'Performance Optimization', 'category' => 'Best Practices', 'level' => 90, 'sort_order' => 33],
-            ['name' => 'Technical Documentation',  'category' => 'Best Practices', 'level' => 85, 'sort_order' => 34],
+            ['name' => 'Security Implementation',  'category' => 'Best Practices', 'level' => 88, 'sort_order' => 45],
+            ['name' => 'Performance Optimization', 'category' => 'Best Practices', 'level' => 90, 'sort_order' => 46],
+            ['name' => 'Technical Documentation',  'category' => 'Best Practices', 'level' => 85, 'sort_order' => 47],
 
             // Leadership
-            ['name' => 'Team Mentoring',              'category' => 'Leadership', 'level' => 85, 'sort_order' => 35],
-            ['name' => 'Project Management',          'category' => 'Leadership', 'level' => 82, 'sort_order' => 36],
-            ['name' => 'Cross-functional Collaboration', 'category' => 'Leadership', 'level' => 85, 'sort_order' => 37],
-            ['name' => 'Client Communication',        'category' => 'Leadership', 'level' => 88, 'sort_order' => 38],
+            ['name' => 'Team Mentoring',              'category' => 'Leadership', 'level' => 85, 'sort_order' => 48],
+            ['name' => 'Project Management',          'category' => 'Leadership', 'level' => 82, 'sort_order' => 49],
+            ['name' => 'Cross-functional Collaboration', 'category' => 'Leadership', 'level' => 85, 'sort_order' => 50],
+            ['name' => 'Client Communication',        'category' => 'Leadership', 'level' => 88, 'sort_order' => 51],
         ];
 
         foreach ($skills as $skill) {
@@ -193,53 +206,49 @@ class DatabaseSeeder extends Seeder
         }
 
         // ── Projects ────────────────────────────────────────────────────
-        $projects = [
-            [
-                'title'        => 'Vendor Management System',
-                'description'  => 'A comprehensive VMS serving 10,000+ concurrent users with optimized performance and 99.9% uptime.',
-                'technologies' => ['PHP', 'Laravel', 'MySQL', 'REST APIs', 'Agile'],
-                'category'     => 'web',
-                'featured'     => true,
-            ],
-            [
-                'title'        => 'HRMS System',
-                'description'  => 'Optimized and restructured HRMS code for enhanced performance and maintainability with custom modules.',
-                'technologies' => ['PHP', 'Laravel', 'MySQL'],
-                'category'     => 'web',
-                'featured'     => true,
-            ],
-            [
-                'title'        => 'Gaming Platform',
-                'description'  => 'Integrated Evoplay third-party services and implemented 2FA security with invoice generation.',
-                'technologies' => ['PHP', 'Laravel', 'Third-party APIs', 'Security'],
-                'category'     => 'web',
-                'featured'     => true,
-            ],
-            [
-                'title'        => 'Medical Staff Recruitment',
-                'description'  => 'Comprehensive web application for recruiting medical staff with job postings and applicant tracking.',
-                'technologies' => ['PHP', 'JavaScript', 'MySQL'],
-                'category'     => 'web',
-                'featured'     => false,
-            ],
-            [
-                'title'        => 'Car Rental Management',
-                'description'  => 'Efficient car rental management system with vehicle reservations, returns, and customer management.',
-                'technologies' => ['PHP', 'CodeIgniter', 'Bootstrap'],
-                'category'     => 'web',
-                'featured'     => false,
-            ],
-            [
-                'title'        => 'Mobile App APIs',
-                'description'  => 'Built RESTful APIs for mobile applications including React Native and iOS apps with Laravel backend.',
-                'technologies' => ['PHP', 'Laravel', 'MySQL', 'RESTful APIs'],
-                'category'     => 'api',
-                'featured'     => false,
-            ],
-        ];
+        $csvPath = public_path('assets/docs/projects.csv');
+        if (file_exists($csvPath)) {
+            $handle = fopen($csvPath, 'r');
+            $header = fgetcsv($handle); // Skip header
 
-        foreach ($projects as $i => $proj) {
-            Project::create(array_merge($proj, ['sort_order' => $i + 1]));
+            $i = 1;
+            while (($row = fgetcsv($handle)) !== false) {
+                $data = array_combine($header, $row);
+
+                // Skip entries with "test" or empty names if any
+                if (empty($data['Name']) || str_contains(strtolower($data['Name']), 'test')) {
+                    continue;
+                }
+
+                $title = str_replace('-', ' ', ucwords($data['Name'], '-'));
+                $description = !empty($data['Description']) ? $data['Description'] : $title;
+
+                // Build conventional image URL
+                $imageUrl = "https://raw.githubusercontent.com/aadhar41/{$data['Name']}/master/public/{$data['Name']}.png";
+
+                Project::create([
+                    'title'            => $title,
+                    'description'      => $description,
+                    'long_description' => $description,
+                    'image'            => $imageUrl,
+                    'live_url'         => !empty($data['Website']) ? $data['Website'] : null,
+                    'github_url'       => $data['URL'],
+                    'technologies'     => [$data['Language']],
+                    'category'         => (str_contains(strtolower($data['Name']), 'api') || str_contains(strtolower($description), 'api')) ? 'api' : 'web',
+                    'featured'        => (int)$data['Stars'] >= 2,
+                    'sort_order'       => $i++,
+                ]);
+            }
+            fclose($handle);
+        } else {
+            // Fallback to minimal static content if CSV is missing
+            Project::create([
+                'title'        => 'Portfolio Project',
+                'description'  => 'Automated import failed. CSV not found.',
+                'technologies' => ['PHP', 'Laravel'],
+                'category'     => 'web',
+                'featured'     => true,
+            ]);
         }
 
         // ── Blog Posts ──────────────────────────────────────────────────

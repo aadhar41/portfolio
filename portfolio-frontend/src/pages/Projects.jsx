@@ -78,17 +78,41 @@ export default function Projects() {
                     style={{ display: "flex", flexDirection: "column" }}
                   >
                     {p.image && (
-                      <img
-                        src={p.image}
-                        alt={p.title}
+                      <div
                         style={{
                           width: "100%",
                           height: 160,
-                          objectFit: "cover",
+                          backgroundColor: "#f0f2f5",
                           borderRadius: 8,
                           marginBottom: "1rem",
+                          overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
-                      />
+                      >
+                        <img
+                          src={p.image}
+                          alt={p.title}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                          onError={(e) => {
+                            // If conventional image fails, try GitHub OpenGraph image
+                            const repoName = p.github_url?.split("/").pop();
+                            const ogUrl = `https://opengraph.githubassets.com/1/aadhar41/${repoName}`;
+                            if (e.target.src !== ogUrl) {
+                              e.target.src = ogUrl;
+                            } else {
+                              // If even that fails, hide the image or show a placeholder icon
+                              e.target.style.display = "none";
+                              e.target.parentElement.innerHTML = `<div style="text-align:center;color:#bdc3c7;"><i class="fas fa-code fa-3x"></i></div>`;
+                            }
+                          }}
+                        />
+                      </div>
                     )}
                     {p.featured && (
                       <span
