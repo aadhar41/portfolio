@@ -14,12 +14,14 @@ class ExperienceController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'experiences_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
+        $cacheKey = 'experiences_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . $request->get('is_active', 'all');
 
         $experiences = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Experience::query();
 
-            if (!request()->is('api/v1/admin/*')) {
+            if ($request->filled('is_active')) {
+                $query->where('is_active', $request->boolean('is_active'));
+            } elseif (!request()->is('api/v1/admin/*')) {
                 $query->where('is_active', true);
             }
 

@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { adminExperience } from "../../services/api";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function ExperienceManagement() {
   const [experiences, setExperiences] = useState([]);
@@ -11,6 +15,8 @@ export default function ExperienceManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
   const [modalOpen, setModalOpen] = useState(false);
   const [currentExp, setCurrentExp] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,12 +35,17 @@ export default function ExperienceManagement() {
       fetchExperiences();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage, statusFilter]);
 
   const fetchExperiences = async () => {
     setLoading(true);
     try {
-      const res = await adminExperience.list({ search, page, per_page: 10 });
+      const res = await adminExperience.list({
+        search,
+        page,
+        per_page: perPage,
+        is_active: statusFilter,
+      });
       // If server returned pagination object
       if (res.data.data) {
         setExperiences(res.data.data);
@@ -78,8 +89,9 @@ export default function ExperienceManagement() {
     try {
       await adminExperience.delete(id);
       fetchExperiences();
+      toast.success("Experience record deleted successfully!");
     } catch (err) {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -101,56 +113,65 @@ export default function ExperienceManagement() {
       }
       setModalOpen(false);
       fetchExperiences();
+      toast.success(
+        currentExp
+          ? "Experience record updated successfully!"
+          : "Experience record created successfully!",
+      );
     } catch (err) {
-      alert("Save failed");
+      toast.error("Save failed");
     }
   };
 
-  if (loading && experiences.length === 0)
-    return <div>Loading professional history...</div>;
+  if (loading && experiences.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search experience..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-gradient"
-          onClick={() => {
-            setCurrentExp(null);
-            setFormData({
-              is_active: true,
-              company: "",
-              position: "",
-              description: "",
-              start_date: "",
-              end_date: "",
-              is_current: false,
-              technologies: "",
-            });
-            setModalOpen(true);
-          }}
-        >
-          <i className="fas fa-plus"></i> Add Experience
-        </button>
-      </div>
+        onAddNew={() => {
+          setCurrentExp(null);
+          setFormData({
+            is_active: true,
+            company: "",
+            position: "",
+            description: "",
+            start_date: "",
+            end_date: "",
+            is_current: false,
+            technologies: "",
+          });
+          setModalOpen(true);
+        }}
+        addNewText="Add Experience"
+        filters={[
+          {
+            name: "is_active",
+            label: "All Status",
+            value: statusFilter,
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        onFilterChange={(name, val) => {
+          setStatusFilter(val);
+          setPage(1);
+        }}
+      />
 
-      <div className="card" style={{ overflow: "hidden" }}>
+      <div
+        className="card"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <LoadingOverlay active={loading && experiences.length > 0} />
         <table
           style={{
             width: "100%",
@@ -429,6 +450,6 @@ export default function ExperienceManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

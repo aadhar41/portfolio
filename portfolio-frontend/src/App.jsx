@@ -23,6 +23,9 @@ import EducationManagement from "./pages/admin/EducationManagement";
 import ProfileManagement from "./pages/admin/ProfileManagement";
 import ContactManagement from "./pages/admin/ContactManagement";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // A simple wrapper to conditional render header/footer
 const MainLayout = ({ children }) => {
   const location = window.location.pathname;
@@ -69,6 +72,7 @@ function App() {
               </Route>
             </Routes>
           </MainLayout>
+          <ToastContainer position="top-right" autoClose={3000} />
         </BrowserRouter>
       </AuthProvider>
     </HelmetProvider>

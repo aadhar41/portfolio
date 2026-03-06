@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { adminProjects, getProjects } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import FileUpload from "../../components/admin/FileUpload";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function ProjectManagement() {
   const [projects, setProjects] = useState([]);
@@ -13,6 +17,9 @@ export default function ProjectManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const [formData, setFormData] = useState({
@@ -33,12 +40,18 @@ export default function ProjectManagement() {
       fetchProjects();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage, statusFilter, categoryFilter]);
 
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await adminProjects.list({ search, page, per_page: 10 });
+      const res = await adminProjects.list({
+        search,
+        page,
+        per_page: perPage,
+        is_active: statusFilter,
+        category: categoryFilter,
+      });
       // If server returned pagination object
       if (res.data.data) {
         setProjects(res.data.data);
@@ -85,8 +98,9 @@ export default function ProjectManagement() {
     try {
       await adminProjects.delete(id);
       fetchProjects();
+      toast.success("Project deleted successfully!");
     } catch (err) {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -112,56 +126,79 @@ export default function ProjectManagement() {
       }
       setModalOpen(false);
       fetchProjects();
+      toast.success(
+        currentProject
+          ? "Project updated successfully!"
+          : "Project created successfully!",
+      );
     } catch (err) {
-      alert("Save failed: " + (err.response?.data?.message || "Unknown error"));
+      toast.error(
+        "Save failed: " + (err.response?.data?.message || "Unknown error"),
+      );
     }
   };
 
-  if (loading && projects.length === 0) return <div>Loading projects...</div>;
+  if (loading && projects.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search projects..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-gradient"
-          onClick={() => {
-            setCurrentProject(null);
-            setFormData({
-              is_active: true,
-              title: "",
-              description: "",
-              category: "web",
-              technologies: "",
-              github_url: "",
-              live_url: "",
-              image: "",
-              featured: false,
-            });
-            setModalOpen(true);
-          }}
-        >
-          <i className="fas fa-plus"></i> Add Project
-        </button>
-      </div>
+        onAddNew={() => {
+          setCurrentProject(null);
+          setFormData({
+            is_active: true,
+            title: "",
+            description: "",
+            category: "web",
+            technologies: "",
+            github_url: "",
+            live_url: "",
+            image: "",
+            featured: false,
+          });
+          setModalOpen(true);
+        }}
+        addNewText="Add Project"
+        filters={[
+          {
+            name: "category",
+            label: "All Categories",
+            value: categoryFilter,
+            options: [
+              { label: "Web", value: "web" },
+              { label: "Mobile", value: "mobile" },
+              { label: "API", value: "api" },
+            ],
+          },
+          {
+            name: "is_active",
+            label: "All Status",
+            value: statusFilter,
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        onFilterChange={(name, val) => {
+          if (name === "category") setCategoryFilter(val);
+          if (name === "is_active") setStatusFilter(val);
+          setPage(1);
+        }}
+      />
 
-      <div className="card" style={{ overflow: "hidden" }}>
+      <div
+        className="card"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <LoadingOverlay active={loading && projects.length > 0} />
         <table
           style={{
             width: "100%",
@@ -486,6 +523,6 @@ export default function ProjectManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -15,13 +15,13 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'blogs_list_' . $request->get('tag', 'all') . '_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . ($request->user() ? $request->user()->id : 'public');
+        $cacheKey = 'blogs_list_' . $request->get('tag', 'all') . '_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . $request->get('is_active', 'all') . '_' . ($request->user() ? $request->user()->id : 'public');
 
         $blogs = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Blog::query();
 
             // Admin can see all, public only published and active
-            if (!$request->user() || $request->user()->role !== 'admin') {
+            if (!request()->is('api/v1/admin/*')) {
                 $query->where('status', 'published')->where('is_active', true);
             } elseif ($request->filled('status')) {
                 $query->where('status', $request->status);
