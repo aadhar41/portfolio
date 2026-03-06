@@ -19,6 +19,10 @@ class EducationController extends Controller
         $education = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Education::query();
 
+            if (!request()->is('api/v1/admin/*')) {
+                $query->where('is_active', true);
+            }
+
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
@@ -41,8 +45,15 @@ class EducationController extends Controller
      */
     public function show($id)
     {
-        $education = Cache::remember("education_detail_{$id}", now()->addHours(24), function () use ($id) {
-            return Education::findOrFail($id);
+        $isAdmin = request()->is('api/v1/admin/*');
+        $cacheKey = "education_detail_{$id}_" . ($isAdmin ? 'admin' : 'public');
+
+        $education = Cache::remember($cacheKey, now()->addHours(24), function () use ($id, $isAdmin) {
+            $query = Education::query();
+            if (!$isAdmin) {
+                $query->where('is_active', true);
+            }
+            return $query->findOrFail($id);
         });
 
         return response()->json($education);
@@ -54,6 +65,7 @@ class EducationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'is_active'     => 'nullable|boolean',
             'institution'   => 'required|string|max:255',
             'degree'        => 'required|string|max:255',
             'field_of_study' => 'required|string|max:255',
@@ -62,7 +74,9 @@ class EducationController extends Controller
             'grade'         => 'nullable|string|max:50',
         ]);
 
-        return response()->json(Education::create($validated), 201);
+        $education = Education::create($validated);
+        Cache::flush();
+        return response()->json($education, 201);
     }
 
     /**
@@ -73,6 +87,7 @@ class EducationController extends Controller
         $education = Education::findOrFail($id);
 
         $validated = $request->validate([
+            'is_active'     => 'nullable|boolean',
             'institution'   => 'sometimes|string|max:255',
             'degree'        => 'sometimes|string|max:255',
             'field_of_study' => 'sometimes|string|max:255',
@@ -82,6 +97,7 @@ class EducationController extends Controller
         ]);
 
         $education->update($validated);
+        Cache::flush();
 
         return response()->json($education);
     }
@@ -92,6 +108,7 @@ class EducationController extends Controller
     public function destroy($id)
     {
         Education::findOrFail($id)->delete();
+        Cache::flush();
 
         return response()->json(['message' => 'Education deleted successfully.']);
     }

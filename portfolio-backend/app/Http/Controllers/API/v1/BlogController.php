@@ -20,11 +20,15 @@ class BlogController extends Controller
         $blogs = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Blog::query();
 
-            // Admin can see all, public only published
+            // Admin can see all, public only published and active
             if (!$request->user() || $request->user()->role !== 'admin') {
-                $query->where('status', 'published');
+                $query->where('status', 'published')->where('is_active', true);
             } elseif ($request->filled('status')) {
                 $query->where('status', $request->status);
+            }
+
+            if ($request->filled('is_active')) {
+                $query->where('is_active', $request->boolean('is_active'));
             }
 
             if ($request->filled('tag')) {
@@ -51,11 +55,19 @@ class BlogController extends Controller
     /**
      * Return a single published blog by slug.
      */
-    public function show($slug)
+    public function show($idOrSlug)
     {
-        $blog = Cache::remember("blog_post_{$slug}", now()->addHours(24), function () use ($slug) {
-            return Blog::where('slug', $slug)
+        $isAdmin = request()->is('api/v1/admin/*');
+        $cacheKey = $isAdmin ? "admin_blog_post_{$idOrSlug}" : "blog_post_{$idOrSlug}";
+
+        $blog = Cache::remember($cacheKey, now()->addHours(24), function () use ($idOrSlug, $isAdmin) {
+            $query = Blog::query();
+            if ($isAdmin) {
+                return $query->findOrFail($idOrSlug);
+            }
+            return $query->where('slug', $idOrSlug)
                 ->where('status', 'published')
+                ->where('is_active', true)
                 ->firstOrFail();
         });
 
@@ -68,6 +80,7 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'is_active'    => 'nullable|boolean',
             'title'        => 'required|string|max:255',
             'slug'         => 'nullable|string|unique:blogs,slug|max:255',
             'excerpt'      => 'required|string',
@@ -84,7 +97,9 @@ class BlogController extends Controller
             $validated['published_at'] = now();
         }
 
-        return response()->json(Blog::create($validated), 201);
+        $blog = Blog::create($validated);
+        Cache::flush();
+        return response()->json($blog, 201);
     }
 
     /**
@@ -95,6 +110,7 @@ class BlogController extends Controller
         $blog = Blog::findOrFail($id);
 
         $validated = $request->validate([
+            'is_active'    => 'nullable|boolean',
             'title'        => 'sometimes|string|max:255',
             'slug'         => 'nullable|string|unique:blogs,slug,' . $id . '|max:255',
             'excerpt'      => 'sometimes|string',
@@ -112,6 +128,7 @@ class BlogController extends Controller
         }
 
         $blog->update($validated);
+        Cache::flush();
 
         return response()->json($blog);
     }
@@ -122,6 +139,7 @@ class BlogController extends Controller
     public function destroy($id)
     {
         Blog::findOrFail($id)->delete();
+        Cache::flush();
 
         return response()->json(['message' => 'Blog post deleted successfully.']);
     }

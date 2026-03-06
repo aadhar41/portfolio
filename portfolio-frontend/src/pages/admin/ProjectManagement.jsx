@@ -16,6 +16,7 @@ export default function ProjectManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const [formData, setFormData] = useState({
+    is_active: true,
     title: "",
     description: "",
     category: "web",
@@ -37,7 +38,7 @@ export default function ProjectManagement() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await getProjects({ search, page, per_page: 10 });
+      const res = await adminProjects.list({ search, page, per_page: 10 });
       // If server returned pagination object
       if (res.data.data) {
         setProjects(res.data.data);
@@ -65,6 +66,7 @@ export default function ProjectManagement() {
   const handleEdit = (project) => {
     setCurrentProject(project);
     setFormData({
+      is_active: project.is_active,
       title: project.title,
       description: project.description,
       category: project.category,
@@ -142,6 +144,7 @@ export default function ProjectManagement() {
           onClick={() => {
             setCurrentProject(null);
             setFormData({
+              is_active: true,
               title: "",
               description: "",
               category: "web",
@@ -200,14 +203,24 @@ export default function ProjectManagement() {
                   </div>
                 </td>
                 <td style={{ padding: "1rem" }}>
-                  {p.featured && (
+                  <div
+                    style={{ display: "flex", flexDirection: "column", gap: 4 }}
+                  >
+                    {p.featured && (
+                      <span
+                        className="badge badge-gradient"
+                        style={{ fontSize: "0.7rem" }}
+                      >
+                        ★ Featured
+                      </span>
+                    )}
                     <span
-                      className="badge badge-gradient"
+                      className={`badge ${p.is_active ? "badge-success" : "badge-secondary"}`}
                       style={{ fontSize: "0.7rem" }}
                     >
-                      ★ Featured
+                      {p.is_active ? "Active" : "Inactive"}
                     </span>
-                  )}
+                  </div>
                 </td>
                 <td style={{ padding: "1rem", textAlign: "right" }}>
                   <button
@@ -426,6 +439,29 @@ export default function ProjectManagement() {
                     }
                   />
                 </div>
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ fontSize: "0.9rem" }}>
+                    Visible on Portfolio
+                  </span>
+                </label>
               </div>
 
               <div

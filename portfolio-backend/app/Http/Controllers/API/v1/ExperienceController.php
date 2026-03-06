@@ -19,6 +19,10 @@ class ExperienceController extends Controller
         $experiences = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Experience::query();
 
+            if (!request()->is('api/v1/admin/*')) {
+                $query->where('is_active', true);
+            }
+
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
@@ -41,8 +45,15 @@ class ExperienceController extends Controller
      */
     public function show($id)
     {
-        $experience = Cache::remember("experience_detail_{$id}", now()->addHours(24), function () use ($id) {
-            return Experience::findOrFail($id);
+        $isAdmin = request()->is('api/v1/admin/*');
+        $cacheKey = "experience_detail_{$id}_" . ($isAdmin ? 'admin' : 'public');
+
+        $experience = Cache::remember($cacheKey, now()->addHours(24), function () use ($id, $isAdmin) {
+            $query = Experience::query();
+            if (!$isAdmin) {
+                $query->where('is_active', true);
+            }
+            return $query->findOrFail($id);
         });
 
         return response()->json($experience);
@@ -54,6 +65,7 @@ class ExperienceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'is_active'    => 'nullable|boolean',
             'company'      => 'required|string|max:255',
             'position'     => 'required|string|max:255',
             'description'  => 'required|string',
@@ -63,7 +75,9 @@ class ExperienceController extends Controller
             'technologies' => 'nullable|array',
         ]);
 
-        return response()->json(Experience::create($validated), 201);
+        $experience = Experience::create($validated);
+        Cache::flush();
+        return response()->json($experience, 201);
     }
 
     /**
@@ -74,6 +88,7 @@ class ExperienceController extends Controller
         $experience = Experience::findOrFail($id);
 
         $validated = $request->validate([
+            'is_active'    => 'nullable|boolean',
             'company'      => 'sometimes|string|max:255',
             'position'     => 'sometimes|string|max:255',
             'description'  => 'sometimes|string',
@@ -84,6 +99,7 @@ class ExperienceController extends Controller
         ]);
 
         $experience->update($validated);
+        Cache::flush();
 
         return response()->json($experience);
     }
@@ -94,6 +110,7 @@ class ExperienceController extends Controller
     public function destroy($id)
     {
         Experience::findOrFail($id)->delete();
+        Cache::flush();
 
         return response()->json(['message' => 'Experience deleted successfully.']);
     }

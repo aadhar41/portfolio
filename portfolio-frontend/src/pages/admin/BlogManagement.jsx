@@ -15,6 +15,7 @@ export default function BlogManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
   const [formData, setFormData] = useState({
+    is_active: true,
     title: "",
     slug: "",
     excerpt: "",
@@ -34,7 +35,7 @@ export default function BlogManagement() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await getBlogs({ search, page, per_page: 10 });
+      const res = await adminBlogs.list({ search, page, per_page: 10 });
       // If server returned pagination object
       if (res.data.data) {
         setBlogs(res.data.data);
@@ -61,6 +62,7 @@ export default function BlogManagement() {
   const handleEdit = (blog) => {
     setCurrentBlog(blog);
     setFormData({
+      is_active: blog.is_active,
       title: blog.title,
       slug: blog.slug,
       excerpt: blog.excerpt,
@@ -136,6 +138,7 @@ export default function BlogManagement() {
           onClick={() => {
             setCurrentBlog(null);
             setFormData({
+              is_active: true,
               title: "",
               slug: "",
               excerpt: "",
@@ -180,6 +183,12 @@ export default function BlogManagement() {
                     style={{ fontSize: "0.7rem" }}
                   >
                     {b.status}
+                  </span>
+                  <span
+                    className={`badge ${b.is_active ? "badge-success" : "badge-secondary"} ml-1`}
+                    style={{ fontSize: "0.7rem" }}
+                  >
+                    {b.is_active ? "Active" : "Inactive"}
                   </span>
                 </td>
                 <td style={{ padding: "1rem", color: "var(--text-light)" }}>
@@ -383,6 +392,29 @@ export default function BlogManagement() {
                 }
                 folder="blogs"
               />
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ fontSize: "0.9rem" }}>
+                    Visible on Portfolio
+                  </span>
+                </label>
+              </div>
 
               <div
                 style={{

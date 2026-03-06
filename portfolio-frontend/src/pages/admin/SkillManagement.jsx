@@ -14,6 +14,7 @@ export default function SkillManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState(null);
   const [formData, setFormData] = useState({
+    is_active: true,
     name: "",
     category: "backend",
     icon_class: "",
@@ -58,6 +59,7 @@ export default function SkillManagement() {
   const handleEdit = (skill) => {
     setCurrentSkill(skill);
     setFormData({
+      is_active: skill.is_active,
       name: skill.name,
       category: skill.category,
       icon_class: skill.icon_class || "",
@@ -119,6 +121,7 @@ export default function SkillManagement() {
           onClick={() => {
             setCurrentSkill(null);
             setFormData({
+              is_active: true,
               name: "",
               category: "backend",
               icon_class: "",
@@ -147,6 +150,7 @@ export default function SkillManagement() {
             <tr>
               <th style={{ padding: "1rem" }}>Skill Name</th>
               <th style={{ padding: "1rem" }}>Category</th>
+              <th style={{ padding: "1rem" }}>Status</th>
               <th style={{ padding: "1rem" }}>Proficiency</th>
               <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
             </tr>
@@ -163,6 +167,14 @@ export default function SkillManagement() {
                 </td>
                 <td style={{ padding: "1rem", textTransform: "capitalize" }}>
                   {skill.category}
+                </td>
+                <td style={{ padding: "1rem" }}>
+                  <span
+                    className={`badge ${skill.is_active ? "badge-gradient" : "badge-secondary"}`}
+                    style={{ fontSize: "0.7rem" }}
+                  >
+                    {skill.is_active ? "Active" : "Inactive"}
+                  </span>
                 </td>
                 <td style={{ padding: "1rem" }}>
                   <div
@@ -334,6 +346,29 @@ export default function SkillManagement() {
                   }
                   placeholder="fab fa-react"
                 />
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ fontSize: "0.9rem" }}>
+                    Visible on Portfolio
+                  </span>
+                </label>
               </div>
 
               <div

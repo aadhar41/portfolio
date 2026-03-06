@@ -12,6 +12,7 @@ class Skill extends Model
     protected $table = 'skills';
 
     protected $fillable = [
+        'is_active',
         'name',
         'category',
         'level',
@@ -20,6 +21,7 @@ class Skill extends Model
 
     protected $casts = [
         'level'      => 'integer',
+        'is_active'  => 'boolean',
         'sort_order' => 'integer',
     ];
 }

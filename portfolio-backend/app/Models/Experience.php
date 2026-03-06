@@ -12,6 +12,7 @@ class Experience extends Model
     protected $table = 'experiences';
 
     protected $fillable = [
+        'is_active',
         'company',
         'position',
         'description',
@@ -23,6 +24,7 @@ class Experience extends Model
 
     protected $casts = [
         'is_current'   => 'boolean',
+        'is_active'    => 'boolean',
         'technologies' => 'array',
     ];
 }
