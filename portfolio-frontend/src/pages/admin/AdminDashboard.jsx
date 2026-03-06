@@ -31,9 +31,9 @@ export default function AdminDashboard() {
           .length;
 
         setStats({
-          projects: projectsRes.data.length,
-          blogs: blogsRes.data.length,
-          messages: contactsRes.data.length,
+          projects: projectsRes.data.total ?? projectsRes.data.length ?? 0,
+          blogs: blogsRes.data.total ?? blogsRes.data.length ?? 0,
+          messages: contactsRes.data.total ?? contactsRes.data.length ?? 0,
           skills: skillCount,
         });
       } catch (err) {
