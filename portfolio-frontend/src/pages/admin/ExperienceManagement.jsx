@@ -14,6 +14,7 @@ export default function ExperienceManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentExp, setCurrentExp] = useState(null);
   const [formData, setFormData] = useState({
+    is_active: true,
     company: "",
     position: "",
     description: "",
@@ -60,6 +61,7 @@ export default function ExperienceManagement() {
   const handleEdit = (exp) => {
     setCurrentExp(exp);
     setFormData({
+      is_active: exp.is_active,
       company: exp.company,
       position: exp.position,
       description: exp.description,
@@ -132,6 +134,7 @@ export default function ExperienceManagement() {
           onClick={() => {
             setCurrentExp(null);
             setFormData({
+              is_active: true,
               company: "",
               position: "",
               description: "",
@@ -161,6 +164,7 @@ export default function ExperienceManagement() {
           >
             <tr>
               <th style={{ padding: "1rem" }}>Position & Company</th>
+              <th style={{ padding: "1rem" }}>Status</th>
               <th style={{ padding: "1rem" }}>Duration</th>
               <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
             </tr>
@@ -175,6 +179,14 @@ export default function ExperienceManagement() {
                   >
                     {exp.company}
                   </div>
+                </td>
+                <td style={{ padding: "1rem" }}>
+                  <span
+                    className={`badge ${exp.is_active ? "badge-success" : "badge-secondary"}`}
+                    style={{ fontSize: "0.7rem" }}
+                  >
+                    {exp.is_active ? "Active" : "Inactive"}
+                  </span>
                 </td>
                 <td style={{ padding: "1rem" }}>
                   {exp.start_date} - {exp.is_current ? "Present" : exp.end_date}
@@ -370,6 +382,29 @@ export default function ExperienceManagement() {
                   }
                   placeholder="Laravel, React, AWS"
                 />
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ fontSize: "0.9rem" }}>
+                    Visible on Portfolio
+                  </span>
+                </label>
               </div>
 
               <div

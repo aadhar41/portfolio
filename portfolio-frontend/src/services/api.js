@@ -33,6 +33,7 @@ export const adminSkills = {
 export const getProjects = (params) => api.get('/projects', { params })
 export const getProject = (id) => api.get(`/projects/${id}`)
 export const adminProjects = {
+    list: (params) => api.get('admin/projects', { params }),
     create: (data) => api.post('admin/projects', data),
     update: (id, data) => api.put(`admin/projects/${id}`, data),
     delete: (id) => api.delete(`admin/projects/${id}`),
@@ -41,6 +42,7 @@ export const adminProjects = {
 export const getBlogs = (params) => api.get('/blogs', { params })
 export const getBlog = (slug) => api.get(`/blogs/${slug}`)
 export const adminBlogs = {
+    list: (params) => api.get('admin/blogs', { params }),
     create: (data) => api.post('admin/blogs', data),
     update: (id, data) => api.put(`admin/blogs/${id}`, data),
     delete: (id) => api.delete(`admin/blogs/${id}`),

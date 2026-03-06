@@ -17,8 +17,12 @@ class SkillController extends Controller
         $cacheKey = 'skills_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
 
         $skills = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
-            $query = Skill::select("id", "name", "category", "level", "sort_order")->orderBy('category')
+            $query = Skill::select("id", "is_active", "name", "category", "level", "sort_order")->orderBy('category')
                 ->orderBy('sort_order');
+
+            if (!request()->is('api/v1/admin/*')) {
+                $query->where('is_active', true);
+            }
 
             if ($request->filled('search')) {
                 $query->where('name', 'like', '%' . $request->search . '%');
@@ -39,8 +43,15 @@ class SkillController extends Controller
      */
     public function show($id)
     {
-        $skill = Cache::remember("skill_detail_{$id}", now()->addHours(24), function () use ($id) {
-            return Skill::findOrFail($id);
+        $isAdmin = request()->is('api/v1/admin/*');
+        $cacheKey = "skill_detail_{$id}_" . ($isAdmin ? 'admin' : 'public');
+
+        $skill = Cache::remember($cacheKey, now()->addHours(24), function () use ($id, $isAdmin) {
+            $query = Skill::query();
+            if (!$isAdmin) {
+                $query->where('is_active', true);
+            }
+            return $query->findOrFail($id);
         });
 
         return response()->json($skill);
@@ -52,13 +63,16 @@ class SkillController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'is_active'  => 'nullable|boolean',
             'name'       => 'required|string|max:255',
             'category'   => 'required|string|in:frontend,backend,database,tools',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);
 
-        return response()->json(Skill::create($validated), 201);
+        $skill = Skill::create($validated);
+        Cache::flush();
+        return response()->json($skill, 201);
     }
 
     /**
@@ -69,6 +83,7 @@ class SkillController extends Controller
         $skill = Skill::findOrFail($id);
 
         $validated = $request->validate([
+            'is_active'  => 'nullable|boolean',
             'name'       => 'sometimes|string|max:255',
             'category'   => 'sometimes|string|in:frontend,backend,database,tools',
             'level'      => 'nullable|integer|min:1|max:100',
@@ -76,6 +91,7 @@ class SkillController extends Controller
         ]);
 
         $skill->update($validated);
+        Cache::flush();
 
         return response()->json($skill);
     }
@@ -86,6 +102,7 @@ class SkillController extends Controller
     public function destroy($id)
     {
         Skill::findOrFail($id)->delete();
+        Cache::flush();
 
         return response()->json(['message' => 'Skill deleted successfully.']);
     }

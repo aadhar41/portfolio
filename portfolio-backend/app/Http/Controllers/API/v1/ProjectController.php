@@ -19,6 +19,10 @@ class ProjectController extends Controller
         $projects = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Project::query();
 
+            if (!request()->is('api/v1/admin/*')) {
+                $query->where('is_active', true);
+            }
+
             if ($request->filled('category') && $request->category !== 'all') {
                 $query->where('category', $request->category);
             }
@@ -45,7 +49,11 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Cache::remember("project_detail_{$id}", now()->addHours(24), function () use ($id) {
-            return Project::findOrFail($id);
+            return Project::where('id', $id)
+                ->when(!request()->is('api/v1/admin/*'), function ($q) {
+                    $q->where('is_active', true);
+                })
+                ->firstOrFail();
         });
 
         return response()->json($project);
@@ -57,6 +65,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'is_active'        => 'nullable|boolean',
             'title'            => 'required|string|max:255',
             'description'      => 'required|string',
             'long_description' => 'nullable|string',
@@ -69,7 +78,9 @@ class ProjectController extends Controller
             'sort_order'       => 'nullable|integer',
         ]);
 
-        return response()->json(Project::create($validated), 201);
+        $project = Project::create($validated);
+        Cache::flush();
+        return response()->json($project, 201);
     }
 
     /**
@@ -80,6 +91,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $validated = $request->validate([
+            'is_active'        => 'nullable|boolean',
             'title'            => 'sometimes|string|max:255',
             'description'      => 'sometimes|string',
             'long_description' => 'nullable|string',
@@ -93,6 +105,7 @@ class ProjectController extends Controller
         ]);
 
         $project->update($validated);
+        Cache::flush();
 
         return response()->json($project);
     }
@@ -103,6 +116,7 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::findOrFail($id)->delete();
+        Cache::flush();
 
         return response()->json(['message' => 'Project deleted successfully.']);
     }

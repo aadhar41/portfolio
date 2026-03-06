@@ -20,9 +20,9 @@ class ProfileController extends Controller
         $data = Cache::remember('full_profile', now()->addHours(24), function () {
             return [
                 'profile'     => Profile::first(),
-                'skills'      => Skill::orderBy('category')->orderBy('sort_order')->get()->groupBy('category'),
-                'experiences' => Experience::orderByDesc('start_date')->get(),
-                'educations'  => Education::orderByDesc('start_year')->get(),
+                'skills'      => Skill::where('is_active', true)->orderBy('category')->orderBy('sort_order')->get()->groupBy('category'),
+                'experiences' => Experience::where('is_active', true)->orderByDesc('start_date')->get(),
+                'educations'  => Education::where('is_active', true)->orderByDesc('start_year')->get(),
             ];
         });
 

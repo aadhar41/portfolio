@@ -12,6 +12,7 @@ class Education extends Model
     protected $table = 'educations';
 
     protected $fillable = [
+        'is_active',
         'institution',
         'degree',
         'field_of_study',

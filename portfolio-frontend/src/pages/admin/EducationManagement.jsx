@@ -14,6 +14,7 @@ export default function EducationManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentEdu, setCurrentEdu] = useState(null);
   const [formData, setFormData] = useState({
+    is_active: true,
     institution: "",
     degree: "",
     field_of_study: "",
@@ -59,6 +60,7 @@ export default function EducationManagement() {
   const handleEdit = (edu) => {
     setCurrentEdu(edu);
     setFormData({
+      is_active: edu.is_active,
       institution: edu.institution,
       degree: edu.degree,
       field_of_study: edu.field_of_study,
@@ -122,6 +124,7 @@ export default function EducationManagement() {
           onClick={() => {
             setCurrentEdu(null);
             setFormData({
+              is_active: true,
               institution: "",
               degree: "",
               field_of_study: "",
@@ -150,6 +153,7 @@ export default function EducationManagement() {
           >
             <tr>
               <th style={{ padding: "1rem" }}>Degree & Institution</th>
+              <th style={{ padding: "1rem" }}>Status</th>
               <th style={{ padding: "1rem" }}>Duration</th>
               <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
             </tr>
@@ -166,6 +170,14 @@ export default function EducationManagement() {
                   >
                     {edu.institution}
                   </div>
+                </td>
+                <td style={{ padding: "1rem" }}>
+                  <span
+                    className={`badge ${edu.is_active ? "badge-success" : "badge-secondary"}`}
+                    style={{ fontSize: "0.7rem" }}
+                  >
+                    {edu.is_active ? "Active" : "Inactive"}
+                  </span>
                 </td>
                 <td style={{ padding: "1rem" }}>
                   {edu.start_year} - {edu.end_year || "Present"}
@@ -335,6 +347,29 @@ export default function EducationManagement() {
                   }
                   placeholder="3.8/4.0"
                 />
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ fontSize: "0.9rem" }}>
+                    Visible on Portfolio
+                  </span>
+                </label>
               </div>
 
               <div
