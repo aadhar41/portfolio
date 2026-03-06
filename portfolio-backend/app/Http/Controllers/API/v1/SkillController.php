@@ -14,13 +14,15 @@ class SkillController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'skills_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all');
+        $cacheKey = 'skills_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . $request->get('is_active', 'all');
 
         $skills = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
             $query = Skill::select("id", "is_active", "name", "category", "level", "sort_order")->orderBy('category')
                 ->orderBy('sort_order');
 
-            if (!request()->is('api/v1/admin/*')) {
+            if ($request->filled('is_active')) {
+                $query->where('is_active', $request->boolean('is_active'));
+            } elseif (!request()->is('api/v1/admin/*')) {
                 $query->where('is_active', true);
             }
 
@@ -65,7 +67,7 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'required|string|max:255',
-            'category'   => 'required|string|in:frontend,backend,database,tools',
+            'category'   => 'required|string|in:frontend,backend,database,devops,tools,other',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);
@@ -85,7 +87,7 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'sometimes|string|max:255',
-            'category'   => 'sometimes|string|in:frontend,backend,database,tools',
+            'category'   => 'sometimes|string|in:frontend,backend,database,tools,other',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);

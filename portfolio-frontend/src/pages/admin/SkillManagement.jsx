@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { adminSkills, getProfile } from "../../services/api";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function SkillManagement() {
   const [skills, setSkills] = useState([]);
@@ -11,6 +15,8 @@ export default function SkillManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState(null);
   const [formData, setFormData] = useState({
@@ -27,13 +33,18 @@ export default function SkillManagement() {
       fetchSkills();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage, statusFilter]);
 
   const fetchSkills = async () => {
     setLoading(true);
     try {
       // Use specific admin list params to trigger pagination and search
-      const res = await adminSkills.list({ search, page, per_page: 12 });
+      const res = await adminSkills.list({
+        search,
+        page,
+        per_page: perPage,
+        is_active: statusFilter,
+      });
       if (res.data.data) {
         setSkills(res.data.data);
         setPagination({
@@ -74,8 +85,9 @@ export default function SkillManagement() {
     try {
       await adminSkills.delete(id);
       fetchSkills();
+      toast.success("Skill deleted successfully!");
     } catch (err) {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -89,53 +101,63 @@ export default function SkillManagement() {
       }
       setModalOpen(false);
       fetchSkills();
+      toast.success(
+        currentSkill
+          ? "Skill updated successfully!"
+          : "Skill created successfully!",
+      );
     } catch (err) {
-      alert("Save failed");
+      toast.error("Save failed. Please check the form.");
     }
   };
 
-  if (loading && skills.length === 0) return <div>Loading skills...</div>;
+  if (loading && skills.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search skills..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-gradient"
-          onClick={() => {
-            setCurrentSkill(null);
-            setFormData({
-              is_active: true,
-              name: "",
-              category: "backend",
-              icon_class: "",
-              proficiency: 80,
-              sort_order: 0,
-            });
-            setModalOpen(true);
-          }}
-        >
-          <i className="fas fa-plus"></i> Add Skill
-        </button>
-      </div>
+        onAddNew={() => {
+          setCurrentSkill(null);
+          setFormData({
+            is_active: true,
+            name: "",
+            category: "backend",
+            icon_class: "",
+            proficiency: 80,
+            sort_order: 0,
+          });
+          setModalOpen(true);
+        }}
+        addNewText="Add Skill"
+        filters={[
+          {
+            name: "is_active",
+            label: "All Status",
+            value: statusFilter,
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        onFilterChange={(name, val) => {
+          setStatusFilter(val);
+          setPage(1);
+        }}
+      />
 
-      <div className="card" style={{ overflow: "hidden" }}>
+      <div
+        className="card"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <LoadingOverlay active={loading && skills.length > 0} />
         <table
           style={{
             width: "100%",
@@ -393,6 +415,6 @@ export default function SkillManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

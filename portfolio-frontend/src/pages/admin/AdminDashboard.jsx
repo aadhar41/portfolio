@@ -5,6 +5,7 @@ import {
   getBlogs,
   getContacts,
 } from "../../services/api";
+import PageLoader from "../../components/admin/PageLoader";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -73,7 +74,7 @@ export default function AdminDashboard() {
     },
   ];
 
-  if (loading) return <div>Loading dashboard stats...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <div>

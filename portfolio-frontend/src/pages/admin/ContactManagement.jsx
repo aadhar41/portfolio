@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { getContacts } from "../../services/api";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
 
 export default function ContactManagement() {
   const [messages, setMessages] = useState([]);
@@ -11,18 +14,19 @@ export default function ContactManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchMessages();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage]);
 
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const res = await getContacts({ search, page, per_page: 10 });
+      const res = await getContacts({ search, page, per_page: perPage });
       // If server returned pagination object
       if (res.data.data) {
         setMessages(res.data.data);
@@ -46,103 +50,91 @@ export default function ContactManagement() {
     setPage(1); // Reset to first page on search
   };
 
-  if (loading && messages.length === 0) return <div>Loading messages...</div>;
+  if (loading && messages.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search messages..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-outline-primary btn-sm"
-          onClick={fetchMessages}
-        >
-          <i className="fas fa-sync"></i> Refresh
-        </button>
-      </div>
+        showAddNew={false}
+      />
 
-      <div style={{ display: "grid", gap: "1rem" }}>
-        {messages.length === 0 ? (
-          <div
-            className="card"
-            style={{
-              padding: "3rem",
-              textAlign: "center",
-              color: "var(--text-light)",
-            }}
-          >
-            <i
-              className="fas fa-inbox fa-3x"
-              style={{ marginBottom: "1rem", opacity: 0.3 }}
-            ></i>
-            <p>
-              No messages yet. They'll show up here when someone contacts you.
-            </p>
-          </div>
-        ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className="card" style={{ padding: "1.5rem" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "1rem",
-                }}
-              >
-                <div>
-                  <h5 style={{ margin: 0 }}>{msg.name}</h5>
-                  <small
-                    style={{ color: "var(--primary-color)", fontWeight: 600 }}
-                  >
-                    {msg.email}
-                  </small>
-                </div>
-                <small style={{ color: "var(--text-light)" }}>
-                  {new Date(msg.created_at).toLocaleString()}
-                </small>
-              </div>
-              <div style={{ marginBottom: "1rem" }}>
-                <strong
+      <div style={{ position: "relative", minHeight: "200px" }}>
+        <LoadingOverlay active={loading && messages.length > 0} />
+        <div style={{ display: "grid", gap: "1rem" }}>
+          {messages.length === 0 ? (
+            <div
+              className="card"
+              style={{
+                padding: "3rem",
+                textAlign: "center",
+                color: "var(--text-light)",
+              }}
+            >
+              <i
+                className="fas fa-inbox fa-3x"
+                style={{ marginBottom: "1rem", opacity: 0.3 }}
+              ></i>
+              <p>
+                No messages yet. They'll show up here when someone contacts you.
+              </p>
+            </div>
+          ) : (
+            messages.map((msg) => (
+              <div key={msg.id} className="card" style={{ padding: "1.5rem" }}>
+                <div
                   style={{
-                    fontSize: "0.85rem",
-                    color: "var(--text-light)",
-                    display: "block",
-                    marginBottom: 4,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "1rem",
                   }}
                 >
-                  Subject:
-                </strong>
-                <div>{msg.subject || "No Subject"}</div>
+                  <div>
+                    <h5 style={{ margin: 0 }}>{msg.name}</h5>
+                    <small
+                      style={{ color: "var(--primary-color)", fontWeight: 600 }}
+                    >
+                      {msg.email}
+                    </small>
+                  </div>
+                  <small style={{ color: "var(--text-light)" }}>
+                    {new Date(msg.created_at).toLocaleString()}
+                  </small>
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <strong
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "var(--text-light)",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Subject:
+                  </strong>
+                  <div>{msg.subject || "No Subject"}</div>
+                </div>
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    padding: "1rem",
+                    borderRadius: 8,
+                    fontSize: "0.95rem",
+                    borderLeft: "4px solid #e2e8f0",
+                  }}
+                >
+                  {msg.message}
+                </div>
               </div>
-              <div
-                style={{
-                  background: "#f8fafc",
-                  padding: "1rem",
-                  borderRadius: 8,
-                  fontSize: "0.95rem",
-                  borderLeft: "4px solid #e2e8f0",
-                }}
-              >
-                {msg.message}
-              </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
 
       {/* Pagination Controls */}
@@ -177,6 +169,6 @@ export default function ContactManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { login } from "../../services/api";
+import { toast } from "react-toastify";
 
 export default function AdminLogin() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -23,6 +24,7 @@ export default function AdminLogin() {
         err.response?.data?.message ||
           "Login failed. Please check your credentials.",
       );
+      toast.error(err.response?.data?.message || "Login failed.");
     } finally {
       setLoading(false);
     }

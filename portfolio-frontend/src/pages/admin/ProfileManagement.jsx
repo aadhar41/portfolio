@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { getProfile, updateProfile } from "../../services/api";
 import FileUpload from "../../components/admin/FileUpload";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function ProfileManagement() {
   const [formData, setFormData] = useState({
@@ -16,7 +18,6 @@ export default function ProfileManagement() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
     fetchProfile();
@@ -47,21 +48,17 @@ export default function ProfileManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage({ type: "", text: "" });
     try {
       await updateProfile(formData);
-      setMessage({ type: "success", text: "Profile updated successfully!" });
+      toast.success("Profile updated successfully!");
     } catch (err) {
-      setMessage({
-        type: "error",
-        text: "Update failed. Please check the form.",
-      });
+      toast.error("Update failed. Please check the form.");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div>Loading profile data...</div>;
+  if (loading) return <PageLoader />;
 
   return (
     <div
@@ -76,20 +73,7 @@ export default function ProfileManagement() {
     >
       <h4 style={{ marginBottom: "1.5rem" }}>Personal Information</h4>
 
-      {message.text && (
-        <div
-          style={{
-            padding: "1rem",
-            borderRadius: 8,
-            marginBottom: "1.5rem",
-            background: message.type === "success" ? "#dcfce7" : "#fee2e2",
-            color: message.type === "success" ? "#166534" : "#991b1b",
-            fontSize: "0.9rem",
-          }}
-        >
-          {message.text}
-        </div>
-      )}
+      <h4 style={{ marginBottom: "1.5rem" }}>Personal Information</h4>
 
       <form onSubmit={handleSubmit}>
         <div

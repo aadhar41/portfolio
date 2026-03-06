@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { adminBlogs, getBlogs } from "../../services/api";
 import FileUpload from "../../components/admin/FileUpload";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
@@ -12,6 +16,9 @@ export default function BlogManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [statusFilter, setStatusFilter] = useState(""); // draft, published
+  const [isActiveFilter, setIsActiveFilter] = useState(""); // "1", "0"
   const [modalOpen, setModalOpen] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
   const [formData, setFormData] = useState({
@@ -30,12 +37,18 @@ export default function BlogManagement() {
       fetchBlogs();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage, statusFilter, isActiveFilter]);
 
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await adminBlogs.list({ search, page, per_page: 10 });
+      const res = await adminBlogs.list({
+        search,
+        page,
+        per_page: perPage,
+        status: statusFilter,
+        is_active: isActiveFilter,
+      });
       // If server returned pagination object
       if (res.data.data) {
         setBlogs(res.data.data);
@@ -80,8 +93,9 @@ export default function BlogManagement() {
     try {
       await adminBlogs.delete(id);
       fetchBlogs();
+      toast.success("Blog post deleted successfully!");
     } catch (err) {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -106,55 +120,77 @@ export default function BlogManagement() {
       }
       setModalOpen(false);
       fetchBlogs();
+      toast.success(
+        currentBlog
+          ? "Blog post updated successfully!"
+          : "Blog post created successfully!",
+      );
     } catch (err) {
-      alert("Save failed: " + (err.response?.data?.message || "Unknown error"));
+      toast.error(
+        "Save failed: " + (err.response?.data?.message || "Unknown error"),
+      );
     }
   };
 
-  if (loading && blogs.length === 0) return <div>Loading blogs...</div>;
+  if (loading && blogs.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search posts..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-gradient"
-          onClick={() => {
-            setCurrentBlog(null);
-            setFormData({
-              is_active: true,
-              title: "",
-              slug: "",
-              excerpt: "",
-              content: "",
-              status: "draft",
-              tags: "",
-              cover_image: "",
-            });
-            setModalOpen(true);
-          }}
-        >
-          <i className="fas fa-plus"></i> New Post
-        </button>
-      </div>
+        onAddNew={() => {
+          setCurrentBlog(null);
+          setFormData({
+            is_active: true,
+            title: "",
+            slug: "",
+            excerpt: "",
+            content: "",
+            status: "draft",
+            tags: "",
+            cover_image: "",
+          });
+          setModalOpen(true);
+        }}
+        addNewText="New Post"
+        filters={[
+          {
+            name: "status",
+            label: "All Status",
+            value: statusFilter,
+            options: [
+              { label: "Draft", value: "draft" },
+              { label: "Published", value: "published" },
+            ],
+          },
+          {
+            name: "is_active",
+            label: "Visibility",
+            value: isActiveFilter,
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        onFilterChange={(name, val) => {
+          if (name === "status") setStatusFilter(val);
+          if (name === "is_active") setIsActiveFilter(val);
+          setPage(1);
+        }}
+      />
 
-      <div className="card" style={{ overflow: "hidden" }}>
+      <div
+        className="card"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <LoadingOverlay active={loading && blogs.length > 0} />
         <table
           style={{
             width: "100%",
@@ -438,6 +474,6 @@ export default function BlogManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

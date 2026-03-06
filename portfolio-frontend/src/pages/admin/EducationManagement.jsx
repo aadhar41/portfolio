@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { adminEducation } from "../../services/api";
+import AdminFilterBar from "../../components/admin/AdminFilterBar";
+import LoadingOverlay from "../../components/admin/LoadingOverlay";
+import PageLoader from "../../components/admin/PageLoader";
+import { toast } from "react-toastify";
 
 export default function EducationManagement() {
   const [education, setEducation] = useState([]);
@@ -11,6 +15,8 @@ export default function EducationManagement() {
   });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
   const [modalOpen, setModalOpen] = useState(false);
   const [currentEdu, setCurrentEdu] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,12 +34,17 @@ export default function EducationManagement() {
       fetchEducation();
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search, page, perPage, statusFilter]);
 
   const fetchEducation = async () => {
     setLoading(true);
     try {
-      const res = await adminEducation.list({ search, page, per_page: 10 });
+      const res = await adminEducation.list({
+        search,
+        page,
+        per_page: perPage,
+        is_active: statusFilter,
+      });
       // If server returned pagination object
       if (res.data.data) {
         setEducation(res.data.data);
@@ -76,8 +87,9 @@ export default function EducationManagement() {
     try {
       await adminEducation.delete(id);
       fetchEducation();
+      toast.success("Education record deleted successfully!");
     } catch (err) {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
@@ -91,55 +103,64 @@ export default function EducationManagement() {
       }
       setModalOpen(false);
       fetchEducation();
+      toast.success(
+        currentEdu
+          ? "Education record updated successfully!"
+          : "Education record created successfully!",
+      );
     } catch (err) {
-      alert("Save failed");
+      toast.error("Save failed");
     }
   };
 
-  if (loading && education.length === 0)
-    return <div>Loading education history...</div>;
+  if (loading && education.length === 0) return <PageLoader />;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          gap: "1rem",
+    <>
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        perPage={perPage}
+        onPerPageChange={(val) => {
+          setPerPage(val);
+          setPage(1);
         }}
-      >
-        <div style={{ flex: 1, maxWidth: 300 }}>
-          <input
-            className="form-control"
-            placeholder="Search education..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{ borderRadius: 50, padding: "8px 20px" }}
-          />
-        </div>
-        <button
-          className="btn btn-gradient"
-          onClick={() => {
-            setCurrentEdu(null);
-            setFormData({
-              is_active: true,
-              institution: "",
-              degree: "",
-              field_of_study: "",
-              start_year: "",
-              end_year: "",
-              grade: "",
-            });
-            setModalOpen(true);
-          }}
-        >
-          <i className="fas fa-plus"></i> Add Education
-        </button>
-      </div>
+        onAddNew={() => {
+          setCurrentEdu(null);
+          setFormData({
+            is_active: true,
+            institution: "",
+            degree: "",
+            field_of_study: "",
+            start_year: "",
+            end_year: "",
+            grade: "",
+          });
+          setModalOpen(true);
+        }}
+        addNewText="Add Education"
+        filters={[
+          {
+            name: "is_active",
+            label: "All Status",
+            value: statusFilter,
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        onFilterChange={(name, val) => {
+          setStatusFilter(val);
+          setPage(1);
+        }}
+      />
 
-      <div className="card" style={{ overflow: "hidden" }}>
+      <div
+        className="card"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <LoadingOverlay active={loading && education.length > 0} />
         <table
           style={{
             width: "100%",
@@ -394,6 +415,6 @@ export default function EducationManagement() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
