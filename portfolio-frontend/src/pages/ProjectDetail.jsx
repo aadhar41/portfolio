@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getProject } from "../services/api";
+import FrontendLoader from "../components/FrontendLoader";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -16,9 +17,7 @@ export default function ProjectDetail() {
   if (loading) {
     return (
       <div style={{ paddingTop: 100 }}>
-        <div className="container section text-center text-muted">
-          Loading...
-        </div>
+        <FrontendLoader />
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProjects } from "../services/api";
+import FrontendLoader from "../components/FrontendLoader";
 
 const CATEGORIES = ["all", "web", "mobile", "api"];
 
@@ -71,7 +72,7 @@ export default function Projects() {
 
           {/* Grid */}
           {loading ? (
-            <p className="text-center text-muted">Loading...</p>
+            <FrontendLoader />
           ) : projects.length === 0 ? (
             <p className="text-center text-muted">No projects found.</p>
           ) : (

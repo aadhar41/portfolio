@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBlogs } from "../services/api";
+import FrontendLoader from "../components/FrontendLoader";
 
 // Category → gradient color mapping
 const CAT_COLORS = {
@@ -183,7 +184,7 @@ export default function Blog() {
           </h2>
 
           {loading ? (
-            <p className="text-center text-muted">Loading...</p>
+            <FrontendLoader />
           ) : paginated.length === 0 ? (
             <p className="text-center text-muted">No posts found.</p>
           ) : (
