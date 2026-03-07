@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getBlog } from "../services/api";
+import FrontendLoader from "../components/FrontendLoader";
 
 const CAT_COLORS = {
   laravel: "linear-gradient(135deg, #667eea, #764ba2)",
@@ -32,9 +33,7 @@ export default function BlogDetail() {
   if (loading) {
     return (
       <div style={{ paddingTop: 100 }}>
-        <div className="container section text-center text-muted">
-          Loading...
-        </div>
+        <FrontendLoader />
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProfile } from "../services/api";
+import FrontendLoader from "../components/FrontendLoader";
 
 const SKILL_ICONS = {
   // Backend Development
@@ -161,6 +162,14 @@ export default function About() {
 
   const timeline = apiTimeline.length > 0 ? apiTimeline : staticTimeline;
   const displaySkills = allSkills.length > 0 ? allSkills : staticSkills;
+
+  if (loading) {
+    return (
+      <div style={{ paddingTop: 100 }}>
+        <FrontendLoader />
+      </div>
+    );
+  }
 
   return (
     <>

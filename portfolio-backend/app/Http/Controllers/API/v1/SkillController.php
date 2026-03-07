@@ -67,7 +67,7 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'required|string|max:255',
-            'category'   => 'required|string|in:frontend,backend,database,devops,tools,other',
+            'category'   => 'required|string|in:frontend,backend,database,devops,tools,other,Frontend Technologies,Backend Technologies',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);
@@ -87,7 +87,7 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'sometimes|string|max:255',
-            'category'   => 'sometimes|string|in:frontend,backend,database,tools,other',
+            'category'   => 'sometimes|string|in:frontend,backend,database,devops,tools,other,Frontend Technologies,Backend Technologies',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);
