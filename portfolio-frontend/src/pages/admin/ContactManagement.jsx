@@ -3,25 +3,7 @@ import { getContacts } from "../../services/api";
 import AdminFilterBar from "../../components/admin/AdminFilterBar";
 import LoadingOverlay from "../../components/admin/LoadingOverlay";
 import PageLoader from "../../components/admin/PageLoader";
-
-function Pagination({ pagination, page, onPrev, onNext }) {
-  if (pagination.last_page <= 1) return null;
-  return (
-    <div className="flex items-center justify-between mt-5">
-      <p className="text-xs text-slate-500">
-        Page <strong>{pagination.current_page}</strong> of <strong>{pagination.last_page}</strong> &mdash; {pagination.total} total
-      </p>
-      <div className="flex gap-2">
-        <button disabled={page === 1} onClick={onPrev} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">
-          ‹ Previous
-        </button>
-        <button disabled={page === pagination.last_page} onClick={onNext} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">
-          Next ›
-        </button>
-      </div>
-    </div>
-  );
-}
+import Pagination from "../../components/admin/Pagination";
 
 export default function ContactManagement() {
   const [messages, setMessages] = useState([]);
@@ -115,7 +97,7 @@ export default function ContactManagement() {
         )}
       </div>
 
-      <Pagination pagination={pagination} page={page} onPrev={() => setPage(page - 1)} onNext={() => setPage(page + 1)} />
+      <Pagination pagination={pagination} page={page} onPageChange={setPage} />
     </>
   );
 }
