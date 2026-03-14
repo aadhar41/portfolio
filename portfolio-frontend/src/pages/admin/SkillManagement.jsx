@@ -6,7 +6,7 @@ import PageLoader from "../../components/admin/PageLoader";
 import Pagination from "../../components/admin/Pagination";
 import { toast } from "react-toastify";
 
-const EMPTY_FORM = { is_active: true, name: "", category: "backend", icon_class: "", proficiency: 80, sort_order: 0 };
+const EMPTY_FORM = { is_active: true, name: "", category: "backend", icon: "", proficiency: 80, sort_order: 0 };
 
 function Modal({ open, onClose, children }) {
   if (!open) return null;
@@ -51,7 +51,7 @@ export default function SkillManagement() {
   };
 
   const openCreate = () => { setCurrentSkill(null); setFormData(EMPTY_FORM); setModalOpen(true); };
-  const openEdit = (s) => { setCurrentSkill(s); setFormData({ is_active: s.is_active, name: s.name, category: s.category, icon_class: s.icon_class || "", proficiency: s.proficiency, sort_order: s.sort_order }); setModalOpen(true); };
+  const openEdit = (s) => { setCurrentSkill(s); setFormData({ is_active: s.is_active, name: s.name, category: s.category, icon: s.icon || "", proficiency: s.proficiency, sort_order: s.sort_order }); setModalOpen(true); };
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this skill?")) return;
     try { await adminSkills.delete(id); fetchSkills(); toast.success("Skill deleted!"); }
@@ -87,7 +87,7 @@ export default function SkillManagement() {
           <tbody className="divide-y divide-slate-50">
             {skills.map((s) => (
               <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="px-4 py-3 font-semibold text-slate-800 flex items-center gap-2"><i className={`${s.icon_class} text-indigo-400 w-4`} />{s.name}</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 flex items-center gap-2"><i className={`${s.icon} text-indigo-400 w-4`} />{s.name}</td>
                 <td className="px-4 py-3 capitalize text-slate-600 text-xs">{s.category}</td>
                 <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.is_active ? "Active" : "Inactive"}</span></td>
                 <td className="px-4 py-3">
@@ -118,18 +118,18 @@ export default function SkillManagement() {
           <div className="grid grid-cols-2 gap-4">
             <Field label="Category">
               <select className={inputCls} value={formData.category} onChange={(e) => fd({ category: e.target.value })}>
-                {["frontend", "backend", "database", "devops", "tools", "other"].map((c) => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                {["API Development", "Backend Development", "Best Practices", "Database Management", "Frontend Technologies", "Leadership", "Software Development", "Tools & Platforms", "other"].map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
             <Field label="Proficiency (%)">
               <input type="number" className={inputCls} value={formData.proficiency} onChange={(e) => fd({ proficiency: parseInt(e.target.value) })} min="0" max="100" />
             </Field>
           </div>
-          <Field label="Icon Class (FontAwesome)"><input className={inputCls} value={formData.icon_class} onChange={(e) => fd({ icon_class: e.target.value })} placeholder="fab fa-react" /></Field>
+          <Field label="Icon Class (FontAwesome)"><input className={inputCls} value={formData.icon} onChange={(e) => fd({ icon: e.target.value })} placeholder="fab fa-react" /></Field>
           {/* Live preview */}
-          {formData.icon_class && (
+          {formData.icon && (
             <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-4 py-2.5 border border-slate-200 text-sm text-slate-600">
-              <i className={formData.icon_class} /> <span>Icon preview</span>
+              <i className={formData.icon} /> <span>Icon preview</span>
             </div>
           )}
           <label className="flex items-center gap-2.5 cursor-pointer py-1"><input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span></label>
