@@ -5,6 +5,10 @@ import FrontendLoader from "../components/FrontendLoader";
 
 const CATEGORIES = ["all", "web", "mobile", "api"];
 
+const Badge = ({ children }) => (
+  <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">{children}</span>
+);
+
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +16,7 @@ export default function Projects() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const PER_PAGE = 6;
+  const PER_PAGE = 9;
 
   useEffect(() => {
     setLoading(true);
@@ -20,156 +24,116 @@ export default function Projects() {
       .then((res) => {
         const data = res.data.data || res.data;
         setProjects(Array.isArray(data) ? data : []);
-        if (res.data.last_page) {
-          setTotalPages(res.data.last_page);
-        }
+        if (res.data.last_page) setTotalPages(res.data.last_page);
       })
       .finally(() => setLoading(false));
   }, [category, search, page]);
 
   return (
     <>
-      {/* ── Page Hero ── */}
-      <section className="page-hero">
-        <div className="container">
-          <h1>Projects</h1>
-          <p>
-            A showcase of my work — websites, APIs, and full-stack applications
+      {/* ── Hero ── */}
+      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 text-white pt-28 pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[length:28px_28px]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <span className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white/80 text-sm px-4 py-1.5 rounded-full mb-5">
+            <i className="fas fa-code" /> Portfolio
+          </span>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Projects</h1>
+          <p className="text-white/70 text-lg max-w-xl mx-auto">
+            A showcase of websites, APIs, and full-stack applications built over 10+ years.
           </p>
         </div>
       </section>
 
-      <section className="section bg-light">
-        <div className="container">
-          {/* Filters */}
-          <div
-            className="flex flex-wrap gap-2 align-center mb-4"
-            style={{ marginBottom: "2rem" }}
-          >
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                className={`btn btn-sm ${category === c ? "btn-gradient" : "btn-outline-primary"}`}
-                style={{ textTransform: "capitalize" }}
-              >
-                {c}
-              </button>
-            ))}
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search projects..."
-              className="form-control"
-              style={{
-                maxWidth: 220,
-                marginLeft: "auto",
-                borderRadius: 50,
-                padding: "8px 18px",
-              }}
-            />
+      {/* ── Content ── */}
+      <section className="py-16 bg-slate-50 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Filters bar */}
+          <div className="flex flex-wrap items-center gap-3 mb-10">
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => { setCategory(c); setPage(1); }}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold capitalize transition-all duration-200 ${
+                    category === c
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-[0_4px_12px_rgba(99,102,241,0.35)]"
+                      : "bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            <div className="ml-auto flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+              <i className="fas fa-search text-slate-400 text-sm" />
+              <input
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search projects..."
+                className="outline-none text-sm text-slate-700 bg-transparent w-44"
+              />
+            </div>
           </div>
 
           {/* Grid */}
           {loading ? (
             <FrontendLoader />
           ) : projects.length === 0 ? (
-            <p className="text-center text-muted">No projects found.</p>
+            <div className="text-center py-24 text-slate-400">
+              <i className="fas fa-search text-4xl mb-4 block text-slate-200" />
+              <p className="text-lg font-medium">No projects found.</p>
+              <p className="text-sm mt-1">Try adjusting your filters or search query.</p>
+            </div>
           ) : (
-            <div className="row row-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((p) => (
-                <div key={p.id} className="card">
-                  <div className="card-header">
-                    <h5>{p.title}</h5>
-                    <small className="text-capitalize">{p.category}</small>
-                  </div>
-                  <div
-                    className="card-body"
-                    style={{ display: "flex", flexDirection: "column" }}
-                  >
-                    {p.image && (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: 160,
-                          backgroundColor: "#f0f2f5",
-                          borderRadius: 8,
-                          marginBottom: "1rem",
-                          overflow: "hidden",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                <div key={p.id} className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(99,102,241,0.12)] hover:border-indigo-100 transition-all duration-300 group">
+                  {/* Image / header */}
+                  {p.image ? (
+                    <div className="h-44 overflow-hidden bg-slate-100">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const rn = p.github_url?.split("/").pop();
+                          const og = `https://opengraph.githubassets.com/1/aadhar41/${rn}`;
+                          if (e.target.src !== og) e.target.src = og;
+                          else { e.target.style.display = "none"; e.target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fas fa-code fa-3x"></i></div>`; }
                         }}
-                      >
-                        <img
-                          src={p.image}
-                          alt={p.title}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                          onError={(e) => {
-                            // If conventional image fails, try GitHub OpenGraph image
-                            const repoName = p.github_url?.split("/").pop();
-                            const ogUrl = `https://opengraph.githubassets.com/1/aadhar41/${repoName}`;
-                            if (e.target.src !== ogUrl) {
-                              e.target.src = ogUrl;
-                            } else {
-                              // If even that fails, hide the image or show a placeholder icon
-                              e.target.style.display = "none";
-                              e.target.parentElement.innerHTML = `<div style="text-align:center;color:#bdc3c7;"><i class="fas fa-code fa-3x"></i></div>`;
-                            }
-                          }}
-                        />
-                      </div>
-                    )}
-                    {p.featured && (
-                      <span
-                        className="badge badge-gradient"
-                        style={{
-                          marginBottom: "0.5rem",
-                          alignSelf: "flex-start",
-                        }}
-                      >
-                        ★ Featured
-                      </span>
-                    )}
-                    <p
-                      style={{
-                        color: "var(--text-light)",
-                        fontSize: "0.9rem",
-                        marginBottom: "1rem",
-                        flexGrow: 1,
-                      }}
-                    >
-                      {p.description}
-                    </p>
-                    <div
-                      className="flex flex-wrap gap-1"
-                      style={{ marginBottom: "1rem" }}
-                    >
-                      {p.technologies?.slice(0, 4).map((t) => (
-                        <span key={t} className="badge badge-primary">
-                          {t}
-                        </span>
-                      ))}
+                      />
                     </div>
-                    <div className="flex gap-1">
-                      <Link
-                        to={`/projects/${p.id}`}
-                        className="btn btn-outline-primary btn-sm"
-                      >
+                  ) : (
+                    <div className="h-12 bg-gradient-to-br from-indigo-600 to-purple-600" />
+                  )}
+
+                  {/* Body */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div>
+                        <h5 className="font-bold text-slate-800 leading-snug group-hover:text-indigo-600 transition-colors">{p.title}</h5>
+                        <span className="text-slate-400 text-xs capitalize">{p.category}</span>
+                      </div>
+                      {p.featured && (
+                        <span className="shrink-0 inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                          <i className="fas fa-star text-[10px]" /> Featured
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-slate-500 text-sm leading-relaxed flex-1 mb-4">{p.description}</p>
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {p.technologies?.slice(0, 4).map((t) => <Badge key={t}>{t}</Badge>)}
+                    </div>
+                    <div className="flex gap-2">
+                      <Link to={`/projects/${p.id}`}
+                        className="flex-1 text-center text-sm font-semibold border border-indigo-600 text-indigo-600 px-3 py-2 rounded-xl hover:bg-indigo-600 hover:text-white transition-all duration-200">
                         Details
                       </Link>
                       {p.live_url && (
-                        <a
-                          href={p.live_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn btn-gradient btn-sm"
-                        >
-                          Live <i className="fas fa-external-link-alt" />
+                        <a href={p.live_url} target="_blank" rel="noreferrer"
+                          className="flex-1 text-center text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(99,102,241,0.35)] transition-all duration-200">
+                          Live <i className="fas fa-external-link-alt text-xs" />
                         </a>
                       )}
                     </div>
@@ -181,26 +145,25 @@ export default function Projects() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div
-              className="flex justify-center gap-1"
-              style={{ marginTop: "2.5rem" }}
-            >
+            <div className="flex justify-center gap-2 mt-12">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
+                className="w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-600 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                <i className="fas fa-chevron-left text-sm" />
+              </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className="btn btn-sm"
-                  style={{
-                    background:
-                      page === p ? "var(--gradient)" : "var(--bg-light)",
-                    color: page === p ? "white" : "var(--primary-color)",
-                    border: "none",
-                    minWidth: 38,
-                  }}
-                >
+                <button key={p} onClick={() => setPage(p)}
+                  className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all ${
+                    page === p
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-[0_4px_12px_rgba(99,102,241,0.35)]"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-400 hover:text-indigo-600"
+                  }`}>
                   {p}
                 </button>
               ))}
+              <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                className="w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-600 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                <i className="fas fa-chevron-right text-sm" />
+              </button>
             </div>
           )}
         </div>

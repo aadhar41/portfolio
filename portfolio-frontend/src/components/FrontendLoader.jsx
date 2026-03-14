@@ -1,53 +1,56 @@
-export default function FrontendLoader() {
+export default function FrontendLoader({ fullPage = false }) {
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "3rem",
-        width: "100%",
-      }}
+      className={`flex flex-col items-center justify-center gap-5 ${
+        fullPage ? "min-h-screen" : "py-16 w-full"
+      }`}
     >
-      <svg
-        fill="hsl(228, 97%, 42%)"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ width: "60px", height: "60px" }}
-      >
-        <circle cx="4" cy="12" r="3">
-          <animate
-            id="spinner_qFRN"
-            begin="0;spinner_OcgL.end+0.25s"
-            attributeName="cy"
-            calcMode="spline"
-            dur="0.6s"
-            values="12;6;12"
-            keySplines=".33,.66,.66,1;.33,0,.66,.33"
+      {/* Animated indigo/purple spinner ring */}
+      <div className="relative w-14 h-14">
+        {/* Outer rotating gradient ring */}
+        <svg
+          className="animate-spin"
+          viewBox="0 0 56 56"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ width: 56, height: 56 }}
+        >
+          <circle
+            cx="28"
+            cy="28"
+            r="24"
+            stroke="url(#spin-grad)"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray="100 52"
           />
-        </circle>
-        <circle cx="12" cy="12" r="3">
-          <animate
-            begin="spinner_qFRN.begin+0.1s"
-            attributeName="cy"
-            calcMode="spline"
-            dur="0.6s"
-            values="12;6;12"
-            keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          <defs>
+            <linearGradient id="spin-grad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#6366f1" />
+              <stop offset="1" stopColor="#a855f7" stopOpacity="0.1" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Inner pulsing dot */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-4 h-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 animate-pulse shadow-[0_0_12px_rgba(99,102,241,0.5)]" />
+        </div>
+      </div>
+
+      {/* Dots strip */}
+      <div className="flex items-center gap-1.5">
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            className="w-1.5 h-1.5 rounded-full bg-indigo-400"
+            style={{
+              animation: "bounce 1.2s infinite",
+              animationDelay: `${i * 0.18}s`,
+            }}
           />
-        </circle>
-        <circle cx="20" cy="12" r="3">
-          <animate
-            id="spinner_OcgL"
-            begin="spinner_qFRN.begin+0.2s"
-            attributeName="cy"
-            calcMode="spline"
-            dur="0.6s"
-            values="12;6;12"
-            keySplines=".33,.66,.66,1;.33,0,.66,.33"
-          />
-        </circle>
-      </svg>
+        ))}
+      </div>
     </div>
   );
 }

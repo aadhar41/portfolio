@@ -3,6 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { getProject } from "../services/api";
 import FrontendLoader from "../components/FrontendLoader";
 
+const Badge = ({ children }) => (
+  <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-indigo-50 text-indigo-600">{children}</span>
+);
+
 export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
@@ -14,172 +18,134 @@ export default function ProjectDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) {
-    return (
-      <div style={{ paddingTop: 100 }}>
-        <FrontendLoader />
-      </div>
-    );
-  }
+  if (loading) return <div className="pt-24"><FrontendLoader /></div>;
 
-  if (!project) {
-    return (
-      <div style={{ paddingTop: 100 }}>
-        <div className="container section text-center">
-          <p>
-            Project not found.{" "}
-            <Link to="/projects" style={{ color: "var(--secondary-color)" }}>
-              ← Back to Projects
-            </Link>
-          </p>
-        </div>
+  if (!project) return (
+    <div className="pt-24 min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="text-center">
+        <i className="fas fa-exclamation-circle text-4xl text-slate-300 mb-4 block" />
+        <p className="text-slate-600 font-medium mb-4">Project not found.</p>
+        <Link to="/projects" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors">
+          <i className="fas fa-arrow-left" /> Back to Projects
+        </Link>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <>
       {/* ── Page Hero ── */}
-      <section className="page-hero">
-        <div className="container">
-          <div
-            className="flex gap-2 justify-center"
-            style={{ marginBottom: "0.75rem" }}
-          >
+      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 text-white pt-28 pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[length:28px_28px]" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             {project.featured && (
-              <span className="badge badge-gradient">★ Featured</span>
+              <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <i className="fas fa-star text-[10px]" /> Featured
+              </span>
             )}
-            <span
-              className="badge"
-              style={{
-                background: "rgba(255,255,255,0.2)",
-                color: "white",
-                textTransform: "capitalize",
-              }}
-            >
+            <span className="bg-white/10 border border-white/20 text-white/80 text-xs font-semibold px-3 py-1 rounded-full capitalize">
               {project.category}
             </span>
           </div>
-          <h1>{project.title}</h1>
-          <p>{project.description}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{project.title}</h1>
+          <p className="text-white/70 text-lg max-w-2xl leading-relaxed">{project.description}</p>
         </div>
       </section>
 
-      <section className="section bg-white">
-        <div className="container" style={{ maxWidth: 860 }}>
-          <Link
-            to="/projects"
-            style={{
-              color: "var(--secondary-color)",
-              display: "inline-block",
-              marginBottom: "2rem",
-              fontSize: "0.9rem",
-            }}
-          >
-            <i className="fas fa-arrow-left" style={{ marginRight: 6 }} /> Back
-            to Projects
+      {/* ── Detail ── */}
+      <section className="py-16 bg-slate-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          {/* Back link */}
+          <Link to="/projects"
+            className="inline-flex items-center gap-2 text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors mb-8">
+            <i className="fas fa-arrow-left text-xs" /> Back to Projects
           </Link>
 
+          {/* Project image */}
           {project.image && (
-            <div
-              style={{
-                width: "100%",
-                maxHeight: 400,
-                backgroundColor: "#f0f2f5",
-                borderRadius: 15,
-                marginBottom: "2rem",
-                overflow: "hidden",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              }}
-            >
+            <div className="w-full max-h-[420px] overflow-hidden rounded-2xl mb-8 shadow-[0_12px_40px_rgba(0,0,0,0.12)] bg-slate-100">
               <img
                 src={project.image}
                 alt={project.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  maxHeight: 400,
-                  objectFit: "cover",
-                }}
+                className="w-full h-full object-cover"
                 onError={(e) => {
-                  const repoName = project.github_url?.split("/").pop();
-                  const ogUrl = `https://opengraph.githubassets.com/1/aadhar41/${repoName}`;
-                  if (e.target.src !== ogUrl) {
-                    e.target.src = ogUrl;
-                  } else {
-                    e.target.style.display = "none";
-                    e.target.parentElement.innerHTML = `<div style="text-align:center;color:#bdc3c7;padding:4rem;"><i class="fas fa-code fa-5x"></i></div>`;
-                  }
+                  const rn = project.github_url?.split("/").pop();
+                  const og = `https://opengraph.githubassets.com/1/aadhar41/${rn}`;
+                  if (e.target.src !== og) e.target.src = og;
+                  else e.target.style.display = "none";
                 }}
               />
             </div>
           )}
 
-          {project.long_description && (
-            <p
-              style={{
-                color: "var(--text-light)",
-                lineHeight: 1.9,
-                marginBottom: "2rem",
-                fontSize: "1rem",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {project.long_description}
-            </p>
-          )}
+          {/* Content grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Main description */}
+            <div className="md:col-span-2 space-y-6">
+              {project.long_description && (
+                <div className="bg-white rounded-2xl p-7 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i className="fas fa-align-left text-indigo-500" /> Overview
+                  </h3>
+                  <div className="text-slate-600 text-sm leading-relaxed blog-content"
+                    dangerouslySetInnerHTML={{ __html: project.long_description }} />
+                </div>
+              )}
 
-          {/* Tech stack */}
-          <div className="card" style={{ marginBottom: "2rem" }}>
-            <div className="card-header">
-              <h5>
-                <i className="fas fa-code" style={{ marginRight: 8 }} />
-                Tech Stack
-              </h5>
+              {/* Technologies */}
+              {project.technologies?.length > 0 && (
+                <div className="bg-white rounded-2xl p-7 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i className="fas fa-code text-indigo-500" /> Technologies Used
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((t) => <Badge key={t}>{t}</Badge>)}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="card-body">
-              <div className="flex flex-wrap gap-1">
-                {project.technologies?.map((t) => (
-                  <span
-                    key={t}
-                    className="badge badge-primary"
-                    style={{ fontSize: "0.85rem", padding: "6px 14px" }}
-                  >
-                    {t}
-                  </span>
-                ))}
+
+            {/* Sidebar */}
+            <div className="space-y-5">
+              {/* Metadata card */}
+              <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
+                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Project Info</h4>
+                <div className="space-y-3">
+                  {[
+                    { icon: "fas fa-tag", label: "Category", value: project.category },
+                    { icon: "fas fa-calendar", label: "Year", value: project.year },
+                    { icon: "fas fa-user", label: "Client", value: project.client },
+                  ].filter((r) => r.value).map((row) => (
+                    <div key={row.label} className="flex items-start gap-3">
+                      <div className="shrink-0 w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center mt-0.5">
+                        <i className={`${row.icon} text-indigo-600 text-xs`} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400 font-medium">{row.label}</p>
+                        <p className="text-sm font-semibold text-slate-700 capitalize">{row.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Links */}
+              <div className="space-y-2.5">
+                {project.live_url && (
+                  <a href={project.live_url} target="_blank" rel="noreferrer"
+                    className="flex justify-center items-center gap-2 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-[0_6px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all duration-200 text-sm">
+                    <i className="fas fa-external-link-alt" /> View Live Demo
+                  </a>
+                )}
+                {project.github_url && (
+                  <a href={project.github_url} target="_blank" rel="noreferrer"
+                    className="flex justify-center items-center gap-2 w-full py-3 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 text-sm">
+                    <i className="fab fa-github" /> View on GitHub
+                  </a>
+                )}
               </div>
             </div>
-          </div>
-
-          {/* Links */}
-          <div className="flex gap-2 flex-wrap">
-            {project.live_url && (
-              <a
-                href={project.live_url}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-gradient"
-              >
-                <i className="fas fa-external-link-alt" /> Live Demo
-              </a>
-            )}
-            {project.github_url && (
-              <a
-                href={project.github_url}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline-primary"
-              >
-                <i className="fab fa-github" /> GitHub
-              </a>
-            )}
-            <Link to="/projects" className="btn btn-secondary">
-              ← All Projects
-            </Link>
           </div>
         </div>
       </section>
