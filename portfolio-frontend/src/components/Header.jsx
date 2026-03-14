@@ -1,29 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-/**
- * NAV config:
- *   - `hash`  → scroll to this section ID on the home page
- *   - `path`  → hard route (dedicated page)
- */
 const NAV = [
-  { label: "Home", hash: "hero" },
-  { label: "About", hash: "about" },
-  { label: "Skills", hash: "skills" },
-  { label: "Download CV", hash: "cv-download" },
-  { label: "Experience", hash: "experience" },
-  { label: "Projects", hash: "projects" },
-  { label: "Education", hash: "education" },
-  // { label: "Blog", path: "blog" },
-  { label: "Blog", hash: "blog" },
-  { label: "Contact", hash: "contact" },
+  { label: "Home",        hash: "hero" },
+  { label: "About",       hash: "about" },
+  { label: "Skills",      hash: "skills" },
+  { label: "Resume",      hash: "cv-download" },
+  { label: "Experience",  hash: "experience" },
+  { label: "Projects",    hash: "projects" },
+  { label: "Education",   hash: "education" },
+  { label: "Blog",        hash: "blog" },
+  { label: "Contact",     hash: "contact" },
 ];
 
 function scrollTo(id) {
   const el = document.getElementById(id);
   if (el) {
-    const offset = 70; // navbar height
-    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    const top = el.getBoundingClientRect().top + window.scrollY - 72;
     window.scrollTo({ top, behavior: "smooth" });
   }
 }
@@ -37,22 +30,20 @@ export default function Header() {
   const menuRef = useRef(null);
   const isHome = pathname === "/";
 
-  // Shadow on scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Highlight active section while scrolling on home page
   useEffect(() => {
     if (!isHome) return;
-    const sectionIds = NAV.filter((n) => n.hash).map((n) => n.hash);
+    const ids = NAV.filter((n) => n.hash).map((n) => n.hash);
     const onScroll = () => {
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sectionIds[i]);
+      for (let i = ids.length - 1; i >= 0; i--) {
+        const el = document.getElementById(ids[i]);
         if (el && window.scrollY >= el.offsetTop - 120) {
-          setActiveHash(sectionIds[i]);
+          setActiveHash(ids[i]);
           break;
         }
       }
@@ -61,20 +52,17 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHome]);
 
-  // Close on route change
   useEffect(() => {
     setMenuOpen(false);
     if (!isHome) setActiveHash("");
     else setActiveHash("hero");
   }, [pathname, isHome]);
 
-  // Close on outside click
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      if (menuRef.current && !menuRef.current.contains(e.target))
         setMenuOpen(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -83,21 +71,9 @@ export default function Header() {
   const handleNavClick = (item, e) => {
     e.preventDefault();
     setMenuOpen(false);
-
-    if (!item.hash) {
-      // Dedicated route (e.g. /blog)
-      navigate(item.path);
-      return;
-    }
-
-    if (isHome) {
-      // Already on home — just scroll
-      scrollTo(item.hash);
-    } else {
-      // Navigate to home first, then scroll after render
-      navigate("/");
-      setTimeout(() => scrollTo(item.hash), 100);
-    }
+    if (!item.hash) { navigate(item.path); return; }
+    if (isHome) scrollTo(item.hash);
+    else { navigate("/"); setTimeout(() => scrollTo(item.hash), 100); }
   };
 
   const isActive = (item) => {
@@ -107,87 +83,90 @@ export default function Header() {
 
   return (
     <header
-      className="navbar"
-      style={{ boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.12)" : "none" }}
       ref={menuRef}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/95 backdrop-blur-md shadow-[0_2px_24px_rgba(0,0,0,0.08)]"
+          : "bg-white/80 backdrop-blur-sm"
+      }`}
     >
-      <div className="container">
-        <div className="navbar-inner">
-          {/* Brand — scrolls to top */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Brand */}
           <a
             href="/"
-            className="navbar-brand"
             onClick={(e) => {
               e.preventDefault();
               if (isHome) scrollTo("hero");
               else navigate("/");
             }}
+            className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight hover:opacity-80 transition-opacity"
           >
             Aadhar Gaur
           </a>
 
-          {/* Desktop nav */}
-          <nav className="nav-desktop">
-            <ul className="nav-menu">
-              {NAV.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.hash ? `/#${item.hash}` : item.path}
-                    className={`nav-link${isActive(item) ? " active" : ""}`}
-                    onClick={(e) => handleNavClick(item, e)}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV.map((item) => (
+              <a
+                key={item.label}
+                href={item.hash ? `/#${item.hash}` : item.path}
+                onClick={(e) => handleNavClick(item, e)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  isActive(item)
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-slate-600 hover:text-indigo-600 hover:bg-slate-50"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+            <a
+              href="/#contact"
+              onClick={(e) => { e.preventDefault(); if (isHome) scrollTo("contact"); else { navigate("/"); setTimeout(() => scrollTo("contact"), 100); } }}
+              className="ml-2 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold rounded-full hover:shadow-[0_4px_14px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Hire Me
+            </a>
           </nav>
 
-          {/* Mobile hamburger */}
+          {/* Hamburger */}
           <button
-            className="nav-hamburger"
+            className="lg:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg bg-slate-100 gap-1.5 transition-colors hover:bg-slate-200"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
-            aria-expanded={menuOpen}
           >
-            <span
-              style={{
-                transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "",
-                transition: "transform 0.3s ease",
-              }}
-            />
-            <span
-              style={{
-                opacity: menuOpen ? 0 : 1,
-                transition: "opacity 0.3s ease",
-              }}
-            />
-            <span
-              style={{
-                transform: menuOpen
-                  ? "rotate(-45deg) translate(5px, -5px)"
-                  : "",
-                transition: "transform 0.3s ease",
-              }}
-            />
+            <span className={`w-5 h-0.5 bg-slate-700 rounded transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`w-5 h-0.5 bg-slate-700 rounded transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+            <span className={`w-5 h-0.5 bg-slate-700 rounded transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
           </button>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile Menu */}
         {menuOpen && (
-          <ul className="nav-mobile-menu">
+          <div className="lg:hidden border-t border-slate-100 py-3 pb-4 animate-[fadeInUp_0.2s_ease_both]">
             {NAV.map((item) => (
-              <li key={item.label}>
-                <a
-                  href={item.hash ? `/#${item.hash}` : item.path}
-                  className={`nav-link${isActive(item) ? " active" : ""}`}
-                  onClick={(e) => handleNavClick(item, e)}
-                >
-                  {item.label}
-                </a>
-              </li>
+              <a
+                key={item.label}
+                href={item.hash ? `/#${item.hash}` : item.path}
+                onClick={(e) => handleNavClick(item, e)}
+                className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-0.5 ${
+                  isActive(item)
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
+                }`}
+              >
+                {item.label}
+              </a>
             ))}
-          </ul>
+            <a
+              href="/#contact"
+              onClick={(e) => { e.preventDefault(); if (isHome) scrollTo("contact"); else { navigate("/"); setTimeout(() => scrollTo("contact"), 100); } setMenuOpen(false); }}
+              className="block mt-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold rounded-full text-center"
+            >
+              Hire Me
+            </a>
+          </div>
         )}
       </div>
     </header>

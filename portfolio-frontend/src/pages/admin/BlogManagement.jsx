@@ -1,135 +1,101 @@
 import { useState, useEffect } from "react";
-import { adminBlogs, getBlogs } from "../../services/api";
+import { adminBlogs } from "../../services/api";
 import FileUpload from "../../components/admin/FileUpload";
 import AdminFilterBar from "../../components/admin/AdminFilterBar";
 import LoadingOverlay from "../../components/admin/LoadingOverlay";
 import PageLoader from "../../components/admin/PageLoader";
 import { toast } from "react-toastify";
 
+// ── shared helpers ──────────────────────────────
+const EMPTY_FORM = { is_active: true, title: "", slug: "", excerpt: "", content: "", status: "draft", tags: "", cover_image: "" };
+
+function Modal({ open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+
+function Pagination({ pagination, page, onPrev, onNext }) {
+  if (pagination.last_page <= 1) return null;
+  return (
+    <div className="flex items-center justify-between mt-5">
+      <p className="text-xs text-slate-500">Page <strong>{pagination.current_page}</strong> of <strong>{pagination.last_page}</strong> &mdash; {pagination.total} total</p>
+      <div className="flex gap-2">
+        <button disabled={page === 1} onClick={onPrev} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">‹ Previous</button>
+        <button disabled={page === pagination.last_page} onClick={onNext} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">Next ›</button>
+      </div>
+    </div>
+  );
+}
+// ────────────────────────────────────────────────
+
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    last_page: 1,
-    total: 0,
-  });
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [statusFilter, setStatusFilter] = useState(""); // draft, published
-  const [isActiveFilter, setIsActiveFilter] = useState(""); // "1", "0"
+  const [statusFilter, setStatusFilter] = useState("");
+  const [isActiveFilter, setIsActiveFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
-  const [formData, setFormData] = useState({
-    is_active: true,
-    title: "",
-    slug: "",
-    excerpt: "",
-    content: "",
-    status: "draft",
-    tags: "",
-    cover_image: "",
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+
+  const fd = (patch) => setFormData((p) => ({ ...p, ...patch }));
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchBlogs();
-    }, 300); // Debounce search
-    return () => clearTimeout(timer);
+    const t = setTimeout(fetchBlogs, 300);
+    return () => clearTimeout(t);
   }, [search, page, perPage, statusFilter, isActiveFilter]);
 
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await adminBlogs.list({
-        search,
-        page,
-        per_page: perPage,
-        status: statusFilter,
-        is_active: isActiveFilter,
-      });
-      // If server returned pagination object
+      const res = await adminBlogs.list({ search, page, per_page: perPage, status: statusFilter, is_active: isActiveFilter });
       if (res.data.data) {
         setBlogs(res.data.data);
-        setPagination({
-          current_page: res.data.current_page,
-          last_page: res.data.last_page,
-          total: res.data.total,
-        });
-      } else {
-        setBlogs(res.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch blogs", err);
-    } finally {
-      setLoading(false);
-    }
+        setPagination({ current_page: res.data.current_page, last_page: res.data.last_page, total: res.data.total });
+      } else { setBlogs(res.data); }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(1); // Reset to first page on search
-  };
-
-  const handleEdit = (blog) => {
-    setCurrentBlog(blog);
-    setFormData({
-      is_active: blog.is_active,
-      title: blog.title,
-      slug: blog.slug,
-      excerpt: blog.excerpt,
-      content: blog.content,
-      status: blog.status,
-      tags: (blog.tags || []).join(", "),
-      cover_image: blog.cover_image || "",
-    });
+  const openCreate = () => { setCurrentBlog(null); setFormData(EMPTY_FORM); setModalOpen(true); };
+  const openEdit = (b) => {
+    setCurrentBlog(b);
+    setFormData({ is_active: b.is_active, title: b.title, slug: b.slug, excerpt: b.excerpt, content: b.content, status: b.status, tags: (b.tags || []).join(", "), cover_image: b.cover_image || "" });
     setModalOpen(true);
   };
-
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this blog post?"))
-      return;
-    try {
-      await adminBlogs.delete(id);
-      fetchBlogs();
-      toast.success("Blog post deleted successfully!");
-    } catch (err) {
-      toast.error("Delete failed");
-    }
+    if (!window.confirm("Delete this blog post?")) return;
+    try { await adminBlogs.delete(id); fetchBlogs(); toast.success("Post deleted!"); }
+    catch { toast.error("Delete failed"); }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
-      ...formData,
-      tags:
-        typeof formData.tags === "string"
-          ? formData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
-          : formData.tags,
-    };
-
+    const data = { ...formData, tags: typeof formData.tags === "string" ? formData.tags.split(",").map((t) => t.trim()).filter(Boolean) : formData.tags };
     try {
-      if (currentBlog) {
-        await adminBlogs.update(currentBlog.id, data);
-      } else {
-        await adminBlogs.create(data);
-      }
-      setModalOpen(false);
-      fetchBlogs();
-      toast.success(
-        currentBlog
-          ? "Blog post updated successfully!"
-          : "Blog post created successfully!",
-      );
-    } catch (err) {
-      toast.error(
-        "Save failed: " + (err.response?.data?.message || "Unknown error"),
-      );
-    }
+      if (currentBlog) { await adminBlogs.update(currentBlog.id, data); } else { await adminBlogs.create(data); }
+      setModalOpen(false); fetchBlogs();
+      toast.success(currentBlog ? "Post updated!" : "Post created!");
+    } catch (err) { toast.error("Save failed: " + (err.response?.data?.message || "Unknown error")); }
   };
 
   if (loading && blogs.length === 0) return <PageLoader />;
@@ -137,127 +103,38 @@ export default function BlogManagement() {
   return (
     <>
       <AdminFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        perPage={perPage}
-        onPerPageChange={(val) => {
-          setPerPage(val);
-          setPage(1);
-        }}
-        onAddNew={() => {
-          setCurrentBlog(null);
-          setFormData({
-            is_active: true,
-            title: "",
-            slug: "",
-            excerpt: "",
-            content: "",
-            status: "draft",
-            tags: "",
-            cover_image: "",
-          });
-          setModalOpen(true);
-        }}
-        addNewText="New Post"
+        search={search} onSearchChange={setSearch}
+        perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
+        onAddNew={openCreate} addNewText="New Post"
         filters={[
-          {
-            name: "status",
-            label: "All Status",
-            value: statusFilter,
-            options: [
-              { label: "Draft", value: "draft" },
-              { label: "Published", value: "published" },
-            ],
-          },
-          {
-            name: "is_active",
-            label: "Visibility",
-            value: isActiveFilter,
-            options: [
-              { label: "Active", value: "1" },
-              { label: "Inactive", value: "0" },
-            ],
-          },
+          { name: "status", label: "All Status", value: statusFilter, options: [{ label: "Draft", value: "draft" }, { label: "Published", value: "published" }] },
+          { name: "is_active", label: "Visibility", value: isActiveFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] },
         ]}
-        onFilterChange={(name, val) => {
-          if (name === "status") setStatusFilter(val);
-          if (name === "is_active") setIsActiveFilter(val);
-          setPage(1);
-        }}
+        onFilterChange={(name, val) => { if (name === "status") setStatusFilter(val); if (name === "is_active") setIsActiveFilter(val); setPage(1); }}
       />
 
-      <div
-        className="card"
-        style={{ overflow: "hidden", position: "relative" }}
-      >
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
         <LoadingOverlay active={loading && blogs.length > 0} />
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "0.9rem",
-          }}
-        >
-          <thead
-            style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}
-          >
+        <table className="w-full text-sm text-left">
+          <thead className="bg-slate-50 border-b border-slate-100">
             <tr>
-              <th style={{ padding: "1rem" }}>Title</th>
-              <th style={{ padding: "1rem" }}>Status</th>
-              <th style={{ padding: "1rem" }}>Date</th>
-              <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
+              {["Title", "Status", "Date", "Actions"].map((h, i) => (
+                <th key={h} className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide ${i === 3 ? "text-right" : ""}`}>{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-50">
             {blogs.map((b) => (
-              <tr key={b.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                <td style={{ padding: "1rem", fontWeight: 600 }}>{b.title}</td>
-                <td style={{ padding: "1rem" }}>
-                  <span
-                    className={`badge ${b.status === "published" ? "badge-gradient" : "badge-primary"}`}
-                    style={{ fontSize: "0.7rem" }}
-                  >
-                    {b.status}
-                  </span>
-                  <span
-                    className={`badge ${b.is_active ? "badge-success" : "badge-secondary"} ml-1`}
-                    style={{ fontSize: "0.7rem" }}
-                  >
-                    {b.is_active ? "Active" : "Inactive"}
-                  </span>
+              <tr key={b.id} className="hover:bg-slate-50/60 transition-colors">
+                <td className="px-4 py-3 font-semibold text-slate-800">{b.title}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide mr-1 ${b.status === "published" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>{b.status}</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${b.is_active ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-500"}`}>{b.is_active ? "Active" : "Hidden"}</span>
                 </td>
-                <td style={{ padding: "1rem", color: "var(--text-light)" }}>
-                  {b.published_at
-                    ? new Date(b.published_at).toLocaleDateString()
-                    : "Draft"}
-                </td>
-                <td style={{ padding: "1rem", textAlign: "right" }}>
-                  <button
-                    onClick={() => handleEdit(b)}
-                    title="Edit"
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#6366f1",
-                      cursor: "pointer",
-                      marginRight: 10,
-                    }}
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(b.id)}
-                    title="Delete"
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#ef4444",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                <td className="px-4 py-3 text-slate-500 text-xs">{b.published_at ? new Date(b.published_at).toLocaleDateString() : "—"}</td>
+                <td className="px-4 py-3 text-right">
+                  <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 transition-colors mr-1" title="Edit"><i className="fas fa-edit text-sm" /></button>
+                  <button onClick={() => handleDelete(b.id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors" title="Delete"><i className="fas fa-trash text-sm" /></button>
                 </td>
               </tr>
             ))}
@@ -265,215 +142,38 @@ export default function BlogManagement() {
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      {pagination.last_page > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "1.5rem",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
-            Showing page {pagination.current_page} of {pagination.last_page} (
-            {pagination.total} total)
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === pagination.last_page}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
+      <Pagination pagination={pagination} page={page} onPrev={() => setPage(page - 1)} onNext={() => setPage(page + 1)} />
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-800">{currentBlog ? "Edit Post" : "New Post"}</h3>
+          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"><i className="fas fa-times" /></button>
         </div>
-      )}
-
-      {/* Modal */}
-      {modalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            className="card"
-            style={{
-              maxWidth: 800,
-              width: "95%",
-              padding: "2rem",
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
-          >
-            <h4 style={{ marginBottom: "1.5rem" }}>
-              {currentBlog ? "Edit Post" : "New Post"}
-            </h4>
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                  Title
-                </label>
-                <input
-                  className="form-control"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div
-                className="row row-2"
-                style={{ gap: "1rem", marginBottom: "1rem" }}
-              >
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                    Slug (optional)
-                  </label>
-                  <input
-                    className="form-control"
-                    value={formData.slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, slug: e.target.value })
-                    }
-                    placeholder="post-title"
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                    Status
-                  </label>
-                  <select
-                    className="form-control"
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
-                    }
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                  </select>
-                </div>
-              </div>
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                  Excerpt
-                </label>
-                <textarea
-                  className="form-control"
-                  rows="2"
-                  value={formData.excerpt}
-                  onChange={(e) =>
-                    setFormData({ ...formData, excerpt: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                  Content (Markdown supported)
-                </label>
-                <textarea
-                  className="form-control"
-                  rows="8"
-                  value={formData.content}
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div
-                className="row row-2"
-                style={{ gap: "1rem", marginBottom: "1.5rem" }}
-              >
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.4rem" }}>
-                    Tags (comma separated)
-                  </label>
-                  <input
-                    className="form-control"
-                    value={formData.tags}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tags: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <FileUpload
-                label="Cover Image"
-                currentImage={formData.cover_image}
-                onUploadSuccess={(url) =>
-                  setFormData({ ...formData, cover_image: url })
-                }
-                folder="blogs"
-              />
-
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_active: e.target.checked })
-                    }
-                    style={{ width: "auto" }}
-                  />
-                  <span style={{ fontSize: "0.9rem" }}>
-                    Visible on Portfolio
-                  </span>
-                </label>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "1rem",
-                }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-gradient">
-                  Save Post
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleSubmit} className="p-6 space-y-1">
+          <Field label="Title"><input className={inputCls} value={formData.title} onChange={(e) => fd({ title: e.target.value })} required /></Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Slug (optional)"><input className={inputCls} value={formData.slug} onChange={(e) => fd({ slug: e.target.value })} placeholder="post-slug" /></Field>
+            <Field label="Status">
+              <select className={inputCls} value={formData.status} onChange={(e) => fd({ status: e.target.value })}>
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </Field>
           </div>
-        </div>
-      )}
+          <Field label="Excerpt"><textarea className={inputCls} rows={2} value={formData.excerpt} onChange={(e) => fd({ excerpt: e.target.value })} required /></Field>
+          <Field label="Content (Markdown supported)"><textarea className={`${inputCls} font-mono text-xs`} rows={8} value={formData.content} onChange={(e) => fd({ content: e.target.value })} required /></Field>
+          <Field label="Tags (comma separated)"><input className={inputCls} value={formData.tags} onChange={(e) => fd({ tags: e.target.value })} /></Field>
+          <FileUpload label="Cover Image" currentImage={formData.cover_image} onUploadSuccess={(url) => fd({ cover_image: url })} folder="blogs" />
+          <label className="flex items-center gap-2.5 cursor-pointer py-1">
+            <input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" />
+            <span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span>
+          </label>
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+            <button type="submit" className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">Save Post</button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }
