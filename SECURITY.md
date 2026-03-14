@@ -1,21 +1,28 @@
 # Security Policy
 
-## Supported Versions
+## 🛡️ Reporting a Vulnerability
 
-The following versions of the project are currently being supported with security updates.
+If you discover a security vulnerability within this project, please **do not disclose it publicly**. Instead, send a detailed e-mail to **aadhar41@gmail.com**.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.6.x   | :white_check_mark: |
-| < 1.6   | :x:                |
+We take all security reports seriously and will acknowledge your report within 48 hours.
 
-## Reporting a Vulnerability
+## ✅ Supported Versions
 
-If you discover a security vulnerability within this project, please send an e-mail to aadhar41@gmail.com. All security vulnerabilities will be promptly addressed.
+The following versions are currently receiving security updates:
 
-Please provide a detailed report including:
-- Type of issue (e.g., SQL injection, XSS).
-- Link to the affected code.
-- Steps to reproduce.
+| Version | Status |
+| --- | --- |
+| 2.x | :white_check_mark: (Current) |
+| 1.x | :warning: (Critical fixes only) |
+| < 1.0 | :x: (Unsupported) |
 
-We ask that you do not disclose the vulnerability publicly until it has been resolved.
+## 📦 What to Include in Your Report
+
+To help us resolve the issue quickly, please include:
+
+- **Type of issue** (e.g., XSS, SQL Injection, CSRF).
+- **Component affected** (e.g., Admin Login, Contact Form API).
+- **Steps to reproduce** (detailed proof-of-concept).
+- **Potential impact** (what could an attacker do?).
+
+Thank you for helping keep this project secure!

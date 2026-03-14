@@ -1,0 +1,13 @@
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, @aadhar41 will be requested for
+# review when someone opens a pull request.
+* @aadhar41
+
+# Backend changes
+/portfolio-backend/ @aadhar41
+
+# Frontend changes
+/portfolio-frontend/ @aadhar41
+
+# GitHub configuration
+/.github/ @aadhar41

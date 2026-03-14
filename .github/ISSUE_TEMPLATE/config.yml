@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussion / Question
+    url: https://github.com/aadhar41/portfolio/discussions
+    about: Ask general questions or start discussions here.
+  - name: 📧 Security Vulnerability
+    url: mailto:aadhar41@gmail.com
+    about: Please report security vulnerabilities via email, NOT via public issues.
