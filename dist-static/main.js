@@ -1,32 +1,74 @@
 /**
- * Interactive Functionality for Aadhar Gaur Portfolio
+ * Interactive Functionality for Aadhar Gaur Portfolio - Cinematic V2
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile Menu Toggle
+    const navbar = document.querySelector('#navbar');
+    const mobileMenuBtn = document.querySelector('#mobile-menu-btn');
     const mobileMenu = document.querySelector('#mobile-menu');
-    const navLinks = document.querySelector('.nav-links');
+    const bars = [
+        document.querySelector('#bar1'),
+        document.querySelector('#bar2'),
+        document.querySelector('#bar3')
+    ];
 
-    if (mobileMenu) {
-        mobileMenu.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            mobileMenu.classList.toggle('is-active');
+    // Mobile Menu Toggle
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            const isActive = mobileMenu.classList.toggle('menu-active');
             
-            // Hamburger to X animation logic (optional, if we add spans)
-            const bars = mobileMenu.querySelectorAll('.bar');
-            if (mobileMenu.classList.contains('is-active')) {
-                bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+            if (isActive) {
+                bars[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
                 bars[1].style.opacity = '0';
-                bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                bars[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
+                document.body.style.overflow = 'hidden';
             } else {
                 bars[0].style.transform = 'none';
                 bars[1].style.opacity = '1';
                 bars[2].style.transform = 'none';
+                document.body.style.overflow = 'auto';
             }
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('menu-active');
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
+                document.body.style.overflow = 'auto';
+            });
         });
     }
 
-    // Smooth Scrolling for Navigation Links
+    // Scroll Effects
+    const handleScroll = () => {
+        // Navbar transparency
+        if (window.scrollY > 50) {
+            navbar.classList.add('py-2', 'bg-slate-950/90', 'shadow-2xl');
+            navbar.classList.remove('py-4', 'bg-slate-900/80');
+        } else {
+            navbar.classList.add('py-4', 'bg-slate-900/80');
+            navbar.classList.remove('py-2', 'bg-slate-950/90', 'shadow-2xl');
+        }
+
+        // Reveal on scroll
+        const revealElements = document.querySelectorAll('.reveal-content');
+        const triggerBottom = window.innerHeight * 0.9;
+
+        revealElements.forEach(el => {
+            const elementTop = el.getBoundingClientRect().top;
+            if (elementTop < triggerBottom) {
+                el.classList.add('revealed');
+            }
+        });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check on init
+
+    // Smooth Scrolling for all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -35,86 +77,39 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
-                const navHeight = document.querySelector('.navbar').offsetHeight;
+                const navHeight = navbar.offsetHeight;
                 const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
                 
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
                 });
-
-                // Close mobile menu after clicking a link
-                if (navLinks.classList.contains('active')) {
-                    navLinks.classList.remove('active');
-                    mobileMenu.classList.remove('is-active');
-                    const bars = mobileMenu.querySelectorAll('.bar');
-                    bars[0].style.transform = 'none';
-                    bars[1].style.opacity = '1';
-                    bars[2].style.transform = 'none';
-                }
             }
         });
     });
 
-    // Scroll Transformation & Reveal Logic
-    const revealElements = document.querySelectorAll('.timeline-item, .project-card, .stat-card, .info-item, .section-title');
-    
-    const revealOnScroll = () => {
-        const triggerBottom = window.innerHeight * 0.85;
-
-        revealElements.forEach(el => {
-            const elementTop = el.getBoundingClientRect().top;
-
-            if (elementTop < triggerBottom) {
-                el.classList.add('revealed');
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }
-        });
-    };
-
-    // Initial styles for reveal elements
-    revealElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-    });
-
-    window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll(); // Initial check on load
-
-    // Navbar transparency change on scroll
-    const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.style.padding = '0.5rem 0';
-            navbar.style.background = 'rgba(15, 23, 42, 0.9)';
-        } else {
-            navbar.style.padding = '1rem 0';
-            navbar.style.background = 'rgba(30, 41, 59, 0.7)';
-        }
-    });
-
-    // Simple Form Submission Handling (Preventing reload)
-    const contactForm = document.querySelector('.contact-form');
+    // Form Interactivity
+    const contactForm = document.querySelector('form');
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const btn = contactForm.querySelector('button');
-            const originalText = btn.innerText;
+            const originalText = btn.innerHTML;
             
-            btn.innerText = 'Sending...';
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Sending...';
             btn.disabled = true;
 
-            // Simulate API call
+            // Simple Success Simulation
             setTimeout(() => {
-                btn.innerText = 'Message Sent!';
-                btn.style.background = '#10b981'; // Success green
+                btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+                btn.classList.add('bg-green-600', 'text-white');
+                btn.classList.remove('bg-white', 'text-slate-950');
                 contactForm.reset();
                 
                 setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.background = '';
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-slate-950');
                     btn.disabled = false;
                 }, 3000);
             }, 1500);
