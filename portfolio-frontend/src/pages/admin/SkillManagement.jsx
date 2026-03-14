@@ -1,114 +1,69 @@
 import { useState, useEffect } from "react";
-import { adminSkills, getProfile } from "../../services/api";
+import { adminSkills } from "../../services/api";
 import AdminFilterBar from "../../components/admin/AdminFilterBar";
 import LoadingOverlay from "../../components/admin/LoadingOverlay";
 import PageLoader from "../../components/admin/PageLoader";
+import Pagination from "../../components/admin/Pagination";
 import { toast } from "react-toastify";
+
+const EMPTY_FORM = { is_active: true, name: "", category: "backend", icon_class: "", proficiency: 80, sort_order: 0 };
+
+function Modal({ open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">{children}</div>
+    </div>
+  );
+}
+const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+function Field({ label, children }) {
+  return <div className="mb-4"><label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{label}</label>{children}</div>;
+}
 
 export default function SkillManagement() {
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    last_page: 1,
-    total: 0,
-  });
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
+  const [statusFilter, setStatusFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState(null);
-  const [formData, setFormData] = useState({
-    is_active: true,
-    name: "",
-    category: "backend",
-    icon_class: "",
-    proficiency: 80,
-    sort_order: 0,
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+
+  const fd = (patch) => setFormData((p) => ({ ...p, ...patch }));
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchSkills();
-    }, 300); // Debounce search
-    return () => clearTimeout(timer);
+    const t = setTimeout(fetchSkills, 300);
+    return () => clearTimeout(t);
   }, [search, page, perPage, statusFilter]);
 
   const fetchSkills = async () => {
     setLoading(true);
     try {
-      // Use specific admin list params to trigger pagination and search
-      const res = await adminSkills.list({
-        search,
-        page,
-        per_page: perPage,
-        is_active: statusFilter,
-      });
-      if (res.data.data) {
-        setSkills(res.data.data);
-        setPagination({
-          current_page: res.data.current_page,
-          last_page: res.data.last_page,
-          total: res.data.total,
-        });
-      } else {
-        setSkills(res.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch skills", err);
-    } finally {
-      setLoading(false);
-    }
+      const res = await adminSkills.list({ search, page, per_page: perPage, is_active: statusFilter });
+      if (res.data.data) { setSkills(res.data.data); setPagination({ current_page: res.data.current_page, last_page: res.data.last_page, total: res.data.total }); }
+      else { setSkills(res.data); }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(1); // Reset to first page on search
-  };
-
-  const handleEdit = (skill) => {
-    setCurrentSkill(skill);
-    setFormData({
-      is_active: skill.is_active,
-      name: skill.name,
-      category: skill.category,
-      icon_class: skill.icon_class || "",
-      proficiency: skill.proficiency,
-      sort_order: skill.sort_order,
-    });
-    setModalOpen(true);
-  };
-
+  const openCreate = () => { setCurrentSkill(null); setFormData(EMPTY_FORM); setModalOpen(true); };
+  const openEdit = (s) => { setCurrentSkill(s); setFormData({ is_active: s.is_active, name: s.name, category: s.category, icon_class: s.icon_class || "", proficiency: s.proficiency, sort_order: s.sort_order }); setModalOpen(true); };
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
-    try {
-      await adminSkills.delete(id);
-      fetchSkills();
-      toast.success("Skill deleted successfully!");
-    } catch (err) {
-      toast.error("Delete failed");
-    }
+    if (!window.confirm("Delete this skill?")) return;
+    try { await adminSkills.delete(id); fetchSkills(); toast.success("Skill deleted!"); }
+    catch { toast.error("Delete failed"); }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (currentSkill) {
-        await adminSkills.update(currentSkill.id, formData);
-      } else {
-        await adminSkills.create(formData);
-      }
-      setModalOpen(false);
-      fetchSkills();
-      toast.success(
-        currentSkill
-          ? "Skill updated successfully!"
-          : "Skill created successfully!",
-      );
-    } catch (err) {
-      toast.error("Save failed. Please check the form.");
-    }
+      if (currentSkill) { await adminSkills.update(currentSkill.id, formData); } else { await adminSkills.create(formData); }
+      setModalOpen(false); fetchSkills();
+      toast.success(currentSkill ? "Skill updated!" : "Skill created!");
+    } catch { toast.error("Save failed. Please check the form."); }
   };
 
   if (loading && skills.length === 0) return <PageLoader />;
@@ -116,137 +71,34 @@ export default function SkillManagement() {
   return (
     <>
       <AdminFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        perPage={perPage}
-        onPerPageChange={(val) => {
-          setPerPage(val);
-          setPage(1);
-        }}
-        onAddNew={() => {
-          setCurrentSkill(null);
-          setFormData({
-            is_active: true,
-            name: "",
-            category: "backend",
-            icon_class: "",
-            proficiency: 80,
-            sort_order: 0,
-          });
-          setModalOpen(true);
-        }}
-        addNewText="Add Skill"
-        filters={[
-          {
-            name: "is_active",
-            label: "All Status",
-            value: statusFilter,
-            options: [
-              { label: "Active", value: "1" },
-              { label: "Inactive", value: "0" },
-            ],
-          },
-        ]}
-        onFilterChange={(name, val) => {
-          setStatusFilter(val);
-          setPage(1);
-        }}
+        search={search} onSearchChange={setSearch}
+        perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
+        onAddNew={openCreate} addNewText="Add Skill"
+        filters={[{ name: "is_active", label: "All Status", value: statusFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] }]}
+        onFilterChange={(_, val) => { setStatusFilter(val); setPage(1); }}
       />
 
-      <div
-        className="card"
-        style={{ overflow: "hidden", position: "relative" }}
-      >
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
         <LoadingOverlay active={loading && skills.length > 0} />
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "0.9rem",
-          }}
-        >
-          <thead
-            style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}
-          >
-            <tr>
-              <th style={{ padding: "1rem" }}>Skill Name</th>
-              <th style={{ padding: "1rem" }}>Category</th>
-              <th style={{ padding: "1rem" }}>Status</th>
-              <th style={{ padding: "1rem" }}>Proficiency</th>
-              <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
-            </tr>
+        <table className="w-full text-sm text-left">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr>{["Skill", "Category", "Status", "Proficiency", "Actions"].map((h, i) => <th key={h} className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide ${i === 4 ? "text-right" : ""}`}>{h}</th>)}</tr>
           </thead>
-          <tbody>
-            {skills.map((skill) => (
-              <tr key={skill.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                <td style={{ padding: "1rem", fontWeight: 600 }}>
-                  <i
-                    className={`${skill.icon_class} mr-1`}
-                    style={{ width: 20 }}
-                  ></i>{" "}
-                  {skill.name}
-                </td>
-                <td style={{ padding: "1rem", textTransform: "capitalize" }}>
-                  {skill.category}
-                </td>
-                <td style={{ padding: "1rem" }}>
-                  <span
-                    className={`badge ${skill.is_active ? "badge-gradient" : "badge-secondary"}`}
-                    style={{ fontSize: "0.7rem" }}
-                  >
-                    {skill.is_active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td style={{ padding: "1rem" }}>
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 10 }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                        height: 6,
-                        background: "#e2e8f0",
-                        borderRadius: 3,
-                        maxWidth: 100,
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "100%",
-                          width: `${skill.proficiency}%`,
-                          background: "var(--gradient)",
-                          borderRadius: 3,
-                        }}
-                      ></div>
-                    </div>
-                    <span>{skill.proficiency}%</span>
+          <tbody className="divide-y divide-slate-50">
+            {skills.map((s) => (
+              <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
+                <td className="px-4 py-3 font-semibold text-slate-800 flex items-center gap-2"><i className={`${s.icon_class} text-indigo-400 w-4`} />{s.name}</td>
+                <td className="px-4 py-3 capitalize text-slate-600 text-xs">{s.category}</td>
+                <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.is_active ? "Active" : "Inactive"}</span></td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-slate-200 rounded-full max-w-[80px]"><div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: `${s.proficiency}%` }} /></div>
+                    <span className="text-xs text-slate-500 font-medium">{s.proficiency}%</span>
                   </div>
                 </td>
-                <td style={{ padding: "1rem", textAlign: "right" }}>
-                  <button
-                    onClick={() => handleEdit(skill)}
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#6366f1",
-                      cursor: "pointer",
-                      marginRight: 10,
-                    }}
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(skill.id)}
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#ef4444",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                <td className="px-4 py-3 text-right">
+                  <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 transition-colors mr-1"><i className="fas fa-edit text-sm" /></button>
+                  <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors"><i className="fas fa-trash text-sm" /></button>
                 </td>
               </tr>
             ))}
@@ -254,167 +106,39 @@ export default function SkillManagement() {
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      {pagination.last_page > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "1.5rem",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
-            Showing page {pagination.current_page} of {pagination.last_page} (
-            {pagination.total} total)
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === pagination.last_page}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
+      <Pagination pagination={pagination} page={page} onPageChange={setPage} />
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-800">{currentSkill ? "Edit Skill" : "New Skill"}</h3>
+          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"><i className="fas fa-times" /></button>
         </div>
-      )}
-
-      {/* Modal */}
-      {modalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            className="card"
-            style={{ maxWidth: 450, width: "95%", padding: "2rem" }}
-          >
-            <h4>{currentSkill ? "Edit Skill" : "New Skill"}</h4>
-            <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem" }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <label>Skill Name</label>
-                <input
-                  className="form-control"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div
-                className="row row-2"
-                style={{ gap: "1rem", marginBottom: "1rem" }}
-              >
-                <div>
-                  <label>Category</label>
-                  <select
-                    className="form-control"
-                    value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
-                    }
-                  >
-                    <option value="frontend">Frontend</option>
-                    <option value="backend">Backend</option>
-                    <option value="database">Database</option>
-                    <option value="devops">DevOps</option>
-                    <option value="tools">Tools</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Proficiency (%)</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={formData.proficiency}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        proficiency: parseInt(e.target.value),
-                      })
-                    }
-                    min="0"
-                    max="100"
-                  />
-                </div>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label>Icon Class (FontAwesome)</label>
-                <input
-                  className="form-control"
-                  value={formData.icon_class}
-                  onChange={(e) =>
-                    setFormData({ ...formData, icon_class: e.target.value })
-                  }
-                  placeholder="fab fa-react"
-                />
-              </div>
-
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_active: e.target.checked })
-                    }
-                    style={{ width: "auto" }}
-                  />
-                  <span style={{ fontSize: "0.9rem" }}>
-                    Visible on Portfolio
-                  </span>
-                </label>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "1rem",
-                }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-gradient">
-                  Save Skill
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleSubmit} className="p-6 space-y-1">
+          <Field label="Skill Name"><input className={inputCls} value={formData.name} onChange={(e) => fd({ name: e.target.value })} required /></Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Category">
+              <select className={inputCls} value={formData.category} onChange={(e) => fd({ category: e.target.value })}>
+                {["frontend", "backend", "database", "devops", "tools", "other"].map((c) => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+              </select>
+            </Field>
+            <Field label="Proficiency (%)">
+              <input type="number" className={inputCls} value={formData.proficiency} onChange={(e) => fd({ proficiency: parseInt(e.target.value) })} min="0" max="100" />
+            </Field>
           </div>
-        </div>
-      )}
+          <Field label="Icon Class (FontAwesome)"><input className={inputCls} value={formData.icon_class} onChange={(e) => fd({ icon_class: e.target.value })} placeholder="fab fa-react" /></Field>
+          {/* Live preview */}
+          {formData.icon_class && (
+            <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-4 py-2.5 border border-slate-200 text-sm text-slate-600">
+              <i className={formData.icon_class} /> <span>Icon preview</span>
+            </div>
+          )}
+          <label className="flex items-center gap-2.5 cursor-pointer py-1"><input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span></label>
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+            <button type="submit" className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">Save Skill</button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

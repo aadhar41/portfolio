@@ -3,114 +3,68 @@ import { adminEducation } from "../../services/api";
 import AdminFilterBar from "../../components/admin/AdminFilterBar";
 import LoadingOverlay from "../../components/admin/LoadingOverlay";
 import PageLoader from "../../components/admin/PageLoader";
+import Pagination from "../../components/admin/Pagination";
 import { toast } from "react-toastify";
+
+const EMPTY_FORM = { is_active: true, institution: "", degree: "", field_of_study: "", start_year: "", end_year: "", grade: "" };
+
+function Modal({ open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">{children}</div>
+    </div>
+  );
+}
+const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+function Field({ label, children }) {
+  return <div className="mb-4"><label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{label}</label>{children}</div>;
+}
 
 export default function EducationManagement() {
   const [education, setEducation] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    last_page: 1,
-    total: 0,
-  });
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [statusFilter, setStatusFilter] = useState(""); // "" for all, "1" for active, "0" for inactive
+  const [statusFilter, setStatusFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentEdu, setCurrentEdu] = useState(null);
-  const [formData, setFormData] = useState({
-    is_active: true,
-    institution: "",
-    degree: "",
-    field_of_study: "",
-    start_year: "",
-    end_year: "",
-    grade: "",
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchEducation();
-    }, 300); // Debounce search
-    return () => clearTimeout(timer);
-  }, [search, page, perPage, statusFilter]);
+  const fd = (patch) => setFormData((p) => ({ ...p, ...patch }));
+
+  useEffect(() => { const t = setTimeout(fetchEducation, 300); return () => clearTimeout(t); }, [search, page, perPage, statusFilter]);
 
   const fetchEducation = async () => {
     setLoading(true);
     try {
-      const res = await adminEducation.list({
-        search,
-        page,
-        per_page: perPage,
-        is_active: statusFilter,
-      });
-      // If server returned pagination object
-      if (res.data.data) {
-        setEducation(res.data.data);
-        setPagination({
-          current_page: res.data.current_page,
-          last_page: res.data.last_page,
-          total: res.data.total,
-        });
-      } else {
-        setEducation(res.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch education", err);
-    } finally {
-      setLoading(false);
-    }
+      const res = await adminEducation.list({ search, page, per_page: perPage, is_active: statusFilter });
+      if (res.data.data) { setEducation(res.data.data); setPagination({ current_page: res.data.current_page, last_page: res.data.last_page, total: res.data.total }); }
+      else { setEducation(res.data); }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(1); // Reset to first page on search
-  };
-
-  const handleEdit = (edu) => {
+  const openCreate = () => { setCurrentEdu(null); setFormData(EMPTY_FORM); setModalOpen(true); };
+  const openEdit = (edu) => {
     setCurrentEdu(edu);
-    setFormData({
-      is_active: edu.is_active,
-      institution: edu.institution,
-      degree: edu.degree,
-      field_of_study: edu.field_of_study,
-      start_year: edu.start_year,
-      end_year: edu.end_year || "",
-      grade: edu.grade || "",
-    });
+    setFormData({ is_active: edu.is_active, institution: edu.institution, degree: edu.degree, field_of_study: edu.field_of_study, start_year: edu.start_year, end_year: edu.end_year || "", grade: edu.grade || "" });
     setModalOpen(true);
   };
-
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
-    try {
-      await adminEducation.delete(id);
-      fetchEducation();
-      toast.success("Education record deleted successfully!");
-    } catch (err) {
-      toast.error("Delete failed");
-    }
+    if (!window.confirm("Delete this education record?")) return;
+    try { await adminEducation.delete(id); fetchEducation(); toast.success("Education deleted!"); }
+    catch { toast.error("Delete failed"); }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (currentEdu) {
-        await adminEducation.update(currentEdu.id, formData);
-      } else {
-        await adminEducation.create(formData);
-      }
-      setModalOpen(false);
-      fetchEducation();
-      toast.success(
-        currentEdu
-          ? "Education record updated successfully!"
-          : "Education record created successfully!",
-      );
-    } catch (err) {
-      toast.error("Save failed");
-    }
+      if (currentEdu) { await adminEducation.update(currentEdu.id, formData); } else { await adminEducation.create(formData); }
+      setModalOpen(false); fetchEducation();
+      toast.success(currentEdu ? "Education updated!" : "Education created!");
+    } catch { toast.error("Save failed"); }
   };
 
   if (loading && education.length === 0) return <PageLoader />;
@@ -118,115 +72,32 @@ export default function EducationManagement() {
   return (
     <>
       <AdminFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        perPage={perPage}
-        onPerPageChange={(val) => {
-          setPerPage(val);
-          setPage(1);
-        }}
-        onAddNew={() => {
-          setCurrentEdu(null);
-          setFormData({
-            is_active: true,
-            institution: "",
-            degree: "",
-            field_of_study: "",
-            start_year: "",
-            end_year: "",
-            grade: "",
-          });
-          setModalOpen(true);
-        }}
-        addNewText="Add Education"
-        filters={[
-          {
-            name: "is_active",
-            label: "All Status",
-            value: statusFilter,
-            options: [
-              { label: "Active", value: "1" },
-              { label: "Inactive", value: "0" },
-            ],
-          },
-        ]}
-        onFilterChange={(name, val) => {
-          setStatusFilter(val);
-          setPage(1);
-        }}
+        search={search} onSearchChange={setSearch}
+        perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
+        onAddNew={openCreate} addNewText="Add Education"
+        filters={[{ name: "is_active", label: "All Status", value: statusFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] }]}
+        onFilterChange={(_, val) => { setStatusFilter(val); setPage(1); }}
       />
 
-      <div
-        className="card"
-        style={{ overflow: "hidden", position: "relative" }}
-      >
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
         <LoadingOverlay active={loading && education.length > 0} />
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "0.9rem",
-          }}
-        >
-          <thead
-            style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}
-          >
-            <tr>
-              <th style={{ padding: "1rem" }}>Degree & Institution</th>
-              <th style={{ padding: "1rem" }}>Status</th>
-              <th style={{ padding: "1rem" }}>Duration</th>
-              <th style={{ padding: "1rem", textAlign: "right" }}>Actions</th>
-            </tr>
+        <table className="w-full text-sm text-left">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr>{["Degree & Institution", "Status", "Duration", "Grade", "Actions"].map((h, i) => <th key={h} className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide ${i === 4 ? "text-right" : ""}`}>{h}</th>)}</tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-50">
             {education.map((edu) => (
-              <tr key={edu.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                <td style={{ padding: "1rem" }}>
-                  <div style={{ fontWeight: 600 }}>
-                    {edu.degree} in {edu.field_of_study}
-                  </div>
-                  <div
-                    style={{ fontSize: "0.8rem", color: "var(--text-light)" }}
-                  >
-                    {edu.institution}
-                  </div>
+              <tr key={edu.id} className="hover:bg-slate-50/60 transition-colors">
+                <td className="px-4 py-3">
+                  <p className="font-semibold text-slate-800">{edu.degree} in {edu.field_of_study}</p>
+                  <p className="text-xs text-indigo-600 mt-0.5">{edu.institution}</p>
                 </td>
-                <td style={{ padding: "1rem" }}>
-                  <span
-                    className={`badge ${edu.is_active ? "badge-success" : "badge-secondary"}`}
-                    style={{ fontSize: "0.7rem" }}
-                  >
-                    {edu.is_active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td style={{ padding: "1rem" }}>
-                  {edu.start_year} - {edu.end_year || "Present"}
-                </td>
-                <td style={{ padding: "1rem", textAlign: "right" }}>
-                  <button
-                    onClick={() => handleEdit(edu)}
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#6366f1",
-                      cursor: "pointer",
-                      marginRight: 10,
-                    }}
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(edu.id)}
-                    style={{
-                      border: "none",
-                      background: "none",
-                      color: "#ef4444",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${edu.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{edu.is_active ? "Active" : "Inactive"}</span></td>
+                <td className="px-4 py-3 text-slate-500 text-xs">{edu.start_year} — {edu.end_year || "Present"}</td>
+                <td className="px-4 py-3 text-slate-500 text-xs">{edu.grade || "—"}</td>
+                <td className="px-4 py-3 text-right">
+                  <button onClick={() => openEdit(edu)} className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 transition-colors mr-1"><i className="fas fa-edit text-sm" /></button>
+                  <button onClick={() => handleDelete(edu.id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors"><i className="fas fa-trash text-sm" /></button>
                 </td>
               </tr>
             ))}
@@ -234,187 +105,31 @@ export default function EducationManagement() {
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      {pagination.last_page > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "1.5rem",
-          }}
-        >
-          <div style={{ fontSize: "0.85rem", color: "var(--text-light)" }}>
-            Showing page {pagination.current_page} of {pagination.last_page} (
-            {pagination.total} total)
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              disabled={page === pagination.last_page}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
+      <Pagination pagination={pagination} page={page} onPageChange={setPage} />
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-800">{currentEdu ? "Edit Education" : "New Education"}</h3>
+          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"><i className="fas fa-times" /></button>
         </div>
-      )}
-
-      {/* Modal */}
-      {modalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            className="card"
-            style={{ maxWidth: 500, width: "95%", padding: "2rem" }}
-          >
-            <h4>{currentEdu ? "Edit Education" : "New Education"}</h4>
-            <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem" }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <label>Institution</label>
-                <input
-                  className="form-control"
-                  value={formData.institution}
-                  onChange={(e) =>
-                    setFormData({ ...formData, institution: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div
-                className="row row-2"
-                style={{ gap: "1rem", marginBottom: "1rem" }}
-              >
-                <div>
-                  <label>Degree</label>
-                  <input
-                    className="form-control"
-                    value={formData.degree}
-                    onChange={(e) =>
-                      setFormData({ ...formData, degree: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Field of Study</label>
-                  <input
-                    className="form-control"
-                    value={formData.field_of_study}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        field_of_study: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-              <div
-                className="row row-2"
-                style={{ gap: "1rem", marginBottom: "1rem" }}
-              >
-                <div>
-                  <label>Start Year</label>
-                  <input
-                    className="form-control"
-                    value={formData.start_year}
-                    onChange={(e) =>
-                      setFormData({ ...formData, start_year: e.target.value })
-                    }
-                    placeholder="2020"
-                    required
-                  />
-                </div>
-                <div>
-                  <label>End Year (optional)</label>
-                  <input
-                    className="form-control"
-                    value={formData.end_year}
-                    onChange={(e) =>
-                      setFormData({ ...formData, end_year: e.target.value })
-                    }
-                    placeholder="2024"
-                  />
-                </div>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label>Grade / CGPA (optional)</label>
-                <input
-                  className="form-control"
-                  value={formData.grade}
-                  onChange={(e) =>
-                    setFormData({ ...formData, grade: e.target.value })
-                  }
-                  placeholder="3.8/4.0"
-                />
-              </div>
-
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_active: e.target.checked })
-                    }
-                    style={{ width: "auto" }}
-                  />
-                  <span style={{ fontSize: "0.9rem" }}>
-                    Visible on Portfolio
-                  </span>
-                </label>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "1rem",
-                }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-gradient">
-                  Save Education
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleSubmit} className="p-6 space-y-1">
+          <Field label="Institution"><input className={inputCls} value={formData.institution} onChange={(e) => fd({ institution: e.target.value })} required /></Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Degree"><input className={inputCls} value={formData.degree} onChange={(e) => fd({ degree: e.target.value })} required /></Field>
+            <Field label="Field of Study"><input className={inputCls} value={formData.field_of_study} onChange={(e) => fd({ field_of_study: e.target.value })} required /></Field>
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-3 gap-4">
+            <Field label="Start Year"><input className={inputCls} value={formData.start_year} onChange={(e) => fd({ start_year: e.target.value })} placeholder="2020" required /></Field>
+            <Field label="End Year"><input className={inputCls} value={formData.end_year} onChange={(e) => fd({ end_year: e.target.value })} placeholder="2024" /></Field>
+            <Field label="Grade / CGPA"><input className={inputCls} value={formData.grade} onChange={(e) => fd({ grade: e.target.value })} placeholder="3.8/4.0" /></Field>
+          </div>
+          <label className="flex items-center gap-2.5 cursor-pointer py-1"><input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span></label>
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+            <button type="submit" className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">Save Education</button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }
