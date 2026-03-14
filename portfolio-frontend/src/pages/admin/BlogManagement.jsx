@@ -4,6 +4,7 @@ import FileUpload from "../../components/admin/FileUpload";
 import AdminFilterBar from "../../components/admin/AdminFilterBar";
 import LoadingOverlay from "../../components/admin/LoadingOverlay";
 import PageLoader from "../../components/admin/PageLoader";
+import Pagination from "../../components/admin/Pagination";
 import { toast } from "react-toastify";
 
 // ── shared helpers ──────────────────────────────
@@ -30,19 +31,6 @@ function Field({ label, children }) {
 }
 
 const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
-
-function Pagination({ pagination, page, onPrev, onNext }) {
-  if (pagination.last_page <= 1) return null;
-  return (
-    <div className="flex items-center justify-between mt-5">
-      <p className="text-xs text-slate-500">Page <strong>{pagination.current_page}</strong> of <strong>{pagination.last_page}</strong> &mdash; {pagination.total} total</p>
-      <div className="flex gap-2">
-        <button disabled={page === 1} onClick={onPrev} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">‹ Previous</button>
-        <button disabled={page === pagination.last_page} onClick={onNext} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-indigo-400 hover:text-indigo-600 transition-colors">Next ›</button>
-      </div>
-    </div>
-  );
-}
 // ────────────────────────────────────────────────
 
 export default function BlogManagement() {
@@ -142,7 +130,7 @@ export default function BlogManagement() {
         </table>
       </div>
 
-      <Pagination pagination={pagination} page={page} onPrev={() => setPage(page - 1)} onNext={() => setPage(page + 1)} />
+      <Pagination pagination={pagination} page={page} onPageChange={setPage} />
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
