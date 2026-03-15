@@ -17,7 +17,7 @@ class SkillController extends Controller
         $cacheKey = 'skills_list_' . $request->get('search', 'all') . '_' . $request->get('page', 1) . '_' . $request->get('per_page', 'all') . '_' . $request->get('is_active', 'all');
 
         $skills = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
-            $query = Skill::select("id", "is_active", "name", "category", "level", "sort_order")->orderBy('category')
+            $query = Skill::select("id", "is_active", "name", "icon", "category", "level", "sort_order")->orderBy('category')
                 ->orderBy('sort_order');
 
             if ($request->filled('is_active')) {
@@ -67,7 +67,8 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'required|string|max:255',
-            'category'   => 'required|string|in:frontend,backend,database,devops,tools,other,Frontend Technologies,Backend Technologies',
+            'icon'       => 'nullable|string|max:255',
+            'category'   => 'required|string|in:API Development,Backend Development,Best Practices,Database Management,Frontend Technologies,Leadership,Software Development,Tools & Platforms,other',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);
@@ -87,7 +88,8 @@ class SkillController extends Controller
         $validated = $request->validate([
             'is_active'  => 'nullable|boolean',
             'name'       => 'sometimes|string|max:255',
-            'category'   => 'sometimes|string|in:frontend,backend,database,devops,tools,other,Frontend Technologies,Backend Technologies',
+            'icon'       => 'nullable|string|max:255',
+            'category'   => 'sometimes|string|in:API Development,Backend Development,Best Practices,Database Management,Frontend Technologies,Leadership,Software Development,Tools & Platforms,other',
             'level'      => 'nullable|integer|min:1|max:100',
             'sort_order' => 'nullable|integer',
         ]);

@@ -14,7 +14,9 @@ const SKILL_ICONS = {
   figma: "fab fa-figma", vue: "fab fa-vuejs", angular: "fab fa-angular",
   security: "fas fa-shield-alt", agile: "fas fa-running", team: "fas fa-users",
 };
-function getIcon(name) {
+function getIcon(skill) {
+  if (skill.icon) return skill.icon;
+  const name = typeof skill === "string" ? skill : skill.name;
   const key = name.toLowerCase().split(/[\s/]/)[0];
   return SKILL_ICONS[key] ?? "fas fa-code";
 }
@@ -182,7 +184,7 @@ export default function About() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {displaySkills.map((s) => {
               const name = typeof s === "string" ? s : s.name;
-              const icon = getIcon(name);
+              const icon = getIcon(s);
               return (
                 <div key={name} className="bg-white rounded-xl p-4 flex flex-col items-center gap-2 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.12)] hover:-translate-y-1 hover:border-indigo-200 border border-slate-100 transition-all duration-200 cursor-default">
                   <div className="w-10 h-10 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl flex items-center justify-center">

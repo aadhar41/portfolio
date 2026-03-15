@@ -14,6 +14,7 @@ class Skill extends Model
     protected $fillable = [
         'is_active',
         'name',
+        'icon',
         'category',
         'level',
         'sort_order',
