@@ -23,14 +23,16 @@ function getIcon(skill) {
 
 /* ── Shared helpers ── */
 const SectionHeading = ({ children, light = false }) => (
-  <div className="text-center mb-12">
-    <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${light ? "text-white" : "text-slate-800"}`}>{children}</h2>
-    <span className={`inline-block w-14 h-1 rounded-full ${light ? "bg-white/40" : "bg-gradient-to-r from-indigo-500 to-purple-500"}`} />
+  <div className="flex flex-col items-center mb-16 group">
+    <h2 className={`text-4xl md:text-5xl font-black mb-6 tracking-tight ${light ? "text-white" : "text-slate-800"}`}>
+      {children}
+    </h2>
+    <div className={`h-2.5 w-24 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-32 transition-all duration-500 shadow-sm ${light ? "from-white/40 to-white/20" : ""}`} />
   </div>
 );
 
 const Badge = ({ children }) => (
-  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">{children}</span>
+  <span className="inline-block px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-sm">{children}</span>
 );
 
 export default function About() {
@@ -51,7 +53,7 @@ export default function About() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="pt-24"><FrontendLoader /></div>;
+  if (loading) return <div className="pt-40"><FrontendLoader /></div>;
 
   const allSkills = Object.values(skills).flat();
 
@@ -82,40 +84,42 @@ export default function About() {
   const displaySkills = allSkills.length > 0 ? allSkills : staticSkills;
 
   const highlights = [
-    { icon: "fas fa-rocket", title: "10+ Years", sub: "Industry Experience" },
-    { icon: "fas fa-project-diagram", title: "15+", sub: "Enterprise Projects" },
+    { icon: "fas fa-rocket", title: "10+ Years", sub: "Industry Exp" },
+    { icon: "fas fa-project-diagram", title: "15+", sub: "Major Projects" },
     { icon: "fas fa-users", title: "5+", sub: "Devs Mentored" },
-    { icon: "fas fa-star", title: "40%", sub: "Performance Boost" },
+    { icon: "fas fa-star", title: "40%", sub: "Opt. Boost" },
   ];
 
   return (
     <>
       {/* ── Page Hero ── */}
-      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 text-white pt-28 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[length:28px_28px]" />
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
-          <span className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white/80 text-sm px-4 py-1.5 rounded-full mb-5">
-            <i className="fas fa-user" /> About Me
-          </span>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Aadhar Gaur</h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Senior PHP Developer · Backend Specialist · Laravel & Yii Expert
+      <section className="relative bg-white pt-40 pb-24 overflow-hidden">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-50 rounded-full blur-[100px]" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-50 rounded-full blur-[120px]" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-5 py-2 rounded-2xl mb-8 shadow-sm">
+            <i className="fas fa-id-badge text-indigo-500" />
+            <span className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em]">Crafting Digital Worlds</span>
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black text-slate-800 mb-8 tracking-tight">Meet Aadhar Gaur</h1>
+          <p className="text-slate-500 text-xl md:text-2xl max-w-2xl mx-auto font-medium leading-relaxed">
+            Architecting scalable backend ecosystems with PHP, Laravel & Cloud Tech for over a decade.
           </p>
         </div>
       </section>
 
       {/* ── Stats strip ── */}
-      <div className="bg-white border-b border-slate-100 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4">
+      <div className="relative z-20 -mt-10">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="clay-surface bg-white/80 backdrop-blur-md p-2 grid grid-cols-2 md:grid-cols-4 gap-2">
             {highlights.map((h) => (
-              <div key={h.title} className="py-6 text-center border-r border-slate-100 last:border-0">
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-2">
-                  <i className={`${h.icon} text-indigo-600`} />
+              <div key={h.title} className="clay-card p-6 md:p-8 text-center bg-white border-white/50 hover:bg-indigo-50 transition-colors">
+                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                  <i className={`${h.icon} text-indigo-600 text-lg`} />
                 </div>
-                <p className="text-2xl font-bold text-slate-800">{h.title}</p>
-                <p className="text-slate-400 text-xs mt-0.5">{h.sub}</p>
+                <p className="text-3xl font-black text-slate-800 tracking-tight">{h.title}</p>
+                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">{h.sub}</p>
               </div>
             ))}
           </div>
@@ -123,52 +127,62 @@ export default function About() {
       </div>
 
       {/* ── Bio ── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
+      <section className="py-32 relative overflow-hidden bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
             {/* Photo + quote */}
-            <div className="text-center">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 blur-lg opacity-20 scale-105" />
-                <img
-                  src={profile?.avatar ?? "/img/AboutAadhar.jpg"}
-                  alt="Aadhar Gaur"
-                  className="relative w-72 max-w-full rounded-2xl shadow-[0_20px_60px_rgba(99,102,241,0.2)] object-cover"
-                  onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=Aadhar+Gaur&size=300&background=6366f1&color=fff"; }}
-                />
+            <div className="lg:col-span-5 text-center order-2 lg:order-1">
+              <div className="relative inline-block group">
+                <div className="absolute -inset-4 rounded-[48px] bg-gradient-to-br from-indigo-500 to-purple-600 blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-700" />
+                <div className="clay-card p-4 bg-white border-white group-hover:scale-[1.02] transition-transform duration-700">
+                  <img
+                    src={profile?.avatar ?? "/img/AboutAadhar.jpg"}
+                    alt="Aadhar Gaur"
+                    className="relative w-full max-w-sm rounded-[32px] shadow-sm object-cover aspect-square"
+                    onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=Aadhar+Gaur&size=400&background=6366f1&color=fff"; }}
+                  />
+                </div>
+                {/* Float Elements */}
+                <div className="absolute -top-6 -right-6 w-24 h-24 clay-card bg-indigo-50 flex items-center justify-center p-4 animate-bounce duration-[3s]">
+                  <i className="fab fa-laravel text-4xl text-indigo-500" />
+                </div>
+                <div className="absolute -bottom-6 -left-6 w-20 h-20 clay-card bg-purple-50 flex items-center justify-center p-4 animate-pulse">
+                  <i className="fas fa-database text-3xl text-purple-500" />
+                </div>
               </div>
-              <p className="mt-5 text-slate-400 italic text-sm max-w-xs mx-auto leading-relaxed">
-                "Coding is not just a job — it's a passion for solving complex problems."
-              </p>
+              <div className="mt-12 clay-surface bg-slate-50 border-none p-6 text-slate-500 italic text-lg leading-relaxed max-w-sm mx-auto font-medium">
+                <i className="fas fa-quote-left text-indigo-100 text-5xl absolute -top-4 -left-4" />
+                "Engineering is not just writing code—it's crafting solutions that empower users and scale businesses."
+              </div>
             </div>
+
             {/* Bio text */}
-            <div>
-              <h2 className="text-3xl font-bold text-slate-800 mb-5">My Journey as a Developer</h2>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {profile?.bio ?? "With over 10 years of experience in web development, I am a seasoned Senior PHP Developer specializing in crafting robust, scalable, and high-performance web applications. My expertise lies primarily in the Laravel framework, complemented by a strong understanding of front-end technologies and database optimization."}
-              </p>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                I thrive on transforming complex business requirements into elegant and efficient technical solutions. My career has been driven by a continuous pursuit of learning and adopting the latest technologies and best practices.
-              </p>
-              <p className="text-slate-600 leading-relaxed mb-8">
-                I'm passionate about clean code, software architecture, and building user-centric applications. Beyond coding, I enjoy mentoring junior developers and contributing to the developer community.
-              </p>
-              <h3 className="text-lg font-bold text-slate-800 mb-4">Why Work With Me?</h3>
-              <div className="space-y-3">
+            <div className="lg:col-span-7 order-1 lg:order-2">
+              <div className="inline-block px-4 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em] mb-6">Professional Narrative</div>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-800 mb-8 tracking-tight">A十年 of Web Evolution</h2>
+              
+              <div className="space-y-6 text-slate-600 text-lg leading-relaxed font-medium">
+                <p>
+                  {profile?.bio ?? "With over a decade of high-level development, I specialize in building mission-critical architectures that combine technical excellence with business scalability. My focus is PHP Engineering, with deep expertise in Laravel ecosystem and legacy Yii modernization."}
+                </p>
+                <p>
+                  I excel at taking complex, abstract business needs and distilling them into high-performance technical architectures. My philosophy centers on clean code, domain-driven design, and creating systems that are as maintainable as they are efficient.
+                </p>
+              </div>
+
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
-                  ["fas fa-brain", "Expertise", "Deep knowledge in PHP, Laravel, MySQL, and API development."],
-                  ["fas fa-bolt", "Performance-Driven", "A constant focus on writing clean, efficient, and maintainable code."],
-                  ["fas fa-comments", "Great Communicator", "Excellent communication skills for cross-functional teams and client interactions."],
-                  ["fas fa-sync-alt", "Continuous Learner", "Always up-to-date with the latest technologies and best practices."],
+                  ["fas fa-brain", "Engineering Mindset", "Deep mastery of OOP, Design Patterns, and Modern PHP architectures."],
+                  ["fas fa-rocket", "Performance First", "Optimizing DB schemas and queries for zero-latency user experiences."],
+                  ["fas fa-microchip", "Cloud Ready", "Experience with scalable deployments on AWS and Dockerized workflows."],
+                  ["fas fa-users", "Leadership", "Vocal advocate for Agile methodologies and mentoring future engineers."],
                 ].map(([icon, title, desc]) => (
-                  <div key={title} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                    <div className="shrink-0 w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center mt-0.5">
-                      <i className={`${icon} text-indigo-600 text-sm`} />
+                  <div key={title} className="clay-card p-6 bg-white hover:bg-slate-50 transition-all border-slate-50 group">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 shadow-inner group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                      <i className={`${icon} text-lg`} />
                     </div>
-                    <div>
-                      <p className="font-semibold text-slate-800 text-sm">{title}</p>
-                      <p className="text-slate-500 text-sm">{desc}</p>
-                    </div>
+                    <h4 className="text-lg font-black text-slate-800 mb-2">{title}</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
                   </div>
                 ))}
               </div>
@@ -177,20 +191,22 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── Skills ── */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <SectionHeading>Technical Skills</SectionHeading>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {displaySkills.map((s) => {
+      {/* ── Skills grid ── */}
+      <section className="py-32 bg-slate-50 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <SectionHeading>Technical Arsenal</SectionHeading>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {displaySkills.map((s, idx) => {
               const name = typeof s === "string" ? s : s.name;
               const icon = getIcon(s);
               return (
-                <div key={name} className="bg-white rounded-xl p-4 flex flex-col items-center gap-2 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.12)] hover:-translate-y-1 hover:border-indigo-200 border border-slate-100 transition-all duration-200 cursor-default">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl flex items-center justify-center">
-                    <i className={`${icon} text-indigo-600 text-lg`} />
+                <div key={name} className="clay-card p-8 flex flex-col items-center gap-4 bg-white group hover:scale-105 transition-all duration-300 border-white/60">
+                  <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-purple-600 transition-all duration-500">
+                    <i className={`${icon} text-indigo-600 text-2xl group-hover:text-white transition-colors duration-500`} />
                   </div>
-                  <span className="text-slate-700 text-xs font-semibold text-center leading-tight">{name}</span>
+                  <span className="text-slate-800 text-[10px] font-black uppercase tracking-widest text-center leading-tight">{name}</span>
                 </div>
               );
             })}
@@ -199,35 +215,42 @@ export default function About() {
       </section>
 
       {/* ── Timeline ── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <SectionHeading>Experience & Education</SectionHeading>
-          <div className="relative timeline-line pl-10">
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <SectionHeading>Career & Education</SectionHeading>
+          
+          <div className="relative pl-12 border-l-[3px] border-slate-100 ml-6">
+            <div className="absolute top-0 left-[-3px] w-[3px] h-full bg-gradient-to-b from-indigo-500 via-purple-500 to-transparent" />
+            
             {timeline.map((item, i) => (
-              <div key={i} className="relative mb-7 group">
+              <div key={i} className="relative mb-16 group last:mb-0">
                 {/* Dot */}
-                <div className={`absolute left-[-2.45rem] top-2 w-5 h-5 rounded-full border-4 border-white shadow-md
+                <div className={`absolute left-[-2.45rem] top-4 w-6 h-6 rounded-xl border-[6px] border-white shadow-md transition-all duration-500 group-hover:scale-125
                   ${item.type === "exp"
-                    ? "bg-gradient-to-br from-indigo-500 to-purple-500 shadow-indigo-200"
-                    : "bg-gradient-to-br from-emerald-400 to-teal-400 shadow-teal-100"}`} />
-                <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 hover:shadow-[0_8px_32px_rgba(99,102,241,0.10)] hover:border-indigo-100 transition-all duration-300">
-                  <div className="flex flex-wrap justify-between gap-2 mb-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${item.type === "exp" ? "bg-indigo-50 text-indigo-600" : "bg-emerald-50 text-emerald-600"}`}>
-                          {item.type === "exp" ? "Work" : "Education"}
+                    ? "bg-indigo-500 shadow-indigo-200"
+                    : "bg-purple-500 shadow-purple-200"}`} />
+                
+                <div className="clay-card p-8 md:p-10 bg-white hover:bg-slate-50 transition-all border-slate-50">
+                  <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
+                    <div className="flex-1 min-w-[200px]">
+                      <div className="flex items-center gap-4 mb-4">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl ${item.type === "exp" ? "bg-indigo-50 text-indigo-600 border border-indigo-100" : "bg-purple-50 text-purple-600 border border-purple-100"}`}>
+                          {item.type === "exp" ? "Professional Exp" : "Academic History"}
                         </span>
+                        <div className="clay-surface bg-slate-50 border-none px-4 py-1.5 flex items-center gap-2">
+                          <i className="fas fa-calendar-alt text-slate-300 text-[10px]" />
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.date}</span>
+                        </div>
                       </div>
-                      <h5 className="font-bold text-slate-800 text-base mt-1 leading-tight">{item.pos}</h5>
-                      <p className="text-indigo-600 font-medium text-sm">{item.company}</p>
+                      <h5 className="text-3xl font-black text-slate-800 tracking-tight mb-2">{item.pos}</h5>
+                      <p className="text-indigo-600 font-black text-lg tracking-tight">{item.company}</p>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 text-slate-400 text-sm bg-slate-50 px-3 py-1 rounded-full border border-slate-200 h-fit">
-                      <i className="fas fa-calendar-alt text-xs" /> {item.date}
-                    </span>
                   </div>
-                  {item.desc && <p className="text-slate-600 text-sm leading-relaxed mt-2 mb-3">{item.desc}</p>}
+                  
+                  {item.desc && <p className="text-slate-500 text-lg leading-relaxed mb-8 font-medium max-w-3xl">{item.desc}</p>}
+                  
                   {item.techs?.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-3">
                       {item.techs.map((t) => <Badge key={t}>{t}</Badge>)}
                     </div>
                   )}

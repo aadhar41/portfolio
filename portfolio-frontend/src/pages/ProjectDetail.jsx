@@ -4,7 +4,7 @@ import { getProject } from "../services/api";
 import FrontendLoader from "../components/FrontendLoader";
 
 const Badge = ({ children }) => (
-  <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-indigo-50 text-indigo-600">{children}</span>
+  <span className="inline-block px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-sm">{children}</span>
 );
 
 export default function ProjectDetail() {
@@ -18,16 +18,21 @@ export default function ProjectDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="pt-24"><FrontendLoader /></div>;
+  if (loading) return <div className="pt-40"><FrontendLoader /></div>;
 
   if (!project) return (
-    <div className="pt-24 min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="text-center">
-        <i className="fas fa-exclamation-circle text-4xl text-slate-300 mb-4 block" />
-        <p className="text-slate-600 font-medium mb-4">Project not found.</p>
-        <Link to="/projects" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors">
-          <i className="fas fa-arrow-left" /> Back to Projects
-        </Link>
+    <div className="pt-40 pb-24 min-h-screen bg-white flex items-center justify-center">
+      <div className="max-w-md w-full px-6">
+        <div className="clay-card p-12 text-center bg-white/50">
+          <div className="w-20 h-20 rounded-[28px] bg-red-50 flex items-center justify-center text-red-500 text-3xl mx-auto mb-8 shadow-inner">
+            <i className="fas fa-exclamation-triangle" />
+          </div>
+          <h2 className="text-2xl font-black text-slate-800 mb-4">Project Not Found</h2>
+          <p className="text-slate-500 font-medium mb-10 leading-relaxed">The project you're looking for might have been moved or deleted.</p>
+          <Link to="/projects" className="clay-button-primary w-full py-3.5">
+            <i className="fas fa-arrow-left mr-3" /> Explore All Projects
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -35,71 +40,92 @@ export default function ProjectDetail() {
   return (
     <>
       {/* ── Page Hero ── */}
-      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 text-white pt-28 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.1)_1px,transparent_0)] bg-[length:28px_28px]" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
+      <section className="relative bg-white pt-40 pb-24 overflow-hidden">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-50 rounded-full blur-[100px]" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-50 rounded-full blur-[120px]" />
+        
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <div className="flex flex-wrap items-center gap-4 mb-8 translate-y-[-10px] animate-[fadeInDown_0.6s_ease_both]">
             {project.featured && (
-              <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full">
-                <i className="fas fa-star text-[10px]" /> Featured
-              </span>
+              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-600 text-[10px] font-black uppercase tracking-[0.15em] px-4 py-1.5 rounded-xl shadow-sm">
+                <i className="fas fa-star" /> Featured Project
+              </div>
             )}
-            <span className="bg-white/10 border border-white/20 text-white/80 text-xs font-semibold px-3 py-1 rounded-full capitalize">
-              {project.category}
-            </span>
+            <div className="bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-[0.15em] px-4 py-1.5 rounded-xl shadow-sm">
+              <i className="fas fa-folder-open mr-2" /> {project.category}
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{project.title}</h1>
-          <p className="text-white/70 text-lg max-w-2xl leading-relaxed">{project.description}</p>
+          <h1 className="text-5xl md:text-7xl font-black text-slate-800 mb-8 tracking-tight animate-[fadeInLeft_0.8s_ease_both]">{project.title}</h1>
+          <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-3xl animate-[fadeInUp_1s_ease_both]">{project.description}</p>
         </div>
       </section>
 
       {/* ── Detail ── */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <section className="py-24 relative overflow-hidden bg-slate-50 min-h-[600px]">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/30 rounded-full blur-[120px] translate-x-1/4 -translate-y-1/4" />
+        
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
           {/* Back link */}
           <Link to="/projects"
-            className="inline-flex items-center gap-2 text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors mb-8">
-            <i className="fas fa-arrow-left text-xs" /> Back to Projects
+            className="inline-flex items-center gap-3 text-slate-400 text-xs font-black uppercase tracking-[0.2em] hover:text-indigo-600 transition-all mb-12 group">
+            <span className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+              <i className="fas fa-arrow-left" />
+            </span>
+            Back to archive
           </Link>
 
           {/* Project image */}
           {project.image && (
-            <div className="w-full max-h-[420px] overflow-hidden rounded-2xl mb-8 shadow-[0_12px_40px_rgba(0,0,0,0.12)] bg-slate-100">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const rn = project.github_url?.split("/").pop();
-                  const og = `https://opengraph.githubassets.com/1/aadhar41/${rn}`;
-                  if (e.target.src !== og) e.target.src = og;
-                  else e.target.style.display = "none";
-                }}
-              />
+            <div className="clay-card p-4 bg-white/40 backdrop-blur-md border-white mb-16 group">
+              <div className="w-full h-auto overflow-hidden rounded-[24px] shadow-inner bg-slate-100 relative">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[2s]"
+                  onError={(e) => {
+                    const rn = project.github_url?.split("/").pop();
+                    const og = `https://opengraph.githubassets.com/1/aadhar41/${rn}`;
+                    if (e.target.src !== og) e.target.src = og;
+                    else e.target.style.display = "none";
+                  }}
+                />
+                <div className="absolute inset-0 bg-indigo-900/5 pointer-events-none" />
+              </div>
             </div>
           )}
 
           {/* Content grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Main description */}
-            <div className="md:col-span-2 space-y-6">
-              {project.long_description && (
-                <div className="bg-white rounded-2xl p-7 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i className="fas fa-align-left text-indigo-500" /> Overview
-                  </h3>
-                  <div className="text-slate-600 text-sm leading-relaxed blog-content"
+            <div className="lg:col-span-8 space-y-10">
+              {project.long_description ? (
+                <div className="clay-card p-10 md:p-12 bg-white">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 shadow-inner">
+                      <i className="fas fa-align-left text-lg" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-800 tracking-tight">Overview</h3>
+                  </div>
+                  <div className="text-slate-600 text-lg leading-relaxed space-y-4 font-medium blog-content"
                     dangerouslySetInnerHTML={{ __html: project.long_description }} />
+                </div>
+              ) : (
+                <div className="clay-surface p-12 text-center text-slate-400 bg-white/50 flex flex-col items-center">
+                  <i className="fas fa-info-circle text-4xl mb-4 text-indigo-100 shadow-inner rounded-full p-4" />
+                  <p className="font-bold text-slate-500">More details coming soon for this project.</p>
                 </div>
               )}
 
               {/* Technologies */}
               {project.technologies?.length > 0 && (
-                <div className="bg-white rounded-2xl p-7 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i className="fas fa-code text-indigo-500" /> Technologies Used
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
+                <div className="clay-card p-10 md:p-12 bg-white">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-inner">
+                      <i className="fas fa-code text-lg" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-800 tracking-tight">Tech Stack</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
                     {project.technologies.map((t) => <Badge key={t}>{t}</Badge>)}
                   </div>
                 </div>
@@ -107,41 +133,39 @@ export default function ProjectDetail() {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-5">
+            <div className="lg:col-span-4 space-y-8">
               {/* Metadata card */}
-              <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Project Info</h4>
-                <div className="space-y-3">
+              <div className="clay-card p-8 md:p-10 bg-white">
+                <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8 border-b border-slate-50 pb-4">Project Info</h4>
+                <div className="space-y-6">
                   {[
                     { icon: "fas fa-tag", label: "Category", value: project.category },
-                    { icon: "fas fa-calendar", label: "Year", value: project.year },
-                    { icon: "fas fa-user", label: "Client", value: project.client },
+                    { icon: "fas fa-calendar", label: "Project Year", value: project.year },
+                    { icon: "fas fa-user", label: "Client / Brand", value: project.client },
                   ].filter((r) => r.value).map((row) => (
-                    <div key={row.label} className="flex items-start gap-3">
-                      <div className="shrink-0 w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center mt-0.5">
-                        <i className={`${row.icon} text-indigo-600 text-xs`} />
+                    <div key={row.label} className="group/item">
+                      <div className="flex items-center gap-4 mb-1">
+                        <i className={`${row.icon} text-indigo-300 text-[10px] group-hover/item:text-indigo-500 transition-colors`} />
+                        <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">{row.label}</p>
                       </div>
-                      <div>
-                        <p className="text-xs text-slate-400 font-medium">{row.label}</p>
-                        <p className="text-sm font-semibold text-slate-700 capitalize">{row.value}</p>
-                      </div>
+                      <p className="text-slate-800 text-lg font-black capitalize ml-6">{row.value}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Links */}
-              <div className="space-y-2.5">
+              <div className="space-y-4">
                 {project.live_url && (
                   <a href={project.live_url} target="_blank" rel="noreferrer"
-                    className="flex justify-center items-center gap-2 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-[0_6px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all duration-200 text-sm">
-                    <i className="fas fa-external-link-alt" /> View Live Demo
+                    className="clay-button-primary w-full py-4 text-base">
+                    Explore Experience <i className="fas fa-external-link-alt ml-2 text-xs" />
                   </a>
                 )}
                 {project.github_url && (
                   <a href={project.github_url} target="_blank" rel="noreferrer"
-                    className="flex justify-center items-center gap-2 w-full py-3 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 text-sm">
-                    <i className="fab fa-github" /> View on GitHub
+                    className="clay-button-secondary w-full py-4 text-base !bg-slate-800 !text-white !border-transparent hover:!bg-indigo-600">
+                    <i className="fab fa-github mr-2" /> Source Code
                   </a>
                 )}
               </div>
