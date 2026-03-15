@@ -29,61 +29,66 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="absolute top-0 left-1/4 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Dynamic background elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03)_0%,transparent_100%)] pointer-events-none" />
 
       <div className="relative w-full max-w-md">
-        {/* Logo / Brand */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_8px_32px_rgba(99,102,241,0.4)] mb-4">
-            <i className="fas fa-shield-alt text-white text-2xl" />
+        {/* Logo Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-[32px] clay-surface bg-gradient-to-br from-indigo-600 to-purple-600 shadow-[0_20px_40px_rgba(79,70,229,0.3)] mb-6 group hover:rotate-12 transition-transform duration-500">
+            <i className="fas fa-shield-halved text-white text-3xl" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Admin Portal</h1>
-          <p className="text-slate-400 text-sm mt-1">Sign in to manage your portfolio</p>
+          <h1 className="text-4xl font-black text-slate-800 tracking-tighter mb-2">Secure Node Access</h1>
+          <p className="text-slate-400 text-sm font-black uppercase tracking-[0.2em]">Authentication Required</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+        {/* Login Card */}
+        <div className="clay-card p-10 md:p-12 bg-white/70 backdrop-blur-md border-white">
           {error && (
-            <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
-              <i className="fas fa-exclamation-circle shrink-0" />
+            <div className="flex items-center gap-4 bg-red-50 border border-red-100 text-red-500 text-xs font-black uppercase tracking-widest px-5 py-4 rounded-2xl mb-8 animate-[shake_0.5s_ease-in-out]">
+              <i className="fas fa-circle-exclamation text-lg" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Email Address
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
+                Node Identity (Email)
               </label>
-              <div className="relative">
-                <i className="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
+              <div className="relative group">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                  <i className="fas fa-at text-sm" />
+                </div>
                 <input
                   type="email"
                   required
                   value={credentials.email}
                   onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                  placeholder="admin@example.com"
-                  className="w-full bg-slate-800/60 border border-slate-700 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="admin@node.local"
+                  className="w-full bg-slate-50/50 border-2 border-slate-100/50 text-slate-800 placeholder-slate-300 rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-indigo-500/30 focus:bg-white transition-all shadow-inner"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Password
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
+                Access Protocol (Password)
               </label>
-              <div className="relative">
-                <i className="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
+              <div className="relative group">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                  <i className="fas fa-lock text-sm" />
+                </div>
                 <input
                   type="password"
                   required
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full bg-slate-800/60 border border-slate-700 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full bg-slate-50/50 border-2 border-slate-100/50 text-slate-800 placeholder-slate-300 rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-indigo-500/30 focus:bg-white transition-all shadow-inner"
                 />
               </div>
             </div>
@@ -91,29 +96,33 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-[0_4px_20px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full clay-button-primary py-5 text-sm font-black group"
             >
               {loading ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="3" strokeDasharray="40 20" />
-                  </svg>
-                  Signing in…
-                </>
+                <div className="flex items-center justify-center gap-3">
+                  <i className="fas fa-circle-notch animate-spin" />
+                  <span>Verifying Node...</span>
+                </div>
               ) : (
-                <>
-                  <i className="fas fa-sign-in-alt" /> Sign In
-                </>
+                <div className="flex items-center justify-center gap-3">
+                  <span>Initialize Authentication</span>
+                  <i className="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform" />
+                </div>
               )}
             </button>
           </form>
-        </div>
 
-        <div className="text-center mt-5">
-          <Link to="/" className="text-slate-500 text-sm hover:text-slate-300 transition-colors">
-            <i className="fas fa-arrow-left mr-1 text-xs" /> Back to Website
-          </Link>
+          <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-center">
+            <Link to="/" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-indigo-600 transition-all flex items-center gap-2 group">
+              <i className="fas fa-arrow-left group-hover:-translate-x-1 transition-transform" /> Back to public interface
+            </Link>
+          </div>
         </div>
+        
+        {/* Footer info */}
+        <p className="text-center mt-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">
+          Standard Encryption Protocols Active
+        </p>
       </div>
     </div>
   );

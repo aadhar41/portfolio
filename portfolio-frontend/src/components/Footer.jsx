@@ -61,80 +61,87 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {/* Brand */}
-            <div>
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-3">
-                Aadhar Gaur
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-5">
-                Senior PHP Developer specializing in Laravel &amp; Yii. Building
-                scalable web applications with 10+ years of experience.
-              </p>
-              <div className="flex gap-3">
-                {SOCIALS.map((s) => (
-                  <a
-                    key={s.href}
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    title={s.title}
-                    className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:border-indigo-600 hover:text-white transition-all duration-200"
-                  >
-                    <i className={`${s.icon} text-sm`} />
-                  </a>
-                ))}
+      <footer className="relative bg-[#f8fafc] pt-20 pb-10 overflow-hidden">
+        {/* Decorative background blobs */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-100/50 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-100/50 rounded-full blur-2xl translate-x-1/4 translate-y-1/4" />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="clay-surface p-10 md:p-14 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 sm:gap-16">
+              {/* Brand */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                <h3 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 tracking-tight">
+                  Aadhar Gaur
+                </h3>
+                <p className="text-slate-500 text-sm leading-relaxed mb-8 max-w-xs">
+                  Senior PHP Developer specializing in Laravel &amp; Yii. Building
+                  scalable web applications with 10+ years of experience.
+                </p>
+                <div className="flex gap-4">
+                  {SOCIALS.map((s) => (
+                    <a
+                      key={s.href}
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={s.title}
+                      className="w-11 h-11 rounded-2xl bg-white/60 border border-white/40 flex items-center justify-center text-slate-500 hover:clay-button-primary hover:text-white transition-all duration-300 shadow-sm"
+                    >
+                      <i className={`${s.icon} text-lg`} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick links */}
+              <div className="flex flex-col items-center md:items-start">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-slate-800 mb-6">
+                  Navigate
+                </h4>
+                <ul className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {NAV_LINKS.map((n) => (
+                    <li key={n.label}>
+                      <a
+                        href={n.path ?? `/#${n.hash}`}
+                        onClick={(e) => handleNav(e, n)}
+                        className="text-slate-500 text-sm font-medium hover:text-indigo-600 transition-colors duration-200 flex items-center gap-2 group"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-indigo-600 transition-colors" />
+                        {n.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* CTA */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-slate-800 mb-6">
+                  Let's Connect
+                </h4>
+                <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                  Open to full-time, freelance, and remote opportunities.
+                </p>
+                <a
+                  href="mailto:aadhar41@gmail.com"
+                  className="clay-button-primary"
+                >
+                  <i className="fas fa-envelope" /> Say Hello
+                </a>
               </div>
             </div>
 
-            {/* Quick links */}
-            <div>
-              <h4 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">
-                Quick Links
-              </h4>
-              <ul className="space-y-2.5">
-                {NAV_LINKS.map((n) => (
-                  <li key={n.label}>
-                    <a
-                      href={n.path ?? `/#${n.hash}`}
-                      onClick={(e) => handleNav(e, n)}
-                      className="text-slate-400 text-sm hover:text-indigo-400 transition-colors duration-200 flex items-center gap-1.5 group"
-                    >
-                      <i className="fas fa-chevron-right text-xs text-slate-600 group-hover:text-indigo-400 transition-colors" />
-                      {n.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* CTA */}
-            <div>
-              <h4 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">
-                Get In Touch
-              </h4>
-              <p className="text-slate-400 text-sm mb-5 leading-relaxed">
-                Open to full-time, freelance, and remote opportunities.
+            <div className="border-t border-slate-100 mt-14 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-slate-400 text-sm font-medium">
+                © {new Date().getFullYear()} Aadhar Gaur. All rights reserved.
               </p>
-              <a
-                href="mailto:aadhar41@gmail.com"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:shadow-[0_4px_14px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all duration-200"
-              >
-                <i className="fas fa-envelope" /> Say Hello
-              </a>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-800 mt-12 pt-7 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} Aadhar Gaur. All rights reserved.
-            </p>
-            <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-              <span>Built with</span>
-              <i className="fas fa-heart text-red-400 text-xs" />
-              <span>React &amp; Tailwind CSS</span>
+              <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold">
+                <span>Made with</span>
+                <i className="fas fa-heart text-red-400 animate-pulse" />
+                <span className="bg-white/80 px-2 py-1 rounded-lg border border-white/40">React</span>
+                <span className="bg-white/80 px-2 py-1 rounded-lg border border-white/40">Tailwind</span>
+              </div>
             </div>
           </div>
         </div>
@@ -143,7 +150,9 @@ export default function Footer() {
       {/* Scroll to top */}
       <button
         onClick={scrollToTop}
-        className={`scroll-top-btn ${showTop ? "show" : ""}`}
+        className={`fixed bottom-8 right-8 w-12 h-12 rounded-2xl clay-button-primary z-[1000] transition-all duration-500 ${
+          showTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"
+        }`}
         aria-label="Back to top"
       >
         <i className="fas fa-arrow-up" />
