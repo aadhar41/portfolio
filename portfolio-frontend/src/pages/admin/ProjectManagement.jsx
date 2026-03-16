@@ -73,6 +73,14 @@ export default function ProjectManagement() {
     } catch (err) { toast.error("Save failed: " + (err.response?.data?.message || "Unknown error")); }
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setPage(1);
+    setStatusFilter("");
+    setCategoryFilter("all");
+    setPerPage(10);
+  };
+
   if (loading && projects.length === 0) return <PageLoader />;
 
   return (
@@ -81,6 +89,7 @@ export default function ProjectManagement() {
         search={search} onSearchChange={setSearch}
         perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
         onAddNew={openCreate} addNewText="Add Project"
+        onClear={handleClearFilters}
         filters={[
           { name: "category", label: "All Categories", value: categoryFilter, options: [{ label: "Web", value: "web" }, { label: "Mobile", value: "mobile" }, { label: "API", value: "api" }] },
           { name: "is_active", label: "All Status", value: statusFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] },

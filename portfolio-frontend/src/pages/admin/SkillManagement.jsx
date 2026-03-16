@@ -66,6 +66,13 @@ export default function SkillManagement() {
     } catch { toast.error("Save failed. Please check the form."); }
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setPage(1);
+    setStatusFilter("");
+    setPerPage(10);
+  };
+
   if (loading && skills.length === 0) return <PageLoader />;
 
   return (
@@ -74,6 +81,7 @@ export default function SkillManagement() {
         search={search} onSearchChange={setSearch}
         perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
         onAddNew={openCreate} addNewText="Add Skill"
+        onClear={handleClearFilters}
         filters={[{ name: "is_active", label: "All Status", value: statusFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] }]}
         onFilterChange={(_, val) => { setStatusFilter(val); setPage(1); }}
       />

@@ -86,6 +86,14 @@ export default function BlogManagement() {
     } catch (err) { toast.error("Save failed: " + (err.response?.data?.message || "Unknown error")); }
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setPage(1);
+    setStatusFilter("");
+    setIsActiveFilter("");
+    setPerPage(10);
+  };
+
   if (loading && blogs.length === 0) return <PageLoader />;
 
   return (
@@ -94,6 +102,7 @@ export default function BlogManagement() {
         search={search} onSearchChange={setSearch}
         perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
         onAddNew={openCreate} addNewText="New Post"
+        onClear={handleClearFilters}
         filters={[
           { name: "status", label: "All Status", value: statusFilter, options: [{ label: "Draft", value: "draft" }, { label: "Published", value: "published" }] },
           { name: "is_active", label: "Visibility", value: isActiveFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] },
