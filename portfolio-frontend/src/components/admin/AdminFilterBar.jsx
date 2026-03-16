@@ -7,6 +7,7 @@ export default function AdminFilterBar({
   addNewText = "Add New",
   filters = [],
   onFilterChange,
+  onClear,
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 bg-white rounded-2xl px-4 py-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-100 mb-5">
@@ -49,6 +50,17 @@ export default function AdminFilterBar({
             ))}
           </select>
         ))}
+
+        {/* Clear Filters */}
+        {onClear && (
+          <button
+            onClick={onClear}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest transition-all group"
+          >
+            <i className="fas fa-undo-alt text-[10px] group-hover:-rotate-180 transition-transform duration-500" />
+            Reset Filters
+          </button>
+        )}
       </div>
 
       {/* Right: Add button */}

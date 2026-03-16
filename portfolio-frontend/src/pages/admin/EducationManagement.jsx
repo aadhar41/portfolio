@@ -67,6 +67,13 @@ export default function EducationManagement() {
     } catch { toast.error("Save failed"); }
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setPage(1);
+    setStatusFilter("");
+    setPerPage(10);
+  };
+
   if (loading && education.length === 0) return <PageLoader />;
 
   return (
@@ -75,6 +82,7 @@ export default function EducationManagement() {
         search={search} onSearchChange={setSearch}
         perPage={perPage} onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
         onAddNew={openCreate} addNewText="Add Education"
+        onClear={handleClearFilters}
         filters={[{ name: "is_active", label: "All Status", value: statusFilter, options: [{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }] }]}
         onFilterChange={(_, val) => { setStatusFilter(val); setPage(1); }}
       />

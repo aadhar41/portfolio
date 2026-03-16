@@ -36,6 +36,12 @@ export default function ContactManagement() {
     }
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setPage(1);
+    setPerPage(10);
+  };
+
   if (loading && messages.length === 0) return <PageLoader />;
 
   return (
@@ -46,6 +52,7 @@ export default function ContactManagement() {
         perPage={perPage}
         onPerPageChange={(v) => { setPerPage(v); setPage(1); }}
         showAddNew={false}
+        onClear={handleClearFilters}
       />
 
       <div className="relative min-h-[200px]">
