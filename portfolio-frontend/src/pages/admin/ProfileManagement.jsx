@@ -4,11 +4,11 @@ import FileUpload from "../../components/admin/FileUpload";
 import PageLoader from "../../components/admin/PageLoader";
 import { toast } from "react-toastify";
 
-const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+const inputCls = "w-full border border-theme rounded-xl px-3.5 py-2.5 text-sm text-theme focus:outline-none focus:ring-2 focus:focus-ring-accent focus:border-transparent transition-all bg-theme";
 function Field({ label, icon, children }) {
   return (
     <div className="mb-4">
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
+      <label className="flex items-center gap-1.5 text-xs font-semibold text-theme-muted uppercase tracking-wide mb-1.5">
         {icon && <i className={`${icon} text-indigo-400`} />} {label}
       </label>
       {children}
@@ -17,12 +17,12 @@ function Field({ label, icon, children }) {
 }
 function Section({ title, icon, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-5">
-      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-100">
-        <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center">
-          <i className={`${icon} text-indigo-600 text-xs`} />
+    <div className="bg-surface rounded-2xl border border-theme shadow-sm p-6 mb-5">
+      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-theme">
+        <div className="w-7 h-7 rounded-lg bg-theme flex items-center justify-center border border-theme">
+          <i className={`${icon} text-indigo-400 text-xs`} />
         </div>
-        <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+        <h3 className="text-sm font-bold text-theme">{title}</h3>
       </div>
       {children}
     </div>
@@ -87,7 +87,7 @@ export default function ProfileManagement() {
       <Section title="Profile Picture" icon="fas fa-image">
         <div className="flex items-center gap-6">
           {formData.avatar && (
-            <div className="shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 border-indigo-100 shadow-md">
+            <div className="shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 border-theme shadow-md">
               <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
             </div>
           )}
@@ -98,7 +98,7 @@ export default function ProfileManagement() {
       </Section>
 
       <div className="flex justify-end">
-        <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200">
+        <button type="submit" disabled={saving} className="clay-button-primary flex items-center gap-2 px-6 py-3 !rounded-xl font-semibold hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200">
           {saving ? <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" strokeWidth="3" strokeDasharray="40 20" /></svg> Saving…</> : <><i className="fas fa-save" /> Save Changes</>}
         </button>
       </div>

@@ -1,7 +1,7 @@
 export default function LoadingOverlay({ active, transparent = false }) {
   if (!active) return null;
   return (
-    <div className={`absolute inset-0 z-50 flex items-center justify-center rounded-[inherit] ${transparent ? "" : "bg-white/70 backdrop-blur-[2px]"}`}>
+    <div className={`absolute inset-0 z-50 flex items-center justify-center rounded-[inherit] ${transparent ? "" : "bg-theme/70 backdrop-blur-[2px]"}`}>
       <svg className="animate-spin w-9 h-9" viewBox="0 0 56 56" fill="none">
         <circle cx="28" cy="28" r="24" stroke="url(#overlay-spin)" strokeWidth="4" strokeLinecap="round" strokeDasharray="100 52" />
         <defs>

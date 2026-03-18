@@ -14,7 +14,7 @@ function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div className="bg-surface rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl border border-theme">
         {children}
       </div>
     </div>
@@ -24,13 +24,13 @@ function Modal({ open, onClose, children }) {
 function Field({ label, children }) {
   return (
     <div className="mb-4">
-      <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{label}</label>
+      <label className="block text-xs font-semibold text-theme-muted uppercase tracking-wide mb-1.5">{label}</label>
       {children}
     </div>
   );
 }
 
-const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+const inputCls = "w-full border border-theme rounded-xl px-3.5 py-2.5 text-sm text-theme focus:outline-none focus:ring-2 focus:focus-ring-accent focus:border-transparent transition-all bg-theme";
 // ────────────────────────────────────────────────
 
 export default function BlogManagement() {
@@ -110,25 +110,25 @@ export default function BlogManagement() {
         onFilterChange={(name, val) => { if (name === "status") setStatusFilter(val); if (name === "is_active") setIsActiveFilter(val); setPage(1); }}
       />
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
+      <div className="bg-surface rounded-2xl border border-theme shadow-sm overflow-hidden relative">
         <LoadingOverlay active={loading && blogs.length > 0} />
         <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 border-b border-slate-100">
+          <thead className="bg-theme border-b border-theme">
             <tr>
               {["Title", "Status", "Date", "Actions"].map((h, i) => (
-                <th key={h} className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide ${i === 3 ? "text-right" : ""}`}>{h}</th>
+                <th key={h} className={`px-4 py-3 text-xs font-semibold text-theme-muted uppercase tracking-wide ${i === 3 ? "text-right" : ""}`}>{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y border-theme">
             {blogs.map((b) => (
-              <tr key={b.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="px-4 py-3 font-semibold text-slate-800">{b.title}</td>
+              <tr key={b.id} className="hover:bg-theme/60 transition-colors">
+                <td className="px-4 py-3 font-semibold text-theme">{b.title}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide mr-1 ${b.status === "published" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>{b.status}</span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${b.is_active ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-500"}`}>{b.is_active ? "Active" : "Hidden"}</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${b.is_active ? "bg-indigo-100/20 text-indigo-400 border border-indigo-200/20" : "bg-theme text-theme-muted border border-theme"}`}>{b.is_active ? "Active" : "Hidden"}</span>
                 </td>
-                <td className="px-4 py-3 text-slate-500 text-xs">{b.published_at ? new Date(b.published_at).toLocaleDateString() : "—"}</td>
+                <td className="px-4 py-3 text-theme-muted text-xs">{b.published_at ? new Date(b.published_at).toLocaleDateString() : "—"}</td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 transition-colors mr-1" title="Edit"><i className="fas fa-edit text-sm" /></button>
                   <button onClick={() => handleDelete(b.id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors" title="Delete"><i className="fas fa-trash text-sm" /></button>
@@ -142,9 +142,9 @@ export default function BlogManagement() {
       <Pagination pagination={pagination} page={page} onPageChange={setPage} />
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-800">{currentBlog ? "Edit Post" : "New Post"}</h3>
-          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"><i className="fas fa-times" /></button>
+        <div className="px-6 py-5 border-b border-theme flex items-center justify-between">
+          <h3 className="text-base font-bold text-theme">{currentBlog ? "Edit Post" : "New Post"}</h3>
+          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-theme-muted hover:bg-theme transition-colors"><i className="fas fa-times" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-1">
           <Field label="Title"><input className={inputCls} value={formData.title} onChange={(e) => fd({ title: e.target.value })} required /></Field>
@@ -163,11 +163,11 @@ export default function BlogManagement() {
           <FileUpload label="Cover Image" currentImage={formData.cover_image} onUploadSuccess={(url) => fd({ cover_image: url })} folder="blogs" />
           <label className="flex items-center gap-2.5 cursor-pointer py-1">
             <input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" />
-            <span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span>
+            <span className="text-sm text-theme-muted font-medium">Visible on Portfolio</span>
           </label>
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
-            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
-            <button type="submit" className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">Save Post</button>
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme mt-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-theme-muted bg-theme rounded-xl hover:bg-surface transition-colors border border-theme">Cancel</button>
+            <button type="submit" className="clay-button-primary px-5 py-2 text-sm font-semibold !rounded-xl">Save Post</button>
           </div>
         </form>
       </Modal>

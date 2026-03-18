@@ -12,6 +12,7 @@ import BlogDetail from "./pages/BlogDetail";
 import Contact from "./pages/Contact";
 
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -46,34 +47,36 @@ function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <MainLayout>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogDetail />} />
-              <Route path="/contact" element={<Contact />} />
+        <ThemeProvider>
+          <BrowserRouter>
+            <MainLayout>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:id" element={<ProjectDetail />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogDetail />} />
+                <Route path="/contact" element={<Contact />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="projects" element={<ProjectManagement />} />
-                <Route path="blog" element={<BlogManagement />} />
-                <Route path="skills" element={<SkillManagement />} />
-                <Route path="experience" element={<ExperienceManagement />} />
-                <Route path="education" element={<EducationManagement />} />
-                <Route path="profile" element={<ProfileManagement />} />
-                <Route path="contacts" element={<ContactManagement />} />
-              </Route>
-            </Routes>
-          </MainLayout>
-          <ToastContainer position="top-right" autoClose={3000} />
-        </BrowserRouter>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="projects" element={<ProjectManagement />} />
+                  <Route path="blog" element={<BlogManagement />} />
+                  <Route path="skills" element={<SkillManagement />} />
+                  <Route path="experience" element={<ExperienceManagement />} />
+                  <Route path="education" element={<EducationManagement />} />
+                  <Route path="profile" element={<ProfileManagement />} />
+                  <Route path="contacts" element={<ContactManagement />} />
+                </Route>
+              </Routes>
+            </MainLayout>
+            <ToastContainer position="top-right" autoClose={3000} />
+          </BrowserRouter>
+        </ThemeProvider>
       </AuthProvider>
     </HelmetProvider>
   );

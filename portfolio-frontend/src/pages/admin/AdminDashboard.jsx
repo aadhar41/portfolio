@@ -68,24 +68,24 @@ export default function AdminDashboard() {
           <Link
             key={s.key}
             to={s.link}
-            className="group clay-card p-8 bg-white hover:scale-105 transition-all duration-300 block border-slate-50"
+            className="group clay-card p-8 bg-surface hover:scale-105 transition-all duration-300 block border-theme"
           >
             <div className="flex items-center justify-between mb-6">
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${s.from} ${s.to} flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform`}>
                 <i className={`${s.icon} text-white text-xl`} />
               </div>
-              <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 shadow-inner group-hover:bg-indigo-50 group-hover:text-indigo-400 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-theme flex items-center justify-center text-theme-muted shadow-inner group-hover:bg-indigo-50 group-hover:text-indigo-400 transition-colors">
                 <i className="fas fa-arrow-right text-[10px]" />
               </div>
             </div>
-            <div className="text-4xl font-black text-slate-800 tracking-tighter mb-1">
+            <div className="text-4xl font-black text-theme tracking-tighter mb-1">
               {loading ? (
-                <span className="inline-block w-16 h-10 bg-slate-50 rounded-xl animate-pulse" />
+                <span className="inline-block w-16 h-10 bg-theme rounded-xl animate-pulse" />
               ) : (
                 stats[s.key]
               )}
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{s.label}</p>
+            <p className="text-[10px] font-black text-theme-muted uppercase tracking-[0.2em]">{s.label}</p>
           </Link>
         ))}
       </div>
@@ -93,9 +93,9 @@ export default function AdminDashboard() {
       {/* Content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Quick Actions */}
-        <div className="lg:col-span-2 clay-card p-10 bg-white border-slate-50">
+        <div className="lg:col-span-2 clay-card p-10 bg-surface border-theme">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h3 className="text-lg font-black text-theme tracking-tight flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 shadow-inner">
                 <i className="fas fa-bolt" />
               </div>
@@ -107,23 +107,23 @@ export default function AdminDashboard() {
               <Link
                 key={a.label}
                 to={a.to}
-                className="flex items-center justify-between p-6 rounded-3xl bg-slate-50/50 hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-xl transition-all duration-300 group"
+                className="flex items-center justify-between p-6 rounded-3xl bg-theme/50 hover:bg-surface border border-transparent hover:border-theme hover:shadow-xl transition-all duration-300 group"
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-xl ${a.color} flex items-center justify-center shadow-sm font-bold`}>
                     <i className={`${a.icon}`} />
                   </div>
-                  <span className="text-sm font-black text-slate-700 uppercase tracking-widest leading-tight">{a.label}</span>
+                  <span className="text-sm font-black text-theme uppercase tracking-widest leading-tight">{a.label}</span>
                 </div>
-                <i className="fas fa-chevron-right text-slate-300 group-hover:translate-x-1 transition-transform" />
+                <i className="fas fa-chevron-right text-theme-muted group-hover:translate-x-1 transition-transform" />
               </Link>
             ))}
           </div>
         </div>
 
         {/* Intelligence / Tips */}
-        <div className="clay-card p-10 bg-white border-slate-50">
-          <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-3 mb-8">
+        <div className="clay-card p-10 bg-surface border-theme">
+          <h3 className="text-lg font-black text-theme tracking-tight flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 shadow-inner">
               <i className="fas fa-brain" />
             </div>
@@ -140,26 +140,26 @@ export default function AdminDashboard() {
                 <div className="shrink-0 w-6 h-6 rounded-lg bg-emerald-50 flex items-center justify-center mt-0.5 text-emerald-500">
                   <i className="fas fa-check text-[10px]" />
                 </div>
-                <p className="text-sm text-slate-500 font-bold tracking-tight leading-relaxed">{tip}</p>
+                <p className="text-sm text-theme-muted font-bold tracking-tight leading-relaxed">{tip}</p>
               </li>
             ))}
           </ul>
           
-          <div className="mt-10 p-6 rounded-[32px] bg-indigo-50/50 border border-indigo-100/50">
+          <div className="mt-10 p-6 rounded-[32px] bg-theme border border-theme">
             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-2">Protocol Hint</p>
-            <p className="text-xs font-bold text-slate-600 leading-relaxed italic">"Regular maintenance of the education and experience blocks increases node credibility by 40%."</p>
+            <p className="text-xs font-bold text-theme-muted leading-relaxed italic">"Regular maintenance of the education and experience blocks increases node credibility by 40%."</p>
           </div>
         </div>
       </div>
 
       {/* Analytics placeholder */}
-      <div className="clay-surface bg-white p-12 overflow-hidden relative group border-slate-50 flex flex-col items-center justify-center text-center">
-        <div className="w-20 h-20 rounded-[32px] bg-slate-50 flex items-center justify-center mb-6 shadow-inner text-slate-200 group-hover:text-indigo-200 transition-colors">
+      <div className="clay-surface bg-surface p-12 overflow-hidden relative group border-theme flex flex-col items-center justify-center text-center">
+        <div className="w-20 h-20 rounded-[32px] bg-theme flex items-center justify-center mb-6 shadow-inner text-theme-muted group-hover:text-indigo-200 transition-colors">
           <i className="fas fa-chart-line text-3xl" />
         </div>
-        <h4 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Grid Traffic Analytics</h4>
-        <p className="text-slate-400 text-lg font-medium max-w-xl mx-auto mb-8">Google Global Analytics integration is currently in transition. Real-time data visualization will be restored shortly.</p>
-        <div className="px-6 py-2 rounded-full bg-slate-50 text-[10px] font-black text-slate-400 border border-slate-100 uppercase tracking-widest flex items-center gap-2">
+        <h4 className="text-2xl font-black text-theme tracking-tight mb-2">Grid Traffic Analytics</h4>
+        <p className="text-theme-muted text-lg font-medium max-w-xl mx-auto mb-8">Google Global Analytics integration is currently in transition. Real-time data visualization will be restored shortly.</p>
+        <div className="px-6 py-2 rounded-full bg-theme text-[10px] font-black text-theme-muted border border-theme uppercase tracking-widest flex items-center gap-2">
           <i className="fas fa-shield-halved text-emerald-400" /> Secure Protocol Pending
         </div>
       </div>

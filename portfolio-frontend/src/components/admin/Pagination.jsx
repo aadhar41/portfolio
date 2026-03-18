@@ -35,19 +35,19 @@ export default function Pagination({ pagination, page, onPageChange }) {
   const btnBase =
     "min-w-[32px] h-8 px-2.5 flex items-center justify-center rounded-lg text-xs font-medium transition-all duration-150";
   const btnActive =
-    "bg-indigo-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.4)]";
+    "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20";
   const btnDefault =
-    "border border-slate-200 text-slate-600 hover:border-indigo-400 hover:text-indigo-600";
+    "border border-theme text-theme-muted hover:border-indigo-400 hover:text-indigo-400 bg-theme";
   const btnDisabled =
-    "border border-slate-100 text-slate-300 cursor-not-allowed";
+    "border border-theme text-theme-muted/30 cursor-not-allowed bg-theme opacity-50";
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
       {/* Info */}
-      <p className="text-xs text-slate-500">
-        Page <strong className="text-slate-700">{current_page}</strong> of{" "}
-        <strong className="text-slate-700">{last_page}</strong> &mdash;{" "}
-        <span className="text-slate-400">{total} total</span>
+      <p className="text-xs text-theme-muted">
+        Page <strong className="text-theme">{current_page}</strong> of{" "}
+        <strong className="text-theme">{last_page}</strong> &mdash;{" "}
+        <span className="text-theme-muted/60">{total} total</span>
       </p>
 
       {/* Page buttons */}
@@ -64,7 +64,7 @@ export default function Pagination({ pagination, page, onPageChange }) {
         {/* Numbered pages */}
         {getPages().map((p, i) =>
           p === "..." ? (
-            <span key={`ellipsis-${i}`} className="px-1 text-slate-400 text-xs select-none">
+            <span key={`ellipsis-${i}`} className="px-1 text-theme-muted text-xs select-none">
               …
             </span>
           ) : (

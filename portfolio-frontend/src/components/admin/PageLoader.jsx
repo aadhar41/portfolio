@@ -16,7 +16,7 @@ export default function PageLoader() {
           <div className="w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 animate-pulse" />
         </div>
       </div>
-      <p className="text-slate-400 text-sm font-medium">Loading…</p>
+      <p className="text-theme-muted text-sm font-medium">Loading…</p>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-theme flex items-center justify-center p-6 relative overflow-hidden">
       {/* Dynamic background elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-[120px] animate-pulse" />
@@ -41,14 +41,14 @@ export default function AdminLogin() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-[32px] clay-surface bg-gradient-to-br from-indigo-600 to-purple-600 shadow-[0_20px_40px_rgba(79,70,229,0.3)] mb-6 group hover:rotate-12 transition-transform duration-500">
             <i className="fas fa-shield-halved text-white text-3xl" />
           </div>
-          <h1 className="text-4xl font-black text-slate-800 tracking-tighter mb-2">Secure Node Access</h1>
-          <p className="text-slate-400 text-sm font-black uppercase tracking-[0.2em]">Authentication Required</p>
+          <h1 className="text-4xl font-black text-theme tracking-tighter mb-2">Secure Node Access</h1>
+          <p className="text-theme-muted text-sm font-black uppercase tracking-[0.2em]">Authentication Required</p>
         </div>
 
         {/* Login Card */}
-        <div className="clay-card p-10 md:p-12 bg-white/70 backdrop-blur-md border-white">
+        <div className="clay-card p-10 md:p-12 bg-surface/70 backdrop-blur-md border border-theme">
           {error && (
-            <div className="flex items-center gap-4 bg-red-50 border border-red-100 text-red-500 text-xs font-black uppercase tracking-widest px-5 py-4 rounded-2xl mb-8 animate-[shake_0.5s_ease-in-out]">
+            <div className="flex items-center gap-4 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-black uppercase tracking-widest px-5 py-4 rounded-2xl mb-8 animate-[shake_0.5s_ease-in-out]">
               <i className="fas fa-circle-exclamation text-lg" />
               <span>{error}</span>
             </div>
@@ -56,11 +56,11 @@ export default function AdminLogin() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
+              <label className="block text-[10px] font-black text-theme-muted uppercase tracking-[0.2em] ml-2">
                 Node Identity (Email)
               </label>
               <div className="relative group">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-theme-muted group-focus-within:text-indigo-400 transition-colors">
                   <i className="fas fa-at text-sm" />
                 </div>
                 <input
@@ -69,17 +69,17 @@ export default function AdminLogin() {
                   value={credentials.email}
                   onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
                   placeholder="admin@node.local"
-                  className="w-full bg-slate-50/50 border-2 border-slate-100/50 text-slate-800 placeholder-slate-300 rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-indigo-500/30 focus:bg-white transition-all shadow-inner"
+                  className="w-full bg-theme border-2 border-theme text-theme placeholder-theme-muted rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:focus-ring-accent focus:bg-surface transition-all shadow-inner"
                 />
               </div>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
+              <label className="block text-[10px] font-black text-theme-muted uppercase tracking-[0.2em] ml-2">
                 Access Protocol (Password)
               </label>
               <div className="relative group">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-theme-muted group-focus-within:text-indigo-400 transition-colors">
                   <i className="fas fa-lock text-sm" />
                 </div>
                 <input
@@ -88,7 +88,7 @@ export default function AdminLogin() {
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full bg-slate-50/50 border-2 border-slate-100/50 text-slate-800 placeholder-slate-300 rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-indigo-500/30 focus:bg-white transition-all shadow-inner"
+                  className="w-full bg-theme border-2 border-theme text-theme placeholder-theme-muted rounded-[24px] pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:focus-ring-accent focus:bg-surface transition-all shadow-inner"
                 />
               </div>
             </div>
@@ -112,15 +112,15 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-center">
-            <Link to="/" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-indigo-600 transition-all flex items-center gap-2 group">
+          <div className="mt-10 pt-8 border-t border-theme flex items-center justify-center">
+            <Link to="/" className="text-[10px] font-black text-theme-muted uppercase tracking-[0.2em] hover:text-indigo-400 transition-all flex items-center gap-2 group">
               <i className="fas fa-arrow-left group-hover:-translate-x-1 transition-transform" /> Back to public interface
             </Link>
           </div>
         </div>
         
         {/* Footer info */}
-        <p className="text-center mt-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">
+        <p className="text-center mt-8 text-[9px] font-black text-theme-muted uppercase tracking-[0.3em]">
           Standard Encryption Protocols Active
         </p>
       </div>

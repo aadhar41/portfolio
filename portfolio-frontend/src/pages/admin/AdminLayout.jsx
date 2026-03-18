@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { logout } from "../../services/api";
+import ThemeSwitcher from "../../components/admin/ThemeSwitcher";
 
 const NAV_ITEMS = [
   { label: "Dashboard",  path: "/admin",           icon: "fas fa-tachometer-alt"   },
@@ -54,7 +55,7 @@ export default function AdminLayout() {
   )?.label ?? "Admin Portal";
 
   return (
-    <div className="flex min-h-screen bg-slate-50 overflow-hidden">
+    <div className="flex min-h-screen bg-theme overflow-hidden">
       {/* ── Sidebar overlay (mobile) ── */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-indigo-900/20 backdrop-blur-sm z-30 lg:hidden transition-all duration-300" onClick={() => setSidebarOpen(false)} />
@@ -62,11 +63,11 @@ export default function AdminLayout() {
 
       {/* ── Sidebar ── */}
       <aside className={`
-        fixed top-0 left-0 h-screen w-72 bg-white flex flex-col z-40
+        fixed top-0 left-0 h-screen w-72 bg-surface flex flex-col z-40
         transform transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0 lg:static lg:z-auto lg:h-screen lg:sticky lg:top-0
-        border-r border-slate-100/50
+        border-r border-theme
       `}>
         {/* Brand */}
         <div className="px-8 py-10 shrink-0">
@@ -75,7 +76,7 @@ export default function AdminLayout() {
               <i className="fas fa-fingerprint text-white text-xl" />
             </div>
             <div>
-              <span className="block text-slate-800 font-black text-xl tracking-tight leading-none">Aadhar</span>
+              <span className="block text-theme font-black text-xl tracking-tight leading-none">Aadhar</span>
               <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Master Panel</span>
             </div>
           </div>
@@ -100,12 +101,12 @@ export default function AdminLayout() {
                     flex items-center gap-4 px-5 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 group
                     ${isActive
                       ? "clay-card !bg-indigo-600 text-white shadow-indigo-200"
-                      : "text-slate-400 hover:bg-indigo-50/50 hover:text-indigo-600"
+                      : "text-theme-muted hover:bg-theme/50 hover:text-indigo-600"
                     }
                   `}
                 >
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors shadow-inner
-                    ${isActive ? "bg-white/20" : "bg-slate-50 group-hover:bg-white"}`}>
+                    ${isActive ? "bg-white/20" : "bg-theme group-hover:bg-surface"}`}>
                     <i className={`${item.icon} text-sm`} />
                   </div>
                   <span className="tracking-tight">{item.label}</span>
@@ -118,13 +119,13 @@ export default function AdminLayout() {
 
         {/* Footer */}
         <div className="p-6 shrink-0 space-y-4">
-          <div className="clay-card p-4 bg-slate-50 border-none flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-emerald-500">
+          <div className="clay-card p-4 bg-theme border-none flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-surface shadow-sm flex items-center justify-center text-emerald-500">
               <i className="fas fa-check-circle" />
             </div>
             <div>
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Server Status</p>
-              <p className="text-xs font-bold text-slate-700">All Systems Online</p>
+              <p className="text-xs font-bold text-theme">All Systems Online</p>
             </div>
           </div>
           
@@ -141,28 +142,30 @@ export default function AdminLayout() {
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white/80 backdrop-blur-xl px-6 py-5 flex items-center justify-between sticky top-0 z-20 border-b border-slate-100">
+        <header className="bg-header backdrop-blur-xl px-6 py-5 flex items-center justify-between sticky top-0 z-20 border-b border-theme">
           <div className="flex items-center gap-6">
             {/* Mobile hamburger */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden w-12 h-12 clay-card bg-white flex items-center justify-center text-slate-600 hover:text-indigo-600 transition-all shadow-sm"
+              className="lg:hidden w-12 h-12 clay-card bg-surface flex items-center justify-center text-theme hover:text-indigo-600 transition-all shadow-sm"
             >
               <i className="fas fa-bars-staggered text-lg" />
             </button>
             <div className="hidden sm:block">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 text-[10px] font-bold text-slate-400 border border-slate-100 mb-1 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme text-[10px] font-bold text-theme-muted border border-theme mb-1 uppercase tracking-widest">
                 <i className="fas fa-globe mr-1" /> External Portal / {currentLabel}
               </div>
-              <h1 className="text-2xl font-black text-slate-800 tracking-tight">{currentLabel}</h1>
+              <h1 className="text-2xl font-black text-theme tracking-tight">{currentLabel}</h1>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeSwitcher />
+            
             <Link
               to="/"
               target="_blank"
-              className="hidden md:flex items-center gap-2 clay-card !bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all border-slate-100 shadow-sm"
+              className="hidden md:flex items-center gap-2 clay-card !bg-surface px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-theme-muted hover:text-indigo-600 transition-all border-theme shadow-sm"
             >
               <i className="fas fa-external-link-alt" /> Live Site
             </Link>
@@ -171,24 +174,24 @@ export default function AdminLayout() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((o) => !o)}
-                className="clay-card !p-1.5 flex items-center gap-3 bg-white border-slate-100 shadow-sm hover:border-indigo-200 transition-all group"
+                className="clay-card !p-1.5 flex items-center gap-3 bg-surface border-theme shadow-sm hover:border-indigo-200 transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-black shadow-lg group-hover:scale-110 transition-transform">
                   {user.name?.charAt(0) ?? "A"}
                 </div>
                 <div className="hidden lg:block text-left pr-2">
-                  <p className="text-xs font-black text-slate-800 leading-none mb-1 tracking-tight">{user.name}</p>
+                  <p className="text-xs font-black text-theme leading-none mb-1 tracking-tight">{user.name}</p>
                   <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">{user.role}</p>
                 </div>
-                <i className={`fas fa-chevron-down text-[10px] text-slate-300 transition-transform duration-300 lg:mr-2 ${dropdownOpen ? "rotate-180" : ""}`} />
+                <i className={`fas fa-chevron-down text-[10px] text-theme-muted transition-transform duration-300 lg:mr-2 ${dropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
               {/* Dropdown panel */}
               {dropdownOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-60 clay-surface bg-white/95 backdrop-blur-md p-2 z-50 animate-[fadeInDown_0.2s_ease]">
-                  <div className="px-5 py-4 border-b border-slate-100 mb-2">
-                    <p className="text-xs font-black text-slate-800 tracking-tight mb-1">{user.name}</p>
-                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{user.email}</p>
+                <div className="absolute right-0 top-[calc(100%+8px)] w-60 clay-surface bg-surface backdrop-blur-md p-2 z-50 animate-[fadeInDown_0.2s_ease]">
+                  <div className="px-5 py-4 border-b border-theme mb-2">
+                    <p className="text-xs font-black text-theme tracking-tight mb-1">{user.name}</p>
+                    <p className="text-[10px] font-black text-theme-muted uppercase tracking-widest">{user.email}</p>
                   </div>
 
                   <div className="space-y-1">
@@ -203,9 +206,9 @@ export default function AdminLayout() {
                         to={item.to}
                         target={item.blank ? "_blank" : undefined}
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all group"
+                        className="flex items-center gap-3 px-4 py-3 text-xs font-bold text-theme-muted hover:bg-theme hover:text-indigo-600 rounded-xl transition-all group"
                       >
-                        <i className={`${item.icon} w-5 text-center text-slate-300 group-hover:text-indigo-400`} />
+                        <i className={`${item.icon} w-5 text-center text-theme-muted group-hover:text-indigo-400`} />
                         <span className="tracking-tight">{item.label}</span>
                       </Link>
                     ))}
@@ -226,7 +229,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6 lg:p-10 overflow-y-auto bg-slate-50/50 custom-scrollbar">
+        <main className="flex-1 p-6 lg:p-10 overflow-y-auto bg-theme custom-scrollbar">
           <Outlet />
         </main>
       </div>

@@ -13,13 +13,13 @@ function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl">{children}</div>
+      <div className="bg-surface rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl border border-theme">{children}</div>
     </div>
   );
 }
-const inputCls = "w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all bg-slate-50";
+const inputCls = "w-full border border-theme rounded-xl px-3.5 py-2.5 text-sm text-theme focus:outline-none focus:ring-2 focus:focus-ring-accent focus:border-transparent transition-all bg-theme";
 function Field({ label, children }) {
-  return <div className="mb-4"><label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{label}</label>{children}</div>;
+  return <div className="mb-4"><label className="block text-xs font-semibold text-theme-muted uppercase tracking-wide mb-1.5">{label}</label>{children}</div>;
 }
 
 export default function ProjectManagement() {
@@ -97,26 +97,26 @@ export default function ProjectManagement() {
         onFilterChange={(name, val) => { if (name === "category") setCategoryFilter(val); if (name === "is_active") setStatusFilter(val); setPage(1); }}
       />
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
+      <div className="bg-surface rounded-2xl border border-theme shadow-sm overflow-hidden relative">
         <LoadingOverlay active={loading && projects.length > 0} />
         <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 border-b border-slate-100">
-            <tr>{["Title", "Category", "Technologies", "Status", "Actions"].map((h, i) => <th key={h} className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide ${i === 4 ? "text-right" : ""}`}>{h}</th>)}</tr>
+          <thead className="bg-theme border-b border-theme">
+            <tr>{["Title", "Category", "Technologies", "Status", "Actions"].map((h, i) => <th key={h} className={`px-4 py-3 text-xs font-semibold text-theme-muted uppercase tracking-wide ${i === 4 ? "text-right" : ""}`}>{h}</th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y border-theme">
             {projects.map((p) => (
-              <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="px-4 py-3 font-semibold text-slate-800">{p.title}</td>
-                <td className="px-4 py-3 capitalize text-slate-600 text-xs">{p.category}</td>
+              <tr key={p.id} className="hover:bg-theme/60 transition-colors">
+                <td className="px-4 py-3 font-semibold text-theme">{p.title}</td>
+                <td className="px-4 py-3 capitalize text-theme-muted text-xs">{p.category}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-1">
-                    {p.technologies.slice(0, 3).map((t) => <span key={t} className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">{t}</span>)}
-                    {p.technologies.length > 3 && <span className="text-slate-400 text-xs">+{p.technologies.length - 3}</span>}
+                    {p.technologies.slice(0, 3).map((t) => <span key={t} className="bg-indigo-50/50 text-indigo-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-indigo-100/50">{t}</span>)}
+                    {p.technologies.length > 3 && <span className="text-theme-muted text-xs">+{p.technologies.length - 3}</span>}
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  {p.featured && <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full mr-1">★ Featured</span>}
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{p.is_active ? "Active" : "Inactive"}</span>
+                  {p.featured && <span className="bg-amber-100/20 text-amber-500 text-[10px] font-bold px-2 py-0.5 rounded-full mr-1 border border-amber-200/20">★ Featured</span>}
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.is_active ? "bg-emerald-100/20 text-emerald-500 border border-emerald-200/20" : "bg-theme text-theme-muted border border-theme"}`}>{p.is_active ? "Active" : "Inactive"}</span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 transition-colors mr-1"><i className="fas fa-edit text-sm" /></button>
@@ -131,9 +131,9 @@ export default function ProjectManagement() {
       <Pagination pagination={pagination} page={page} onPageChange={setPage} />
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-800">{currentProject ? "Edit Project" : "New Project"}</h3>
-          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"><i className="fas fa-times" /></button>
+        <div className="px-6 py-5 border-b border-theme flex items-center justify-between">
+          <h3 className="text-base font-bold text-theme">{currentProject ? "Edit Project" : "New Project"}</h3>
+          <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg text-theme-muted hover:bg-theme transition-colors"><i className="fas fa-times" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-1">
           <Field label="Title"><input className={inputCls} value={formData.title} onChange={(e) => fd({ title: e.target.value })} required /></Field>
@@ -146,18 +146,13 @@ export default function ProjectManagement() {
               </select>
             </Field>
             <Field label="Featured">
-              <div className="flex items-center gap-2 h-10"><input type="checkbox" checked={formData.featured} onChange={(e) => fd({ featured: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-slate-600">Highlight Project</span></div>
+              <div className="flex items-center gap-2 h-10"><input type="checkbox" checked={formData.featured} onChange={(e) => fd({ featured: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-theme-muted">Highlight Project</span></div>
             </Field>
           </div>
-          <Field label="Technologies (comma separated)"><input className={inputCls} value={formData.technologies} onChange={(e) => fd({ technologies: e.target.value })} placeholder="React, Laravel, MySQL" /></Field>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="GitHub URL"><input className={inputCls} type="url" value={formData.github_url} onChange={(e) => fd({ github_url: e.target.value })} /></Field>
-            <Field label="Live URL"><input className={inputCls} type="url" value={formData.live_url} onChange={(e) => fd({ live_url: e.target.value })} /></Field>
-          </div>
-          <label className="flex items-center gap-2.5 cursor-pointer py-1"><input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-slate-600 font-medium">Visible on Portfolio</span></label>
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
-            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
-            <button type="submit" className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all">Save Project</button>
+          <label className="flex items-center gap-2.5 cursor-pointer py-1"><input type="checkbox" checked={formData.is_active} onChange={(e) => fd({ is_active: e.target.checked })} className="w-4 h-4 accent-indigo-600" /><span className="text-sm text-theme-muted font-medium">Visible on Portfolio</span></label>
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme mt-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm font-medium text-theme-muted bg-theme rounded-xl hover:bg-surface transition-colors border border-theme">Cancel</button>
+            <button type="submit" className="clay-button-primary px-5 py-2 text-sm font-semibold !rounded-xl">Save Project</button>
           </div>
         </form>
       </Modal>

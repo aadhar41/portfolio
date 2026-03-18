@@ -58,42 +58,42 @@ export default function ContactManagement() {
       <div className="relative min-h-[200px]">
         <LoadingOverlay active={loading && messages.length > 0} />
         {messages.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <i className="fas fa-inbox text-slate-300 text-2xl" />
+          <div className="bg-surface rounded-2xl border border-theme shadow-sm p-16 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-theme flex items-center justify-center mb-4 border border-theme">
+              <i className="fas fa-inbox text-theme-muted text-2xl" />
             </div>
-            <h3 className="font-semibold text-slate-700 mb-1">No messages yet</h3>
-            <p className="text-slate-400 text-sm">They'll show up here when someone contacts you.</p>
+            <h3 className="font-semibold text-theme mb-1">No messages yet</h3>
+            <p className="text-theme-muted text-sm">They'll show up here when someone contacts you.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {messages.map((msg) => (
-              <div key={msg.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div key={msg.id} className="bg-surface rounded-2xl border border-theme shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpanded(expanded === msg.id ? null : msg.id)}>
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="shrink-0 w-9 h-9 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                       {msg.name?.charAt(0) ?? "?"}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-800 text-sm truncate">{msg.name}</p>
-                      <p className="text-xs text-indigo-600 truncate">{msg.email}</p>
+                      <p className="font-semibold text-theme text-sm truncate">{msg.name}</p>
+                      <p className="text-xs text-indigo-400 truncate">{msg.email}</p>
                     </div>
                     <div className="hidden sm:block ml-4 min-w-0">
-                      <p className="text-sm text-slate-600 truncate">{msg.subject || "No Subject"}</p>
+                      <p className="text-sm text-theme-muted truncate">{msg.subject || "No Subject"}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 shrink-0 ml-3">
-                    <span className="hidden sm:block text-xs text-slate-400">{new Date(msg.created_at).toLocaleDateString()}</span>
-                    <i className={`fas fa-chevron-${expanded === msg.id ? "up" : "down"} text-slate-400 text-xs`} />
+                    <span className="hidden sm:block text-xs text-theme-muted">{new Date(msg.created_at).toLocaleDateString()}</span>
+                    <i className={`fas fa-chevron-${expanded === msg.id ? "up" : "down"} text-theme-muted text-xs`} />
                   </div>
                 </div>
                 {expanded === msg.id && (
-                  <div className="px-5 pb-5 border-t border-slate-100">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-3 mb-2">Message</p>
-                    <div className="bg-slate-50 rounded-xl px-4 py-3 border-l-4 border-indigo-300 text-sm text-slate-700 leading-relaxed">
+                  <div className="px-5 pb-5 border-t border-theme">
+                    <p className="text-xs font-semibold text-theme-muted uppercase tracking-wide mt-3 mb-2">Message</p>
+                    <div className="bg-theme rounded-xl px-4 py-3 border-l-4 border-indigo-300 text-sm text-theme leading-relaxed">
                       {msg.message}
                     </div>
-                    <a href={`mailto:${msg.email}`} className="inline-flex items-center gap-2 mt-3 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+                    <a href={`mailto:${msg.email}`} className="inline-flex items-center gap-2 mt-3 text-xs font-semibold text-indigo-400 hover:text-indigo-600 transition-colors">
                       <i className="fas fa-reply" /> Reply via Email
                     </a>
                   </div>
