@@ -11,23 +11,23 @@ A full-stack personal portfolio built with a **Laravel 12 REST API** backend and
 | Page | Preview |
 | --- | --- |
 | **Home** | ![Home Page](portfolio-frontend/public/img/screens/portfolio-home.png) |
-| **About** | ![About Page](portfolio-frontend/public/img/screens/portfolio-about-2026-03-05-19_08_09.png) |
-| **Projects** | ![Projects Page](portfolio-frontend/public/img/screens/portfolio-projects-2026-03-05-19_08_28.png) |
-| **Project Detail** | ![Project Detail](portfolio-frontend/public/img/screens/portfolio-projects-48-2026-03-05-19_08_57.png) |
-| **Blog** | ![Blog Page](portfolio-frontend/public/img/screens/portfolio-blog-2026-03-05-19_09_10.png) |
-| **Blog Detail** | ![Blog Detail](portfolio-frontend/public/img/screens/portfolio-blog-php-security-best-practices-2025-2026-03-05-19_09_23.png) |
-| **Contact** | ![Contact Page](portfolio-frontend/public/img/screens/portfolio-contact-2026-03-05-19_09_34.png) |
+| **About** | ![About Page](portfolio-frontend/public/img/screens/portfolio-about.png) |
+| **Projects** | ![Projects Page](portfolio-frontend/public/img/screens/portfolio-projects.png) |
+| **Project Detail** | ![Project Detail](portfolio-frontend/public/img/screens/portfolio-project-detail.png) |
+| **Blog** | ![Blog Page](portfolio-frontend/public/img/screens/portfolio-blog.png) |
+| **Blog Detail** | ![Blog Detail](portfolio-frontend/public/img/screens/portfolio-blog-detail.png) |
+| **Contact** | ![Contact Page](portfolio-frontend/public/img/screens/portfolio-contact.png) |
 
 ### Admin Dashboard (Sanctum Protected)
 
 | Feature | Preview |
 | --- | --- |
-| **Login** | ![Admin Login](portfolio-frontend/public/img/screens/admin-login-2026-03-05-16_30_04.png) |
-| **Dashboard** | ![Admin Dashboard](portfolio-frontend/public/img/screens/admin-2026-03-05-16_30_21.png) |
-| **Project Management** | ![Project Management](portfolio-frontend/public/img/screens/admin-projects-2026-03-05-16_30_30.png) |
-| **Blog Management** | ![Blog Management](portfolio-frontend/public/img/screens/admin-blog-2026-03-05-16_32_07.png) |
-| **Skills Management** | ![Skills Management](portfolio-frontend/public/img/screens/admin-skills-2026-03-05-16_33_29.png) |
-| **Profile Management** | ![Profile Management](portfolio-frontend/public/img/screens/admin-profile-2026-03-05-16_33_39.png) |
+| **Login** | ![Admin Login](portfolio-frontend/public/img/screens/admin-login.png) |
+| **Dashboard** | ![Admin Dashboard](portfolio-frontend/public/img/screens/admin-dashboard.png) |
+| **Project Management** | ![Project Management](portfolio-frontend/public/img/screens/admin-projects.png) |
+| **Blog Management** | ![Blog Management](portfolio-frontend/public/img/screens/admin-blogs.png) |
+| **Skills Management** | ![Skills Management](portfolio-frontend/public/img/screens/admin-skills.png) |
+| **Profile Management** | ![Profile Management](portfolio-frontend/public/img/screens/admin-profile.png) |
 | **Contact Management** | *(Collapsible card layout with message previews)* |
 
 ---
